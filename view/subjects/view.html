@@ -1,0 +1,13 @@
+{% extends '/view/base.html' %}
+
+{% block title %}Crear asignatura{% endblock %}
+
+{% block content %}
+
+Evaluables:<br><br>
+
+{% for task in tasks %}
+	<a href="#">{{ task.name }}</a> -> {{ task.percent }}%<br>
+{% endfor %}
+
+{% endblock %}

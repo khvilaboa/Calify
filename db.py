@@ -8,11 +8,9 @@ class Subject(ndb.Model):
     description = ndb.StringProperty(indexed=False)
     year = ndb.IntegerProperty(indexed=True)
 
-    @property
     def tasks(self):
         return Task.query(ancestor=self.key)
 
-    @property
     def teachers(self):
         return Task.query(ancestor=self.key)
 

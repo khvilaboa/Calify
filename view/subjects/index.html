@@ -11,7 +11,7 @@
 Asignaturas:<br>
 
 {% for subject in subjects %}
-	{{ subject.name }}<br>
+	<a href="/subjects/view/{{ subject.key.id() }}">{{ subject.name }}</a><br>
 {% endfor %}
 
 {% endblock %}
