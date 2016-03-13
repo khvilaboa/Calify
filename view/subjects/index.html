@@ -6,4 +6,12 @@
 
 <a class="btn btn-default" href="/subjects/create">Crear asignatura</a>
 
+<br><br>
+
+Asignaturas:<br>
+
+{% for subject in subjects %}
+	{{ subject.name }}<br>
+{% endfor %}
+
 {% endblock %}
