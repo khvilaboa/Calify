@@ -1,8 +1,9 @@
 
-.wrapper {
-	background-color: #bdc3c7;
-	min-height: 100%;
+body {
+	background-color: #fff;
 }
+
+
 
 /* NAVBAR */
 
@@ -116,9 +117,15 @@ li.sb-item i.fa {
 }
 
 
-/* CONTAINER */
+/* CONTENTS */
 
-.container {
+.contents {
 	margin-left: 250px;
 	padding: 0px;
+}
+
+/* TABLES */
+table > thead {
+	background-color: #eee;
+	color: #222;
 }

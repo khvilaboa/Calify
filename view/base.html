@@ -2,62 +2,68 @@
 {% autoescape true %}
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>{% block title %}{% endblock %}</title>
-	<!-- Tell the browser to be responsive to screen width -->
-	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-	<!-- Bootstrap 3.3.5 -->
-	<link rel="stylesheet" href="/css/bootstrap.min.css">
-	<!-- Page style -->
-	<link rel="stylesheet" href="/css/style.css">
-	<!-- Font Awesome -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-	<!-- Ionicons -->
-	<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %}{% endblock %}</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.5 -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <!-- Page style -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 </head>
 
 <body>
-	<nav class="navbar navbar-default">
+<nav class="navbar navbar-default">
 
-		<div class="navbar-header">
-			<a class="navbar-brand" href="#">Calify</a>
-		</div>
-		
-		<ul class="nav navbar-nav pull-right">
-			<li><a href="#"><i class="fa fa-sign-in"></i></a></li>
-			<li><a href="#"><i class="fa icon-chevron-sign-up"></i></a></li>
-		</ul>
+    <div class="navbar-header">
+        <a class="navbar-brand" href="#">Calify {% block brandtext %}{% endblock %}</a>
+    </div>
 
-	</nav>
+    <ul class="nav navbar-nav">
+        {% block navitems %}{% endblock %}
+    </ul>
 
+    <ul class="nav navbar-nav pull-right">
+        <li><a href="#"><i class="fa fa-sign-in"></i></a></li>
+        <li><a href="#"><i class="fa icon-chevron-sign-up"></i></a></li>
+    </ul>
 
-			<div class = "sidebar">
-					<a class="sb-user-info" href="#">
-						<div class="sb-user">
-							<img class="img-circle sb-user-img" src="/img/user.png">
-							<span class="sb-user-info">Username</span>
-						</div>
-					</a>
-					
-					<ul class="sb-items">
-						<li class="sb-header"><span>NAVIGATION</span></li>
-						<li class="sb-item"><a href="/subjects"><i class="fa fa-book"></i> Subjects</a></li>
-						<li class="sb-item"><a href="#"><i class="fa fa-line-chart"></i> Statistics</a></li>
-						<li class="sb-item"><a href="#"><i class="fa fa-user"></i> Profile</a></li>
-					</ul>
-			</div>
-
-			<div class="contents">
-				{% block content %}{% endblock %}
-			</div>
-		</div>
+</nav>
 
 
-	<!-- jQuery 2.1.4 -->
-	<script src="plugins/jQuery/jQuery-2.1.4.min.js"></script>
-	<!-- Bootstrap 3.3.5 -->
-	<script src="bootstrap/js/bootstrap.min.js"></script>
+<div class="sidebar">
+    <a class="sb-user-info" href="#">
+        <div class="sb-user">
+            <img class="img-circle sb-user-img" src="/img/user.png">
+            <span class="sb-user-info">Username</span>
+        </div>
+    </a>
+
+    <ul class="sb-items">
+        <li class="sb-header"><span>NAVIGATION</span></li>
+        <li class="sb-item"><a href="/subjects"><i class="fa fa-book"></i> Subjects</a></li>
+        <li class="sb-item"><a href="#"><i class="fa fa-line-chart"></i> Statistics</a></li>
+        <li class="sb-item"><a href="#"><i class="fa fa-user"></i> Profile</a></li>
+    </ul>
+</div>
+
+<div class="contents">
+    <div class="card" style="margin:5px;">
+        {% block content %}{% endblock %}
+    </div>
+</div>
+</div>
+
+
+<!-- jQuery 2.1.4 -->
+<script src="plugins/jQuery/jQuery-2.1.4.min.js"></script>
+<!-- Bootstrap 3.3.5 -->
+<script src="bootstrap/js/bootstrap.min.js"></script>
 </body>
 </html>
 {% endautoescape %}
