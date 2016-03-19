@@ -23,8 +23,7 @@ class SubjectsHandler(webapp2.RequestHandler):
             task.put()"""
 
         if not action:  # index
-            subjects = db.Subject.query()
-            values["subjects"] = subjects
+            values["subjects"] = db.Subject.query()
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
         elif action == "view":
             sub = db.Subject.get_by_id(long(idSub))
@@ -67,6 +66,16 @@ class SubjectsHandler(webapp2.RequestHandler):
         task = db.Task(parent=est.key, name="Examen parcial 2", percent=20)
         task.put()"""
 
+    def post(self, action, idSub):
+        if action <> "create" or idSub <> "":
+            self.redirect("/")
+
+        name = self.request.get("name")
+        desc = self.request.get("description")
+        est = db.Subject(name=name, description=desc, year=2012)
+        est.put()
+
+        self.redirect("/")
 
 app = webapp2.WSGIApplication([
     ('/subjects/?([a-z]*)/?([0-9]*)', SubjectsHandler)

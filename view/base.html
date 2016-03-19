@@ -31,9 +31,7 @@
 
 	</nav>
 
-	<div class="wrapper">
 
-		
 			<div class = "sidebar">
 					<a class="sb-user-info" href="#">
 						<div class="sb-user">
@@ -44,20 +42,17 @@
 					
 					<ul class="sb-items">
 						<li class="sb-header"><span>NAVIGATION</span></li>
-						<li class="sb-item"><a href="#"><i class="fa fa-book"></i> Subjects</a></li>
+						<li class="sb-item"><a href="/subjects"><i class="fa fa-book"></i> Subjects</a></li>
 						<li class="sb-item"><a href="#"><i class="fa fa-line-chart"></i> Statistics</a></li>
 						<li class="sb-item"><a href="#"><i class="fa fa-user"></i> Profile</a></li>
 					</ul>
 			</div>
 
-			<div class="row container">
-				<div class = "col-xs-9">
-					{% block content %}{% endblock %}
-				</div>
+			<div class="contents">
+				{% block content %}{% endblock %}
 			</div>
 		</div>
 
-	</div> <!-- ./wrapper -->
 
 	<!-- jQuery 2.1.4 -->
 	<script src="plugins/jQuery/jQuery-2.1.4.min.js"></script>

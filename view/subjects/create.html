@@ -4,6 +4,45 @@
 
 {% block content %}
 
-Tal
+<form role="form" method="POST">
+
+    <div class="form-group">
+        <label class="control-label col-xs-2" for="name">Nombre:</label>
+
+        <div class="col-xs-4">
+            <input type="text" class="form-control" id="name" name="name" placeholder="Enter email">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-2" for="pwd">Password:</label>
+
+        <div class="col-xs-4">
+            <input type="password" class="form-control" id="pwd" placeholder="Enter password">
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label for="description" class="col-xs-12">Descripcion:</label>
+
+        <div class="col-xs-12">
+            <textarea class="form-control col-xs-12" rows="5" id="description" name="description"></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="checkbox col-xs-12">
+            <label><input type="checkbox"> Remember me</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-xs-12">
+            <button type="submit" class="btn btn-default">Submit</button>
+        </div>
+    </div>
+
+</form>
 
 {% endblock %}
