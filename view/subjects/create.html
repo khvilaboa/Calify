@@ -5,12 +5,13 @@
 {% block content %}
 
 <form role="form" method="POST">
+    <h3>Subject data:</h3>
 
     <div class="form-group">
-        <label class="control-label col-xs-2" for="name">Nombre:</label>
+        <label class="control-label col-xs-2" for="name">Name:</label>
 
         <div class="col-xs-4">
-            <input type="text" class="form-control" id="name" name="name" placeholder="Enter email">
+            <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
         </div>
     </div>
 
@@ -24,18 +25,57 @@
 
 
     <div class="form-group">
-        <label for="description" class="col-xs-12">Descripcion:</label>
+        <label for="description" class="col-xs-12">Description:</label>
 
         <div class="col-xs-12">
             <textarea class="form-control col-xs-12" rows="5" id="description" name="description"></textarea>
         </div>
     </div>
 
-    <div class="form-group">
+    <!--<div class="form-group">
         <div class="checkbox col-xs-12">
             <label><input type="checkbox"> Remember me</label>
         </div>
+    </div>-->
+
+    <h3>Tasks:</h3>
+
+    <div class="form-group" id="taskForm">
+
+        <label class="col-xs-1 control-label">Name</label>
+
+        <div class="col-xs-4">
+            <input type="text" class="form-control" name="taskName" placeholder="Name" id="taskName"/>
+        </div>
+        <label class="col-xs-1 control-label">Percent</label>
+
+        <div class="col-xs-4">
+            <input type="number" class="form-control" name="taskPercent" placeholder="Percent" min="0" max="100"
+                   id="taskPercent"/>
+        </div>
+
+        <div class="col-xs-1 col-xs-offset-1">
+            <button type="button" class="btn btn-default addButton"><i class="fa fa-plus"></i></button>
+        </div>
     </div>
+
+
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Percent</th>
+            <th>***</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="hide" id="taskRowTemplate">
+            <td name="taskRowName"></td>
+            <td name="taskRowPercent"></td>
+            <td name="taskRowTitle"></td>
+        </tr>
+        </tbody>
+    </table>
 
     <div class="form-group">
         <div class="col-xs-12">
@@ -43,6 +83,49 @@
         </div>
     </div>
 
+    <div id="tasksData"></div>
 </form>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        taskIndex = 0;
+
+        $('#taskForm').on('click', '.addButton', function () {
+
+            var $template = $('#taskRowTemplate');
+            var $taskName = $('#taskName').val();
+            var $taskPercent = $('#taskPercent').val();
+
+            var $clone = $template
+                    .clone()
+                    .removeClass('hide')
+                    .removeAttr('id')
+                    .attr('data-task-index', taskIndex)
+                    .insertBefore($template);
+
+            // Update the name attributes
+            $clone
+                    .find('[name="taskRowName"]').attr('name', 'task[' + taskIndex + '].name').text($taskName).end()
+                    .find('[name="taskRowPercent"]').attr('name', 'task[' + taskIndex + '].percent').text($taskPercent + " %").end();
+
+            $('<input>').attr({type: 'hidden', name: 'task[' + taskIndex + '].name', value: $taskName}).appendTo('#tasksData');
+            $('<input>').attr({type: 'hidden', name: 'task[' + taskIndex + '].percent', value: $taskPercent}).appendTo('#tasksData');
+
+            taskIndex++;
+        });
+
+        // Remove button click handler
+        $('#bookForm').on('click', '.removeButton', function () {
+            var $row = $(this).parents('.form-group'),
+                    index = $row.attr('data-book-index');
+
+            // Remove element containing the fields
+            $row.remove();
+        });
+    });
+</script>
 
 {% endblock %}

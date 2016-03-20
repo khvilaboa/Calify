@@ -24,6 +24,9 @@ class SubjectsHandler(webapp2.RequestHandler):
 
         if not action:  # index
             values["subjects"] = db.Subject.query()
+            for s in db.Subject.query():
+                for t in s.teachers():
+                    self.response.write(t.name)
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
         elif action == "view":
             sub = db.Subject.get_by_id(long(idSub))
@@ -72,10 +75,28 @@ class SubjectsHandler(webapp2.RequestHandler):
 
         name = self.request.get("name")
         desc = self.request.get("description")
-        est = db.Subject(name=name, description=desc, year=2012)
-        est.put()
+
+        sub = db.Subject(name=name, description=desc, year=2012)
+        sub.put()
+
+        self.response.write("Name: " + name)
+        self.response.write("<br>Description: " + desc)
+        self.response.write("<br>Tasks:<br>")
+
+        i = 0
+        taskName = self.request.get("task[%d].name" % i, "")
+        taskPercent = self.request.get("task[%d].percent" % i, "") # TODO: check types
+
+        while taskName != "" and taskPercent != "":
+            task = db.Task(parent=sub.key, name=taskName, percent=int(taskPercent))
+            task.put()
+            self.response.write(taskName + "<br>" + str(taskPercent) + "<br>")
+            i += 1
+            taskName = self.request.get("task[%d].name" % i, "")
+            taskPercent = self.request.get("task[%d].percent" % i, "")
 
         self.redirect("/")
+
 
 app = webapp2.WSGIApplication([
     ('/subjects/?([a-z]*)/?([0-9]*)', SubjectsHandler)

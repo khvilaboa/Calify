@@ -12,7 +12,7 @@ class Subject(ndb.Model):
         return Task.query(ancestor=self.key)
 
     def teachers(self):
-        return Task.query(ancestor=self.key)
+        return Teacher.query(ancestor=self.key)
 
 
 class Task(ndb.Model):
