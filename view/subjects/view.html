@@ -3,6 +3,9 @@
 
 {% block title %}Crear asignatura{% endblock %}
 
+{% block brandtext %}
+&nbsp; - &nbsp;{{ sub.name }}
+{% endblock %}
 
 {% block navitems %}
 
@@ -13,7 +16,7 @@
 
 Evaluables:<br><br>
 
-{% for task in tasks %}
+{% for task in sub.tasks() %}
 	<a href="#">{{ task.name }}</a> -> {{ task.percent }}%<br>
 {% endfor %}
 

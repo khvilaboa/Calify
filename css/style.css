@@ -126,6 +126,11 @@ li.sb-item i.fa {
 
 /* TABLES */
 table > thead {
-	background-color: #eee;
+	background-color: #f0f0f0;
+	color: #222;
+}
+
+table th:hover {
+	background-color: #e8e8e8;
 	color: #222;
 }

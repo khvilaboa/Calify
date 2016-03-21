@@ -14,26 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import webapp2, jinja2, os
+import webapp2
 from google.appengine.api import users
 
-JINJA_ENVIRONMENT = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
-    extensions=['jinja2.ext.autoescape'],
-    autoescape=True)
 
-
-class MainHandler(webapp2.RequestHandler):
-    def get(self):
+class BaseHandler(webapp2.RequestHandler):
+    def checkLogin(self):
         user = users.get_current_user()
-        if user:
-            self.redirect("/subjects")
-        else:
-            url = users.create_login_url("/subjects")
-            template = JINJA_ENVIRONMENT.get_template('/view/login.html')
-            self.response.write(template.render({"loginUrl": url}))
+        if not user:
+            self.redirect("/")
+
+    def getValues(self):
+        return {"logoutUrl": users.create_logout_url("/")}
+
 
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', BaseHandler)
 ], debug=True)

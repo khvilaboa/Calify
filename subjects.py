@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import webapp2, jinja2, os, db
-from google.appengine.ext import ndb
+import webapp2, jinja2, os, db, base
+from google.appengine.api import users
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -9,10 +9,11 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape=True)
 
 
-class SubjectsHandler(webapp2.RequestHandler):
+class SubjectsHandler(base.BaseHandler):
     def get(self, action, idSub):
+        self.checkLogin()
 
-        values = {}
+        values = self.getValues()
 
         """if action == "dbfill":
             est = db.Subject(name="EST", description="asdf", year=2012)
@@ -30,7 +31,7 @@ class SubjectsHandler(webapp2.RequestHandler):
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
         elif action == "view":
             sub = db.Subject.get_by_id(long(idSub))
-            values["tasks"] = sub.tasks()
+            values["sub"] = sub
             template = JINJA_ENVIRONMENT.get_template('view/subjects/view.html')
         elif os.path.isfile('view/subjects/%s.html' % action):
             template = JINJA_ENVIRONMENT.get_template('view/subjects/%s.html' % action)
