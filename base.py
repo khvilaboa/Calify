@@ -19,13 +19,22 @@ from google.appengine.api import users
 
 
 class BaseHandler(webapp2.RequestHandler):
+
     def checkLogin(self):
         user = users.get_current_user()
         if not user:
             self.redirect("/")
 
+    def getUserName(self):
+        self.checkLogin()
+        user = users.get_current_user().email()
+        if user.find("@") <> -1:
+            user = user.split("@")[0]
+        return user
+
     def getValues(self):
-        return {"logoutUrl": users.create_logout_url("/")}
+        return {"logoutUrl": users.create_logout_url("/"),
+                "username": self.getUserName()}
 
 
 

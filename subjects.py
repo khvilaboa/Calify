@@ -11,7 +11,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 class SubjectsHandler(base.BaseHandler):
     def get(self, action, idSub):
-        self.checkLogin()
+        #self.checkLogin()
 
         values = self.getValues()
 
