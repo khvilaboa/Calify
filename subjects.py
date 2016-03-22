@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import webapp2, jinja2, os, db, base
-from google.appengine.api import users
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -29,6 +28,11 @@ class SubjectsHandler(base.BaseHandler):
             sub = db.Subject.get_by_id(long(idSub))
             values["sub"] = sub
             template = JINJA_ENVIRONMENT.get_template('view/subjects/view.html')
+        elif action == "delete":
+            self.response.write("toca borrar la asignatura con id " + idSub)
+            db.Subject.deleteById(long(idSub))
+            self.redirect("/")
+            return
         elif action == "test": # Only for testing purposes
             # New teacher
             if not db.Teacher.exists(self.getEmail()):

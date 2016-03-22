@@ -8,6 +8,7 @@
 
 {% block navitems %}
 	<li><a href = "/subjects/create"><i class="fa fa-plus"></i> New</a></li>
+	<li class="visibleOnRowSelect hide"><a href = "#" id="deleteAction"><i class="fa fa-times"></i> Delete</a></li>
 {% endblock %}
 
 {% block content %}
@@ -37,13 +38,42 @@
 
 {% block scripts %}
 <script>
-    $("tr").click(function() {
+    function deselectRows() {
+        $( "tr" ).each(function() {
+            $(this).removeClass("rowSelected");
+        });
+    }
+
+    $("tr").click(function(e) {
         if($(this).parent().is("tbody")) {
-            $( "tr" ).each(function() {
-                $(this).removeClass("rowSelected");
-            });
+            // Deselect other rows
+            deselectRows();
+
+            // Select clicked row
             $(this).addClass("rowSelected");
+
+            // Refresh action data
+            subId = $(this).attr("ondblclick").split("/");
+            //alert(subId[subId.length-1]);
+            $("#deleteAction").attr("data-href", "/subjects/delete/" + subId[subId.length-1].slice(0,-1));
+
+            // Show actions in navbar
+            $(".visibleOnRowSelect").removeClass("hide");
         }
+        e.stopPropagation();
+    });
+
+    $("html").click(function() {
+        deselectRows();
+        $(".visibleOnRowSelect").addClass("hide");
+    });
+
+    $("#deleteAction").click(function() {
+        alertify.confirm("Seguro?", function(e) {
+            if(e) {
+                window.document.location = $("#deleteAction").attr("data-href");
+            }
+        });
     });
 </script>
 {% endblock %}

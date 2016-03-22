@@ -13,6 +13,16 @@ class Subject(ndb.Model):
     def tasks(self):
         return Task.query(ancestor=self.key)
 
+    @staticmethod
+    def deleteById(id):
+        sub = Subject.get_by_id(long(id))
+        if sub:
+            for task in sub.tasks():
+                task.key.delete()
+            sub.key.delete()
+            return True
+        return False
+
     #def teachers(self):
     #    return Teacher.query().filter(Teacher.subjects == self.key)
 
