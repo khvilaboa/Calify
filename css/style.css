@@ -134,3 +134,9 @@ table th:hover {
 	background-color: #e8e8e8;
 	color: #222;
 }
+
+.rowSelected {
+	background-color: #4285F4;
+	color: #FFF;
+}
+

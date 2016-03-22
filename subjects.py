@@ -110,7 +110,7 @@ class SubjectsHandler(base.BaseHandler):
         name = self.request.get("name")
         desc = self.request.get("description")
 
-        sub = db.Subject(name=name, description=desc, year=2012, teachers=teacherKey)
+        sub = db.Subject(name=name, description=desc, year=2012, teachers=[teacherKey])
         sub.put()
 
         self.response.write("Name: " + name)
