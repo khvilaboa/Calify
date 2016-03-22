@@ -8,11 +8,13 @@ class Subject(ndb.Model):
     description = ndb.StringProperty(indexed=False)
     year = ndb.IntegerProperty(indexed=True)
 
+    teachers = ndb.KeyProperty(kind="Teacher", repeated=True)
+
     def tasks(self):
         return Task.query(ancestor=self.key)
 
-    def teachers(self):
-        return Teacher.query().filter(Teacher.subjects == self.key)
+    #def teachers(self):
+    #    return Teacher.query().filter(Teacher.subjects == self.key)
 
 
 class Task(ndb.Model):
@@ -23,10 +25,16 @@ class Task(ndb.Model):
 
 
 class Teacher(ndb.Model):
-    email = ndb.StringProperty(indexed=False)
+    email = ndb.StringProperty(indexed=True)
 
-    subjects = ndb.KeyProperty(kind="Subject", repeated=True)
+    @staticmethod
+    def exists(email):
+        return len(Teacher.query(Teacher.email == email).fetch()) > 0
 
+    @staticmethod
+    def getByEmail(email):
+        teacher = Teacher.query(Teacher.email == email).fetch()
+        return teacher[0] if len(teacher) > 0 else None
 
 class Student(ndb.Model):
     email = ndb.StringProperty(indexed=False)

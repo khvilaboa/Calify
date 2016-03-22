@@ -26,11 +26,14 @@ class BaseHandler(webapp2.RequestHandler):
             self.redirect("/")
 
     def getUserName(self):
-        self.checkLogin()
-        user = users.get_current_user().email()
+        user = self.getEmail()
         if user.find("@") <> -1:
             user = user.split("@")[0]
         return user
+
+    def getEmail(self):
+        self.checkLogin()
+        return users.get_current_user().email()
 
     def getValues(self):
         return {"logoutUrl": users.create_logout_url("/"),

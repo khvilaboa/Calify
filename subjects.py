@@ -11,8 +11,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 class SubjectsHandler(base.BaseHandler):
     def get(self, action, idSub):
-        #self.checkLogin()
-
+        self.checkLogin()
         values = self.getValues()
 
         """if action == "dbfill":
@@ -25,14 +24,37 @@ class SubjectsHandler(base.BaseHandler):
 
         if not action:  # index
             values["subjects"] = db.Subject.query()
-            for s in db.Subject.query():
-                for t in s.teachers():
-                    self.response.write(t.name)
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
         elif action == "view":
             sub = db.Subject.get_by_id(long(idSub))
             values["sub"] = sub
             template = JINJA_ENVIRONMENT.get_template('view/subjects/view.html')
+        elif action == "test": # Only for testing purposes
+            # New teacher
+            if not db.Teacher.exists(self.getEmail()):
+                teacher = db.Teacher(email=self.getEmail(), subjects=[])
+                teacher.put()
+                self.response.write("creating...")
+
+            return
+        elif action == "testdos": # Only for testing purposes
+
+            """if db.Teacher.exists(self.getEmail()):
+                self.response.write("existe: " + self.getEmail())
+            else:
+                self.response.write("no existe")
+            return"""
+
+            teacherKey = db.Teacher.getByEmail(self.getEmail())
+            if teacherKey == None:
+                teacher = db.Teacher(email=self.getEmail())
+                teacherKey = teacher.put()
+                self.response.write("creating...")
+                self.response.write(teacherKey)
+                return
+            else:
+                self.response.write(teacherKey.key)
+                return
         elif os.path.isfile('view/subjects/%s.html' % action):
             template = JINJA_ENVIRONMENT.get_template('view/subjects/%s.html' % action)
         else:
@@ -71,13 +93,24 @@ class SubjectsHandler(base.BaseHandler):
         task.put()"""
 
     def post(self, action, idSub):
+        self.checkLogin()
         if action <> "create" or idSub <> "":
             self.redirect("/")
 
+        # Teacher data
+        teacherKey = db.Teacher.getByEmail(self.getEmail())
+        if teacherKey <> None:
+            teacherKey = teacherKey.key
+        else:
+            teacher = db.Teacher(email=self.getEmail())
+            teacherKey = teacher.put()
+
+
+        # Subject data
         name = self.request.get("name")
         desc = self.request.get("description")
 
-        sub = db.Subject(name=name, description=desc, year=2012)
+        sub = db.Subject(name=name, description=desc, year=2012, teachers=teacherKey)
         sub.put()
 
         self.response.write("Name: " + name)
