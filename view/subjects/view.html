@@ -14,10 +14,17 @@
 
 {% block content %}
 
-Evaluables:<br><br>
+<div class="card-title">
+    EVALUABLES
+</div>
+<div class="row card">
+	<div class="col-xs-12">
+		{% for task in sub.tasks() %}
+			<a href="#">{{ task.name }}</a> -> {{ task.percent }}%<br>
+		{% endfor %}
+	</div>
+</div>
 
-{% for task in sub.tasks() %}
-	<a href="#">{{ task.name }}</a> -> {{ task.percent }}%<br>
-{% endfor %}
+
 
 {% endblock %}

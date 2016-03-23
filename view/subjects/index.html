@@ -3,49 +3,52 @@
 {% block title %}Calify{% endblock %}
 
 {% block brandtext %}
-&nbsp; - &nbsp;Subjects
+
 {% endblock %}
 
 {% block navitems %}
-	<li><a href = "/subjects/create"><i class="fa fa-plus"></i> New</a></li>
-	<li class="visibleOnRowSelect hide"><a href = "#" id="deleteAction"><i class="fa fa-times"></i> Delete</a></li>
+<li><a href="/subjects/create"><i class="fa fa-plus"></i> New</a></li>
+<li class="visibleOnRowSelect hide"><a href="#" id="deleteAction"><i class="fa fa-times"></i> Delete</a></li>
 {% endblock %}
 
 {% block content %}
 
-<table class="table">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Coordinator</th>
-        <th>***</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for subject in subjects %}
+<div class="card-title">Subjects</div>
+<div class="card">
+    <table class="table not-sel">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Coordinator</th>
+            <th>***</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for subject in subjects %}
 
-            <tr ondblclick="window.document.location = '/subjects/view/{{ subject.key.id() }}'">
-                <td>{{ subject.name }}</td>
-                <td>{{ subject.name }}</td>
-                <td>***</td>
-            </tr>
+        <tr ondblclick="window.document.location = '/subjects/view/{{ subject.key.id() }}'">
+            <td>{{ subject.name }}</td>
+            <td>{{ subject.name }}</td>
+            <td>***</td>
+        </tr>
 
-    {% endfor %}
+        {% endfor %}
 
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script>
     function deselectRows() {
-        $( "tr" ).each(function() {
+        $("tr").each(function () {
             $(this).removeClass("rowSelected");
         });
     }
 
-    $("tr").click(function(e) {
-        if($(this).parent().is("tbody")) {
+    $("tr").click(function (e) {
+        if ($(this).parent().is("tbody")) {
             // Deselect other rows
             deselectRows();
 
@@ -55,7 +58,7 @@
             // Refresh action data
             subId = $(this).attr("ondblclick").split("/");
             //alert(subId[subId.length-1]);
-            $("#deleteAction").attr("data-href", "/subjects/delete/" + subId[subId.length-1].slice(0,-1));
+            $("#deleteAction").attr("data-href", "/subjects/delete/" + subId[subId.length - 1].slice(0, -1));
 
             // Show actions in navbar
             $(".visibleOnRowSelect").removeClass("hide");
@@ -63,14 +66,14 @@
         e.stopPropagation();
     });
 
-    $("html").click(function() {
+    $("html").click(function () {
         deselectRows();
         $(".visibleOnRowSelect").addClass("hide");
     });
 
-    $("#deleteAction").click(function() {
-        alertify.confirm("Seguro?", function(e) {
-            if(e) {
+    $("#deleteAction").click(function () {
+        alertify.confirm("Seguro?", function (e) {
+            if (e) {
                 window.document.location = $("#deleteAction").attr("data-href");
             }
         });

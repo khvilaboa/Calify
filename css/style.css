@@ -1,6 +1,6 @@
 
 body {
-	background-color: #fff;
+	background-color: #000;
 }
 
 
@@ -121,10 +121,16 @@ li.sb-item i.fa {
 
 .contents {
 	margin-left: 250px;
-	padding: 0px;
+	padding: 10px;
+	background-color: #f5f5f5;
 }
 
 /* TABLES */
+table {
+	background-color: #fff;
+	margin: 0 !important;
+}
+
 table > thead {
 	background-color: #f0f0f0;
 	color: #222;
@@ -140,3 +146,31 @@ table th:hover {
 	color: #FFF;
 }
 
+/* CARDS */
+.card-title {
+	font-family: 'Arial';
+	font-size: 14px;
+	font-weight: bold;
+	color: rgba(0, 0, 0, 0.55);
+	padding-left: 6px;
+	margin-bottom: 10px;
+	text-transform: uppercase;
+}
+
+.card {
+	background-color: #ccc;
+	border-radius: 5px;
+	margin: 0 0 20px 0;
+	padding: 10px;
+}
+
+.card-row {
+	margin-top: 20px;
+}
+
+.not-sel {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
