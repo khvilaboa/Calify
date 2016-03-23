@@ -14,17 +14,79 @@
 
 {% block content %}
 
-<div class="card-title">
-    EVALUABLES
+<div class="row card-fixed-container">
+    <div class="col-xs-4 no-margin">
+        <div class="card-fixed card-fixed-active text-center" id="tasksTab">
+            <img src="/img/card-img-task.png" class="card-fixed-img"><span class="card-fixed-text"> Tasks</span>
+        </div>
+    </div>
+    <div class="col-xs-4 no-margin">
+        <div class="card-fixed text-center" id="studentsTab">
+            <img src="/img/card-img-user.png" class="card-fixed-img"><span class="card-fixed-text"> Students</span>
+        </div>
+    </div>
+    <div class="col-xs-4 no-margin">
+        <div class="card-fixed text-center" id="teachersTab">
+            <img src="/img/card-img-user.png" class="card-fixed-img"><span class="card-fixed-text"> Teachers</span>
+        </div>
+    </div>
 </div>
-<div class="row card">
-	<div class="col-xs-12">
-		{% for task in sub.tasks() %}
-			<a href="#">{{ task.name }}</a> -> {{ task.percent }}%<br>
-		{% endfor %}
-	</div>
+
+<div class="content" id="tasksContents">
+    <div class="row card">
+        <div class="col-xs-12">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Percent</th>
+                    <th>***</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for task in sub.tasks() %}
+                <tr>
+                    <td>{{ task.name }}</td>
+                    <td>{{ task.percent }}%</td>
+                    <td>***</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<div class="content hide" id="studentsContents">
+    <div class="row card">
+        <div class="col-xs-12">
+            Students data
+        </div>
+    </div>
+</div>
+
+<div class="content hide" id="teachersContents">
+    <div class="row card">
+        <div class="col-xs-12">
+            Teachers data
+        </div>
+    </div>
 </div>
 
 
+{% endblock %}
 
+{% block scripts %}
+
+<script>
+    $(".card-fixed").click(function () {
+        $(".card-fixed").removeClass("card-fixed-active");
+        $(this).addClass("card-fixed-active");
+
+        $(".content").addClass("hide");
+
+        $("#" + $(this).attr("id").slice(0, -3) + "Contents").removeClass("hide")
+    });
+</script>
 {% endblock %}
