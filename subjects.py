@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/env python
+
 
 import webapp2, jinja2, os, db, base
 
@@ -135,11 +137,9 @@ class SubjectsHandler(base.BaseHandler):
         elif action == "addstudents" and idSub != "":
             opt = self.request.get("optAddStudents")
             if opt == "manual":
-                self.response.write("manual... " + idSub + "<br>")
                 # Get params data
                 dni = self.request.get("dni")
                 name = self.request.get("name")
-                self.response.write(dni + ", " + name + "<br>")
 
                 # Get the subject from the datastore
                 sub = db.Subject.get_by_id(long(idSub))
@@ -152,15 +152,42 @@ class SubjectsHandler(base.BaseHandler):
                 else:
                     stKey = st.key
 
-                self.response.write(str(stKey) + "<br>")
-                self.response.write(str(sub) + "<br>")
-
+                # Add the student to the subject
                 if stKey not in sub.students:
                     sub.students.append(stKey)
                     sub.put()
 
             elif opt == "file":
-                pass
+                # Get params data
+                filename = self.request.get("filename")
+                separator = self.request.get("separator")
+                csvLines = self.request.POST["filename"].value.split("\r\n")
+
+                # Get the subject from the datastore
+                sub = db.Subject.get_by_id(long(idSub))
+
+                # Parse CSV
+                header = csvLines[0].decode('utf-8').lower().split(separator)
+
+                nameInd = header.index("nombre")
+                dniInd = header.index("dni")
+
+                for line in csvLines[1:]:
+                    fields = line.decode('utf-8').split(separator)
+                    name = fields[nameInd]
+                    dni = fields[dniInd]
+                    self.response.write(fields[nameInd] + ", " + fields[dniInd] + "<br>")
+
+                    st = db.Student.getByDni(dni)
+                    if st is None:
+                        st = db.Student(dni=dni, name=name)
+                        stKey = st.put()
+                    else:
+                        stKey = st.key
+
+                    if stKey not in sub.students:
+                        sub.students.append(stKey)
+                sub.put()
             elif opt == "subject":
                 pass
 
