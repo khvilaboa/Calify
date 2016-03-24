@@ -33,7 +33,7 @@ class SubjectsHandler(base.BaseHandler):
             db.Subject.deleteById(long(idSub))
             self.redirect("/")
             return
-        elif action == "test": # Only for testing purposes
+        elif action == "test":  # Only for testing purposes
             # New teacher
             if not db.Teacher.exists(self.getEmail()):
                 teacher = db.Teacher(email=self.getEmail(), subjects=[])
@@ -41,7 +41,7 @@ class SubjectsHandler(base.BaseHandler):
                 self.response.write("creating...")
 
             return
-        elif action == "testdos": # Only for testing purposes
+        elif action == "testdos":  # Only for testing purposes
 
             """if db.Teacher.exists(self.getEmail()):
                 self.response.write("existe: " + self.getEmail())
@@ -98,42 +98,73 @@ class SubjectsHandler(base.BaseHandler):
 
     def post(self, action, idSub):
         self.checkLogin()
-        if action <> "create" or idSub <> "":
-            self.redirect("/")
 
-        # Teacher data
-        teacherKey = db.Teacher.getByEmail(self.getEmail())
-        if teacherKey <> None:
-            teacherKey = teacherKey.key
-        else:
-            teacher = db.Teacher(email=self.getEmail())
-            teacherKey = teacher.put()
+        if action == "create" and idSub == "":
+            # Teacher data
+            teacherKey = db.Teacher.getByEmail(self.getEmail())
+            if teacherKey <> None:
+                teacherKey = teacherKey.key
+            else:
+                teacher = db.Teacher(email=self.getEmail())
+                teacherKey = teacher.put()
 
 
-        # Subject data
-        name = self.request.get("name")
-        desc = self.request.get("description")
+            # Subject data
+            name = self.request.get("name")
+            desc = self.request.get("description")
 
-        sub = db.Subject(name=name, description=desc, year=2012, teachers=[teacherKey])
-        sub.put()
+            sub = db.Subject(name=name, description=desc, year=2012, teachers=[teacherKey], students=[])
+            sub.put()
 
-        self.response.write("Name: " + name)
-        self.response.write("<br>Description: " + desc)
-        self.response.write("<br>Tasks:<br>")
+            self.response.write("Name: " + name)
+            self.response.write("<br>Description: " + desc)
+            self.response.write("<br>Tasks:<br>")
 
-        i = 0
-        taskName = self.request.get("task[%d].name" % i, "")
-        taskPercent = self.request.get("task[%d].percent" % i, "") # TODO: check types
-
-        while taskName != "" and taskPercent != "":
-            task = db.Task(parent=sub.key, name=taskName, percent=int(taskPercent))
-            task.put()
-            self.response.write(taskName + "<br>" + str(taskPercent) + "<br>")
-            i += 1
+            i = 0
             taskName = self.request.get("task[%d].name" % i, "")
-            taskPercent = self.request.get("task[%d].percent" % i, "")
+            taskPercent = self.request.get("task[%d].percent" % i, "")  # TODO: check types
 
-        self.redirect("/")
+            while taskName != "" and taskPercent != "":
+                task = db.Task(parent=sub.key, name=taskName, percent=int(taskPercent))
+                task.put()
+                self.response.write(taskName + "<br>" + str(taskPercent) + "<br>")
+                i += 1
+                taskName = self.request.get("task[%d].name" % i, "")
+                taskPercent = self.request.get("task[%d].percent" % i, "")
+
+        elif action == "addstudents" and idSub != "":
+            opt = self.request.get("optAddStudents")
+            if opt == "manual":
+                self.response.write("manual... " + idSub + "<br>")
+                # Get params data
+                dni = self.request.get("dni")
+                name = self.request.get("name")
+                self.response.write(dni + ", " + name + "<br>")
+
+                # Get the subject from the datastore
+                sub = db.Subject.get_by_id(long(idSub))
+
+                # Get student from the datastore (create it if not exist)
+                st = db.Student.getByDni(dni)
+                if st is None:
+                    st = db.Student(dni=dni, name=name)
+                    stKey = st.put()
+                else:
+                    stKey = st.key
+
+                self.response.write(str(stKey) + "<br>")
+                self.response.write(str(sub) + "<br>")
+
+                if stKey not in sub.students:
+                    sub.students.append(stKey)
+                    sub.put()
+
+            elif opt == "file":
+                pass
+            elif opt == "subject":
+                pass
+
+        self.redirect("/subjects/view/" + idSub)
 
 
 app = webapp2.WSGIApplication([

@@ -9,6 +9,7 @@ class Subject(ndb.Model):
     year = ndb.IntegerProperty(indexed=True)
 
     teachers = ndb.KeyProperty(kind="Teacher", repeated=True)
+    students = ndb.KeyProperty(kind="Student", repeated=True)
 
     def tasks(self):
         return Task.query(ancestor=self.key)
@@ -46,9 +47,18 @@ class Teacher(ndb.Model):
         teacher = Teacher.query(Teacher.email == email).fetch()
         return teacher[0] if len(teacher) > 0 else None
 
+
 class Student(ndb.Model):
     email = ndb.StringProperty(indexed=False)
-    dni = ndb.StringProperty(indexed=False)
+    dni = ndb.StringProperty(indexed=True)
     name = ndb.StringProperty(indexed=False)
 
-    # subjects = db.ListProperty(ndb.Key)
+    @staticmethod
+    def exists(dni):
+        return len(Student.query(Student.dni == dni).fetch()) > 0
+
+    @staticmethod
+    def getByDni(dni):
+        st = Student.query(Student.dni == dni).fetch()
+        return st[0] if len(st) > 0 else None
+

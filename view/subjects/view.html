@@ -59,10 +59,56 @@
 </div>
 
 <div class="content hide" id="studentsContents">
-    <div class="row card">
-        <div class="col-xs-12">
-            Students data
+    <div class="card">
+        <div class="expandable-click" data-expanded="0">
+            <img src="/img/dropdown.png" class="dropdown-img rotated"
+                 id="dropDownImg"> Add students
         </div>
+        <div class="expandable-data">
+            <form method="POST" action="/subjects/addstudents/{{ sub.key.id() }}">
+                <div class="radio expandable-radio">
+                    <label><input type="radio" name="optAddStudents" value="file">From file</label>
+                </div>
+                <div class="expandable-data">
+                    asf
+                </div>
+
+                <div class="radio expandable-radio">
+                    <label><input type="radio" name="optAddStudents" value="manual">Manually</label>
+                </div>
+                <div class="expandable-data">
+                    <div class="form-group row">
+                        <label class="control-label col-sm-1" for="name">Name:</label>
+
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter the student's name">
+                        </div>
+
+                        <label class="control-label col-sm-1" for="dni">DNI:</label>
+
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" id="dni" name="dni" placeholder="Enter DNI">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="radio disabled">
+                    <label><input type="radio" name="optAddStudents" value="subject" disabled>From another subject</label>
+                </div>
+                <div class="expandable-data">
+                    sadfasdf
+                </div>
+
+                <div class="text-right">
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        There aren't students in this subject yet.
     </div>
 </div>
 
@@ -80,6 +126,10 @@
 {% block scripts %}
 
 <script>
+    $(document).ready(function () {
+        $(".expandable-data").slideUp('fast');
+        $("input[name='optAddStudents']").prop('checked', false);
+    });
     $(".card-fixed").click(function () {
         $(".card-fixed").removeClass("card-fixed-active");
         $(this).addClass("card-fixed-active");
@@ -87,6 +137,21 @@
         $(".content").addClass("hide");
 
         $("#" + $(this).attr("id").slice(0, -3) + "Contents").removeClass("hide")
+    });
+    $(".expandable-click").click(function () {
+        if ($(this).attr("data-expanded") == "0") {
+            $(this).attr("data-expanded", "1");
+            $(this).next().slideDown();
+            $("#dropDownImg").removeClass("rotated");
+        } else {
+            $(this).attr("data-expanded", "0");
+            $(this).next().slideUp();
+            $("#dropDownImg").addClass("rotated");
+        }
+    });
+    $(".expandable-radio").change(function () {
+        $(".expandable-radio").next().slideUp();
+        $(this).next().slideDown();
     });
 </script>
 {% endblock %}

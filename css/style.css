@@ -200,6 +200,22 @@ table th:hover {
     margin: 0 5px 0 5px;
 }
 
+
+/* DROPDOWN */
+
+.dropdown-img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+
+/* EXPANDABLE */
+.expandable-data {
+    padding-left: 15px;
+}
+
+
 /* AUXILIAR */
 
 .no-sel {
@@ -211,6 +227,14 @@ table th:hover {
 
 .no-margin {
     margin: 0 !important;
+}
+
+.rotated {
+  transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg); /* IE 9 */
+  -moz-transform: rotate(-90deg); /* Firefox */
+  -webkit-transform: rotate(-90deg); /* Safari and Chrome */
+  -o-transform: rotate(-90deg); /* Opera */
 }
 
 /* USAGE
