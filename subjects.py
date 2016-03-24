@@ -25,8 +25,8 @@ class SubjectsHandler(base.BaseHandler):
             values["subjects"] = db.Subject.query()
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
         elif action == "view":
-            sub = db.Subject.get_by_id(long(idSub))
-            values["sub"] = sub
+            values["sub"] = db.Subject.get_by_id(long(idSub))
+            values["students"] = [ db.Student.get_by_id(stKey.id()) for stKey in values["sub"].students ]
             template = JINJA_ENVIRONMENT.get_template('view/subjects/view.html')
         elif action == "delete":
             self.response.write("toca borrar la asignatura con id " + idSub)
