@@ -17,6 +17,8 @@ handlers:
 
 - url: /subjects(/.*)?
   script: subjects.app
+- url: /teachers(/.*)?
+  script: teachers.app
 - url: .*
   script: main.app
 

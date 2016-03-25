@@ -28,7 +28,8 @@ class SubjectsHandler(base.BaseHandler):
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
         elif action == "view":
             values["sub"] = db.Subject.get_by_id(long(idSub))
-            values["students"] = [ db.Student.get_by_id(stKey.id()) for stKey in values["sub"].students ]
+            values["students"] = [ stKey.get() for stKey in values["sub"].students ]
+            values["teachers"] = [ tKey.get() for tKey in values["sub"].teachers ]
             template = JINJA_ENVIRONMENT.get_template('view/subjects/view.html')
         elif action == "delete":
             self.response.write("toca borrar la asignatura con id " + idSub)
@@ -116,7 +117,7 @@ class SubjectsHandler(base.BaseHandler):
             desc = self.request.get("description")
 
             sub = db.Subject(name=name, description=desc, year=2012, teachers=[teacherKey], students=[])
-            sub.put()
+            idSub = str(sub.put().id())
 
             self.response.write("Name: " + name)
             self.response.write("<br>Description: " + desc)
@@ -190,6 +191,27 @@ class SubjectsHandler(base.BaseHandler):
                 sub.put()
             elif opt == "subject":
                 pass
+        elif action == "addteacher" and idSub != "":
+            # Get params data
+            email = self.request.get("teacherEmail")
+
+            # Get the subject from the datastore
+            sub = db.Subject.get_by_id(long(idSub))
+
+            t = db.Teacher.getByEmail(email)
+            if t is None:
+                st = db.Teacher(email=email)
+                tKey = t.put()
+            else:
+                tKey = t.key
+
+            self.response.write(tKey)
+            self.response.write(sub.teachers)
+            self.response.write(tKey not in sub.teachers)
+            if tKey not in sub.teachers:
+                sub.teachers.append(tKey)
+                sub.put()
+            
 
         self.redirect("/subjects/view/" + idSub)
 
