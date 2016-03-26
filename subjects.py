@@ -37,11 +37,13 @@ class SubjectsHandler(base.BaseHandler):
             self.redirect("/")
             return
         elif action == "test":  # Only for testing purposes
-            # New teacher
-            if not db.Teacher.exists(self.getEmail()):
-                teacher = db.Teacher(email=self.getEmail(), subjects=[])
-                teacher.put()
-                self.response.write("creating...")
+            try:
+                offset = int(self.request.get("offset"))
+            except ValueError:
+                offset = 0
+
+            students, cursor, more = db.Student.query().order(db.Student.name).fetch_page(10, offset)
+            self.response.write(offset)
 
             return
         elif action == "testdos":  # Only for testing purposes
@@ -123,12 +125,13 @@ class SubjectsHandler(base.BaseHandler):
             self.response.write("<br>Description: " + desc)
             self.response.write("<br>Tasks:<br>")
 
+            # Go throught all the tasks of the subject
             i = 0
             taskName = self.request.get("task[%d].name" % i, "")
             taskPercent = self.request.get("task[%d].percent" % i, "")  # TODO: check types
 
             while taskName != "" and taskPercent != "":
-                task = db.Task(parent=sub.key, name=taskName, percent=int(taskPercent))
+                task = db.Task(subject=sub.key, name=taskName, percent=int(taskPercent))
                 task.put()
                 self.response.write(taskName + "<br>" + str(taskPercent) + "<br>")
                 i += 1
@@ -211,7 +214,7 @@ class SubjectsHandler(base.BaseHandler):
             if tKey not in sub.teachers:
                 sub.teachers.append(tKey)
                 sub.put()
-            
+
 
         self.redirect("/subjects/view/" + idSub)
 

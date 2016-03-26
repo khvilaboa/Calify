@@ -12,7 +12,7 @@ class Subject(ndb.Model):
     students = ndb.KeyProperty(kind="Student", repeated=True)
 
     def tasks(self):
-        return Task.query(ancestor=self.key)
+        return Task.query(Task.subject == self.key)
 
     @staticmethod
     def deleteById(id):
@@ -32,7 +32,7 @@ class Task(ndb.Model):
     name = ndb.StringProperty(indexed=True)
     percent = ndb.IntegerProperty(indexed=True)
 
-    # students = db.ListProperty(ndb.Key)
+    subject = ndb.KeyProperty(kind='Subject')
 
 
 class Teacher(ndb.Model):
