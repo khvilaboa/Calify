@@ -44,7 +44,7 @@
             </thead>
             <tbody>
             {% for task in sub.tasks() %}
-            <tr>
+            <tr onclick="window.document.location = '/tasks/calify/{{ task.key.id() }}'">
                 <td>{{ task.name }}</td>
                 <td>{{ task.percent }}%</td>
                 <td>***</td>

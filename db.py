@@ -27,12 +27,20 @@ class Subject(ndb.Model):
     #def teachers(self):
     #    return Teacher.query().filter(Teacher.subjects == self.key)
 
+    def getStudents(self):
+        return [stKey.get() for stKey in self.students]
+
+
 
 class Task(ndb.Model):
     name = ndb.StringProperty(indexed=True)
     percent = ndb.IntegerProperty(indexed=True)
 
     subject = ndb.KeyProperty(kind='Subject')
+
+    def getStudents(self):
+        sub = self.subject.get()
+        return sub.students
 
 
 class Teacher(ndb.Model):
@@ -62,3 +70,13 @@ class Student(ndb.Model):
         st = Student.query(Student.dni == dni).fetch()
         return st[0] if len(st) > 0 else None
 
+class Mark(ndb.Model):
+    mark = ndb.FloatProperty(indexed=False)
+
+    student = ndb.KeyProperty(kind='Student')
+    task = ndb.KeyProperty(kind='Task')
+
+    @staticmethod
+    def add(student, task, mark):
+        mark = Mark(student=student, task=task, mark=mark)
+        return mark.put()

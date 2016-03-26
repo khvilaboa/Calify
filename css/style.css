@@ -141,8 +141,12 @@ table th:hover {
 }
 
 .rowSelected {
-    background-color: #4285F4;
-    color: #FFF;
+    background-color: #f5f5f5   ;
+}
+
+.mark-control {
+    width: 50px;
+    height: 30px;
 }
 
 /* CARDS */

@@ -1,0 +1,96 @@
+{% extends '/view/base.html' %}
+
+{% block title %}{{task.name}}{% endblock %}
+
+{% block content %}
+
+
+    <div class="card-title">{{subject.name}} > {{task.name}}</div>
+
+    <div class="card">
+        <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Student name</th>
+                    <th>Student dni</th>
+                    <th>Mark</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for student in students %}
+                <tr data-id="{{ student.key.id() }}">
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.dni }}</td>
+                    <td>***</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    mark = "";
+
+    function normRow(row) {
+        lastMarkTd = row.children().next().next();
+        lastMarkTd.html(mark);
+        lastSelected.removeClass("rowSelected");
+    }
+
+    function validMark(mark) {
+        var maxMark = 10;
+        try {
+            markFloat = parseFloat(mark);
+            return markFloat >= 0 && markFloat <= maxMark;
+        }catch(err) {
+            return false;
+        }
+    }
+
+    $("tbody > tr").click(function() {
+
+        lastSelected = $("tbody > tr.rowSelected");
+        if(lastSelected) {
+            normRow(lastSelected);
+        }
+
+        $(this).addClass("rowSelected");
+
+        markTd =  $(this).children().next().next();
+        mark = markTd.html();
+        markTd.html("<input type='text' class='form-control mark-control' value='" + mark + "'/>" );
+
+        markControl = $(".mark-control");
+        markControl.click(function(e) { e.stopPropagation() });
+        markControl.keyup(function(e) {
+            if(e.keyCode == 13) {
+                selected = $("tbody > tr.rowSelected");
+                stId = selected.attr("data-id");
+                if(validMark(markControl.val())) {
+                    mark = markControl.val();
+                    url = "/tasks/addnote/{{ task.key.id() }}/" + stId + "?mark=" + mark;
+
+                    $.get(url, function (data, status) {
+                        alertify.success("Nota anadida correctamente");
+                    });
+                    
+                } else {
+                    alertify.error("Nota no valida");
+                }
+                normRow(selected);
+
+
+                //alert("/tasks/addnote/{{ task.key.id() }}/" + stId + "?mark=" + mark);
+
+                //$.get("/tasks/addnote/{{ task.key.id() }}}/" + stId + "?mark=" + mark, function (data, status) {
+
+                //});
+            }
+        });
+    });
+</script>
+
+{% endblock %}
