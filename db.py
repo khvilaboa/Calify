@@ -42,6 +42,10 @@ class Task(ndb.Model):
         sub = self.subject.get()
         return sub.students
 
+    def getMarks(self):
+        sub = self.subject.get()
+        return Mark.getMarks(self)
+
 
 class Teacher(ndb.Model):
     email = ndb.StringProperty(indexed=True)
@@ -77,6 +81,23 @@ class Mark(ndb.Model):
     task = ndb.KeyProperty(kind='Task')
 
     @staticmethod
-    def add(student, task, mark):
-        mark = Mark(student=student, task=task, mark=mark)
-        return mark.put()
+    def exists(student, task):
+        return len(Mark.query(ndb.AND(Mark.student == student.key, Mark.task == task.key)).fetch()) > 0
+
+    @staticmethod
+    def getByStudentAndTask(studentKey, taskKey):
+        mark = Mark.query(ndb.AND(Mark.student == studentKey, Mark.task == taskKey)).fetch()
+        return mark[0] if len(mark) > 0 else None
+
+    @staticmethod
+    def addOrUpdate(studentKey, taskKey, mark):
+        m = Mark.getByStudentAndTask(studentKey, taskKey)
+        if m is None:
+            m = Mark(student=studentKey, task=taskKey, mark=mark)
+        else:
+            m.mark = mark
+        return m.put()
+
+    @staticmethod
+    def getMarks(task):
+        return Mark.query(Mark.task == task.key).fetch()

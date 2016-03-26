@@ -18,18 +18,28 @@ class TasksHandler(base.BaseHandler):
         if action == "calify":
             task = db.Task.get_by_id(long(idTask))
             sub = task.subject.get()
+            marks = {}
+            for mark in task.getMarks():
+                marks[mark.student.id()] = mark.mark
+            students = [(student, marks.get(student.key.id(), -1)) for student in sub.getStudents()]
+            """self.response.write(marks)
+            self.response.write("<br><br>")
+            self.response.write(students)
+            self.response.write("<br><br>")
+            self.response.write(sub.getStudents())"""
+
+
             values["task"] = task
             values["subject"] = sub
-            values["students"] = sub.getStudents()
+            values["students"] = students# sub.getStudents()
 
             template = JINJA_ENVIRONMENT.get_template('view/tasks/calify.html')
-        elif action == "addnote":
+        elif action == "addnote": # Called by ajax requests
             task = db.Task.get_by_id(long(idTask))
             student = db.Student.get_by_id(long(idSt))
             mark = float(self.request.get("mark"))
-            self.response.write
-            self.response.write(db.Mark.add(student.key, task.key, mark))
 
+            db.Mark.addOrUpdate(student.key, task.key, mark)  # TODO: check if mark it's updated correctly
             return
         else:
             self.redirect("/")
