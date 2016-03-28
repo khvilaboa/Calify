@@ -54,7 +54,7 @@ class SubjectsHandler(base.BaseHandler):
                 self.response.write("no existe")
             return"""
 
-            teacherKey = db.Teacher.getByEmail(self.getEmail())
+            """teacherKey = db.Teacher.getByEmail(self.getEmail())
             if teacherKey == None:
                 teacher = db.Teacher(email=self.getEmail())
                 teacherKey = teacher.put()
@@ -63,7 +63,7 @@ class SubjectsHandler(base.BaseHandler):
                 return
             else:
                 self.response.write(teacherKey.key)
-                return
+                return"""
         elif os.path.isfile('view/subjects/%s.html' % action):
             template = JINJA_ENVIRONMENT.get_template('view/subjects/%s.html' % action)
         else:
@@ -106,24 +106,13 @@ class SubjectsHandler(base.BaseHandler):
 
         if action == "create" and idSub == "":
             # Teacher data
-            teacherKey = db.Teacher.getByEmail(self.getEmail())
-            if teacherKey <> None:
-                teacherKey = teacherKey.key
-            else:
-                teacher = db.Teacher(email=self.getEmail())
-                teacherKey = teacher.put()
-
+            teacherKey = db.Teacher.addOrUpdate(self.getEmail())
 
             # Subject data
             name = self.request.get("name")
             desc = self.request.get("description")
 
-            sub = db.Subject(name=name, description=desc, year=2012, teachers=[teacherKey], students=[])
-            idSub = str(sub.put().id())
-
-            self.response.write("Name: " + name)
-            self.response.write("<br>Description: " + desc)
-            self.response.write("<br>Tasks:<br>")
+            subKey = db.Subject.addOrUpdate(name, desc, 2012, [teacherKey])
 
             # Go throught all the tasks of the subject
             i = 0
@@ -131,13 +120,13 @@ class SubjectsHandler(base.BaseHandler):
             taskPercent = self.request.get("task[%d].percent" % i, "")  # TODO: check types
 
             while taskName != "" and taskPercent != "":
-                task = db.Task(subject=sub.key, name=taskName, percent=int(taskPercent))
-                task.put()
-                self.response.write(taskName + "<br>" + str(taskPercent) + "<br>")
+                db.Task.addOrUpdate(subKey, taskName, int(taskPercent))
+
                 i += 1
                 taskName = self.request.get("task[%d].name" % i, "")
                 taskPercent = self.request.get("task[%d].percent" % i, "")
 
+            idSub = str(subKey.id())
         elif action == "addstudents" and idSub != "":
             opt = self.request.get("optAddStudents")
             if opt == "manual":
@@ -149,17 +138,11 @@ class SubjectsHandler(base.BaseHandler):
                 sub = db.Subject.get_by_id(long(idSub))
 
                 # Get student from the datastore (create it if not exist)
-                st = db.Student.getByDni(dni)
-                if st is None:
-                    st = db.Student(dni=dni, name=name)
-                    stKey = st.put()
-                else:
-                    stKey = st.key
+                stKey = db.Student.addOrUpdate(dni, name)
 
                 # Add the student to the subject
                 if stKey not in sub.students:
-                    sub.students.append(stKey)
-                    sub.put()
+                    sub.addStudent(stKey)
 
             elif opt == "file":
                 # Get params data
@@ -182,16 +165,13 @@ class SubjectsHandler(base.BaseHandler):
                     dni = fields[dniInd]
                     self.response.write(fields[nameInd] + ", " + fields[dniInd] + "<br>")
 
-                    st = db.Student.getByDni(dni)
-                    if st is None:
-                        st = db.Student(dni=dni, name=name)
-                        stKey = st.put()
-                    else:
-                        stKey = st.key
+                    # Get student from the datastore (create it if not exist)
+                    stKey = db.Student.addOrUpdate(dni, name)
 
+                    # Add the student to the subject
                     if stKey not in sub.students:
-                        sub.students.append(stKey)
-                sub.put()
+                        sub.addStudent(stKey)
+
             elif opt == "subject":
                 pass
         elif action == "addteacher" and idSub != "":
@@ -201,19 +181,10 @@ class SubjectsHandler(base.BaseHandler):
             # Get the subject from the datastore
             sub = db.Subject.get_by_id(long(idSub))
 
-            t = db.Teacher.getByEmail(email)
-            if t is None:
-                st = db.Teacher(email=email)
-                tKey = t.put()
-            else:
-                tKey = t.key
+            # Add the teacher if they don't exist
+            tKey = db.Teacher.addOrUpdate(email)
 
-            self.response.write(tKey)
-            self.response.write(sub.teachers)
-            self.response.write(tKey not in sub.teachers)
-            if tKey not in sub.teachers:
-                sub.teachers.append(tKey)
-                sub.put()
+            sub.addTeacher(tKey)
 
 
         self.redirect("/subjects/view/" + idSub)
