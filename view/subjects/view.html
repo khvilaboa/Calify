@@ -240,10 +240,12 @@
     });
 
     $(".icon-delete").click(function () {
+        var row = $(this).parent().parent();
         var id = $(this).parent().parent().attr("data-id"); // tr
         url = "/subjects/removeteacher/{{sub.key.id()}}?teacherId=" + id;
         $.post(url, function (data) {
-            alert(data);
+            alertify.success("Teacher erased correctly");
+            row.remove();
         });
     });
 </script>
