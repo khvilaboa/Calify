@@ -59,7 +59,7 @@
 <div class="content hide" id="studentsContents">
     <div class="card">
         <div class="expandable-click" data-expanded="0">
-            <img src="/img/dropdown.png" class="dropdown-img rotated"
+            <img src="/img/dropdown.png" class="img-icon rotated"
                  id="dropDownImg"> Add students
         </div>
         <div class="expandable-data">
@@ -168,15 +168,15 @@
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>***</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for t in teachers %}
-                <tr>
+                <tr data-id="{{ t.key.id() }}">
                     <td>{{ t.name }}</td>
                     <td>{{ t.email }}</td>
-                    <td>***</td>
+                    <td><img src="/img/delete.png" class="img-icon icon-delete" /></td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -239,5 +239,12 @@
 
     });
 
+    $(".icon-delete").click(function () {
+        var id = $(this).parent().parent().attr("data-id"); // tr
+        url = "/subjects/removeteacher/{{sub.key.id()}}?teacherId=" + id;
+        $.post(url, function (data) {
+            alert(data);
+        });
+    });
 </script>
 {% endblock %}

@@ -25,6 +25,10 @@ class Subject(ndb.Model):
         self.teachers.append(tKey)
         return self.put()
 
+    def removeTeacher(self, tKey):
+        self.teachers.remove(tKey)
+        return self.put()
+
     @staticmethod
     def deleteById(id):
         sub = Subject.get_by_id(long(id))
@@ -98,6 +102,8 @@ class Teacher(ndb.Model):
         else:
             t.email = email
         return t.put()
+
+
 
 
 class Student(ndb.Model):

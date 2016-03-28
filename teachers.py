@@ -17,6 +17,13 @@
 import webapp2, db, base
 
 
+class CrudHandler(base.BaseHandler):
+
+    def get(self, action, teacherId):
+        pass
+
+
+
 
 class SearchHandler(base.BaseHandler):
     def get(self):
@@ -28,5 +35,6 @@ class SearchHandler(base.BaseHandler):
 
 
 app = webapp2.WSGIApplication([
-    ('/teachers/search', SearchHandler)
+    ('/teachers/search', SearchHandler),
+    ('/teachers/(delete)/([0-9]+)', CrudHandler)
 ], debug=True)

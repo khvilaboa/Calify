@@ -209,10 +209,11 @@ table th:hover {
 
 /* DROPDOWN */
 
-.dropdown-img {
+.img-icon {
     width: 20px;
     height: 20px;
     margin-right: 10px;
+    cursor: pointer;
 }
 
 
@@ -230,8 +231,12 @@ table th:hover {
 .searchResult {
     padding: 5px;
     color: #002A80;
+    cursor: pointer;
 }
 
+.searchResult:hover {
+    background-color: #f5f5f5;
+}
 
 /* AUXILIAR */
 

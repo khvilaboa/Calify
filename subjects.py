@@ -15,14 +15,6 @@ class SubjectsHandler(base.BaseHandler):
         self.checkLogin()
         values = self.getValues()
 
-        """if action == "dbfill":
-            est = db.Subject(name="EST", description="asdf", year=2012)
-            est.put()
-            task = db.Task(parent=est.key, name="Examen parcial 1", percent=80)
-            task.put()
-            task = db.Task(parent=est.key, name="Examen parcial 2", percent=20)
-            task.put()"""
-
         if not action:  # index
             values["subjects"] = db.Subject.query()
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
@@ -46,24 +38,6 @@ class SubjectsHandler(base.BaseHandler):
             self.response.write(offset)
 
             return
-        elif action == "testdos":  # Only for testing purposes
-
-            """if db.Teacher.exists(self.getEmail()):
-                self.response.write("existe: " + self.getEmail())
-            else:
-                self.response.write("no existe")
-            return"""
-
-            """teacherKey = db.Teacher.getByEmail(self.getEmail())
-            if teacherKey == None:
-                teacher = db.Teacher(email=self.getEmail())
-                teacherKey = teacher.put()
-                self.response.write("creating...")
-                self.response.write(teacherKey)
-                return
-            else:
-                self.response.write(teacherKey.key)
-                return"""
         elif os.path.isfile('view/subjects/%s.html' % action):
             template = JINJA_ENVIRONMENT.get_template('view/subjects/%s.html' % action)
         else:
@@ -185,7 +159,19 @@ class SubjectsHandler(base.BaseHandler):
             tKey = db.Teacher.addOrUpdate(email)
 
             sub.addTeacher(tKey)
+        elif action == "removeteacher" and idSub != "":  # ajax
+            # Get params data
+            teacherId = self.request.get("teacherId")
+            teacher = db.Teacher.get_by_id(long(teacherId))
 
+            # Get the subject from the datastore
+            sub = db.Subject.get_by_id(long(idSub))
+
+            if teacher is not None and sub is not None:
+                sub.removeTeacher(teacher.key)
+                self.response.write("1")
+            else:
+                self.response.write("0")
 
         self.redirect("/subjects/view/" + idSub)
 
