@@ -121,7 +121,7 @@
 
     <div class="card">
         {% if sub.students %}
-        <table class="table table-hover">
+        <table class="table table-hover" id="tableStudents">
             <thead>
             <tr>
                 <th>Name</th>
@@ -131,10 +131,10 @@
             </thead>
             <tbody>
             {% for st in students %}
-            <tr>
+            <tr data-id="{{ st.key.id() }}">
                 <td>{{ st.name }}</td>
                 <td>{{ st.dni }}</td>
-                <td>***</td>
+                <td><img src="/img/delete.png" class="img-icon icon-delete" /></td>
             </tr>
             {% endfor %}
             </tbody>
@@ -163,7 +163,7 @@
         </form>
         <div class="card-row">
             {% if teachers %}
-            <table class="table table-hover">
+            <table class="table table-hover" id="tableTeachers">
                 <thead>
                 <tr>
                     <th>Name</th>
@@ -240,9 +240,15 @@
     });
 
     $(".icon-delete").click(function () {
-        var row = $(this).parent().parent();
-        var id = $(this).parent().parent().attr("data-id"); // tr
-        url = "/subjects/removeteacher/{{sub.key.id()}}?teacherId=" + id;
+        var row = $(this).closest("tr");
+        var id = row.attr("data-id");
+        var tableId = $(this).closest("table").attr("id");
+
+        if(tableId == "tableStudents") {
+            url = "/subjects/removestudent/{{sub.key.id()}}?studentId=" + id;
+        } else if(tableId == "tableTeachers") {
+            url = "/subjects/removeteacher/{{sub.key.id()}}?teacherId=" + id;
+        }
         $.post(url, function (data) {
             alertify.success("Teacher erased correctly");
             row.remove();

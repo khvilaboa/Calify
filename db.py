@@ -29,6 +29,10 @@ class Subject(ndb.Model):
         self.teachers.remove(tKey)
         return self.put()
 
+    def removeStudent(self, stKey):
+        self.students.remove(stKey)
+        return self.put()
+
     @staticmethod
     def deleteById(id):
         sub = Subject.get_by_id(long(id))

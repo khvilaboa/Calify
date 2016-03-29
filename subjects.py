@@ -172,7 +172,19 @@ class SubjectsHandler(base.BaseHandler):
                 self.response.write("1")
             else:
                 self.response.write("0")
+        elif action == "removestudent" and idSub != "":  # ajax
+            # Get params data
+            studentId = self.request.get("studentId")
+            student = db.Student.get_by_id(long(studentId))
 
+            # Get the subject from the datastore
+            sub = db.Subject.get_by_id(long(idSub))
+
+            if student is not None and sub is not None:
+                sub.removeStudent(student.key)
+                self.response.write("1")
+            else:
+                self.response.write("0")
         self.redirect("/subjects/view/" + idSub)
 
 
