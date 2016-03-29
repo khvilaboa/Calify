@@ -29,13 +29,19 @@ class SubjectsHandler(base.BaseHandler):
             self.redirect("/")
             return
         elif action == "test":  # Only for testing purposes
-            try:
+            """try:
                 offset = int(self.request.get("offset"))
             except ValueError:
                 offset = 0
 
             students, cursor, more = db.Student.query().order(db.Student.name).fetch_page(10, offset)
-            self.response.write(offset)
+            self.response.write(offset)"""
+            task = db.Task.get_by_id(long(self.request.get("id")))
+
+            if task:
+                task.key.delete()
+            else:
+                self.response.write("vacio")
 
             return
         elif os.path.isfile('view/subjects/%s.html' % action):
@@ -182,6 +188,19 @@ class SubjectsHandler(base.BaseHandler):
 
             if student is not None and sub is not None:
                 sub.removeStudent(student.key)
+                self.response.write("1")
+            else:
+                self.response.write("0")
+        elif action == "removetask" and idSub != "":  # ajax
+            # Get params data
+            taskId = self.request.get("taskId")
+            task = db.Task.get_by_id(long(taskId))
+
+            # Get the subject from the datastore
+            sub = db.Subject.get_by_id(long(idSub))
+
+            if task is not None and sub is not None:
+                sub.removeTask(task.key)
                 self.response.write("1")
             else:
                 self.response.write("0")

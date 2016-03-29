@@ -33,6 +33,12 @@ class Subject(ndb.Model):
         self.students.remove(stKey)
         return self.put()
 
+    def removeTask(self, taskKey):
+        task = taskKey.get()
+        if task:
+            taskKey.delete()
+
+
     @staticmethod
     def deleteById(id):
         sub = Subject.get_by_id(long(id))

@@ -34,20 +34,20 @@
 
 <div class="content" id="tasksContents">
     <div class="card">
-        <table class="table table-hover">
+        <table class="table table-hover" id="tableTasks">
             <thead>
             <tr>
                 <th>Name</th>
                 <th>Percent</th>
-                <th>***</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             {% for task in sub.tasks() %}
-            <tr onclick="window.document.location = '/tasks/calify/{{ task.key.id() }}'">
+            <tr data-id="{{ task.key.id() }}" onclick="window.document.location = '/tasks/calify/{{ task.key.id() }}'">
                 <td>{{ task.name }}</td>
                 <td>{{ task.percent }}%</td>
-                <td>***</td>
+                <td><img src="/img/delete.png" class="img-icon icon-delete" /></td>
             </tr>
             {% endfor %}
             </tbody>
@@ -126,7 +126,7 @@
             <tr>
                 <th>Name</th>
                 <th>DNI</th>
-                <th>***</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -239,7 +239,9 @@
 
     });
 
-    $(".icon-delete").click(function () {
+    $(".icon-delete").click(function (e) {
+        e.stopPropagation();
+
         var row = $(this).closest("tr");
         var id = row.attr("data-id");
         var tableId = $(this).closest("table").attr("id");
@@ -248,11 +250,15 @@
             url = "/subjects/removestudent/{{sub.key.id()}}?studentId=" + id;
         } else if(tableId == "tableTeachers") {
             url = "/subjects/removeteacher/{{sub.key.id()}}?teacherId=" + id;
+        } else if(tableId == "tableTasks") {
+            url = "/subjects/removetask/{{sub.key.id()}}?taskId=" + id;
         }
+
         $.post(url, function (data) {
             alertify.success("Teacher erased correctly");
             row.remove();
         });
+
     });
 </script>
 {% endblock %}
