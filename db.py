@@ -40,7 +40,7 @@ class Subject(ndb.Model):
 
 
     @staticmethod
-    def deleteById(id):
+    def removeById(id):
         sub = Subject.get_by_id(long(id))
         if sub:
             for task in sub.tasks():

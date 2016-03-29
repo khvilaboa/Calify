@@ -23,11 +23,6 @@ class SubjectsHandler(base.BaseHandler):
             values["students"] = [ stKey.get() for stKey in values["sub"].students ]
             values["teachers"] = [ tKey.get() for tKey in values["sub"].teachers ]
             template = JINJA_ENVIRONMENT.get_template('view/subjects/view.html')
-        elif action == "delete":
-            self.response.write("toca borrar la asignatura con id " + idSub)
-            db.Subject.deleteById(long(idSub))
-            self.redirect("/")
-            return
         elif action == "test":  # Only for testing purposes
             """try:
                 offset = int(self.request.get("offset"))
@@ -204,6 +199,10 @@ class SubjectsHandler(base.BaseHandler):
                 self.response.write("1")
             else:
                 self.response.write("0")
+        elif action == "remove" and idSub != "":
+            db.Subject.removeById(long(idSub))
+            self.redirect("/")
+            return
         self.redirect("/subjects/view/" + idSub)
 
 

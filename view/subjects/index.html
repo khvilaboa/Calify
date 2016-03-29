@@ -15,21 +15,21 @@
 
 <div class="card-title">Subjects</div>
 <div class="card">
-    <table class="table no-sel">
+    <table class="table table-hover no-sel">
         <thead>
         <tr>
             <th>Name</th>
             <th>Coordinator</th>
-            <th>***</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         {% for subject in subjects %}
 
-        <tr ondblclick="window.document.location = '/subjects/view/{{ subject.key.id() }}'">
+        <tr data-id="{{ subject.key.id() }}" onclick="window.document.location = '/subjects/view/{{ subject.key.id() }}'">
             <td>{{ subject.name }}</td>
             <td>{{ subject.name }}</td>
-            <td>***</td>
+            <td><img src="/img/delete.png" class="img-icon icon-delete" /></td>
         </tr>
 
         {% endfor %}
@@ -41,40 +41,22 @@
 
 {% block scripts %}
 <script>
-    function deselectRows() {
-        $("tr").each(function () {
-            $(this).removeClass("rowSelected");
-        });
-    }
 
-    $("tr").click(function (e) {
-        if ($(this).parent().is("tbody")) {
-            // Deselect other rows
-            deselectRows();
-
-            // Select clicked row
-            $(this).addClass("rowSelected");
-
-            // Refresh action data
-            subId = $(this).attr("ondblclick").split("/");
-            //alert(subId[subId.length-1]);
-            $("#deleteAction").attr("data-href", "/subjects/delete/" + subId[subId.length - 1].slice(0, -1));
-
-            // Show actions in navbar
-            $(".visibleOnRowSelect").removeClass("hide");
-        }
+    $(".icon-delete").click(function (e) {
         e.stopPropagation();
-    });
 
-    $("html").click(function () {
-        deselectRows();
-        $(".visibleOnRowSelect").addClass("hide");
-    });
+        var row = $(this).closest("tr");
+        var id = row.attr("data-id");
+        var url = "/subjects/remove/" + id;
+        alert(url);
 
-    $("#deleteAction").click(function () {
         alertify.confirm("Seguro?", function (e) {
             if (e) {
-                window.document.location = $("#deleteAction").attr("data-href");
+
+                $.post(url, function (data) {
+                    alertify.success("Teacher erased correctly");
+                    row.remove();
+                });
             }
         });
     });

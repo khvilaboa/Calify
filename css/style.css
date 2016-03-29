@@ -238,6 +238,13 @@ table th:hover {
     background-color: #f5f5f5;
 }
 
+/* INPUTS */
+input[type=file] {
+    border: 0;
+    height: 30px;
+    padding-left: 12px;
+}
+
 /* AUXILIAR */
 
 .no-sel {
