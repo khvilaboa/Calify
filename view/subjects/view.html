@@ -4,7 +4,7 @@
 {% block title %}Crear asignatura{% endblock %}
 
 {% block brandtext %}
-&nbsp; - &nbsp;{{ sub.name }}
+<!--&nbsp; - &nbsp;{{ sub.name }} -->
 {% endblock %}
 
 {% block navitems %}
@@ -255,7 +255,7 @@
         }
 
         $.post(url, function (data) {
-            alertify.success("Teacher erased correctly");
+            alertify.success("Student erased correctly");
             row.remove();
         });
 

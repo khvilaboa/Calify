@@ -31,6 +31,8 @@ class Subject(ndb.Model):
 
     def removeStudent(self, stKey):
         self.students.remove(stKey)
+        for mark in Mark.query(Mark.student == stKey):
+            mark.key.delete()
         return self.put()
 
     def removeTask(self, taskKey):
