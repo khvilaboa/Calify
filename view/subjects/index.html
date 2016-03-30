@@ -48,7 +48,6 @@
         var row = $(this).closest("tr");
         var id = row.attr("data-id");
         var url = "/subjects/remove/" + id;
-        alert(url);
 
         alertify.confirm("Seguro?", function (e) {
             if (e) {

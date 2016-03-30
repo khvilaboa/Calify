@@ -21,7 +21,7 @@
 </head>
 
 <body>
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-default fixed-nav">
 
     <div class="navbar-header">
         <a class="navbar-brand" href="#">Calify {% block brandtext %}{% endblock %}</a>
@@ -38,7 +38,7 @@
 </nav>
 
 
-<div class="sidebar">
+<div class="sidebar fixed-sidebar">
     <a class="sb-user-info" href="#">
         <div class="sb-user">
             <img class="img-circle sb-user-img" src="/img/user.png">
@@ -56,7 +56,7 @@
 
 <div class="contents">
 
-        {% block content %}{% endblock %}
+    {% block content %}{% endblock %}
 
 </div>
 
@@ -64,7 +64,6 @@
 <!-- jQuery 2.1.4 -->
 <script src="/js/jquery-2.2.2.min.js"></script>
 <script src="/js/alertify.min.js"></script>
-
 
 {% block scripts %}{% endblock %}
 </body>

@@ -4,6 +4,9 @@ body {
 }
 
 /* NAVBAR */
+nav {
+    width:100%;
+}
 
 .navbar {
     background-color: #e74c3c;
@@ -40,6 +43,16 @@ body {
     background-color: #34495e;
     padding: 50px 0 0 0;
     z-index: 0;
+}
+
+.fixed-nav {
+    position: fixed;
+    top: 0;
+}
+
+.fixed-sidebar {
+    position: fixed;
+    top: 0;
 }
 
 .sb-user-info:hover,
@@ -120,7 +133,7 @@ li.sb-item i.fa {
 
 .contents {
     margin-left: 250px;
-    padding: 10px;
+    padding: 60px 10px 10px 10px;
     background-color: #eee;
 }
 
@@ -243,6 +256,8 @@ input[type=file] {
     border: 0;
     height: 30px;
     padding-left: 12px;
+    padding-top: 0px;
+    box-shadow: none;
 }
 
 /* AUXILIAR */
