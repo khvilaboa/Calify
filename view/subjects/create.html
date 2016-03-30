@@ -60,31 +60,32 @@
             </div>
         </div>
 
-        <div class="card-row">
-            <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Percent</th>
-                    <th>***</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr class="hide" id="taskRowTemplate">
-                    <td name="taskRowName"></td>
-                    <td name="taskRowPercent"></td>
-                    <td name="taskRowTitle"></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+
+        <table class="table table-hover hide">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Percent</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="hide" id="taskRowTemplate">
+                <td name="taskRowName"></td>
+                <td name="taskRowPercent"></td>
+                <td name="taskRowActions"><img src="/img/delete.png" class="img-icon icon-delete" /></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="card-row hide" id="percentSumMsg"><img src="/img/warning.png" class="img-icon" /> The sum of the percentages is greater than 100%.</div>
 
     </div>
 
 
     <div class="form-group row no-margin">
         <div class="col-xs-12">
-            <button type="submit" class="btn btn-default">Submit</button>
+            <button type="submit" class="btn btn-default" onclick="validate();">Submit</button>
         </div>
     </div>
 
@@ -95,49 +96,66 @@
 
 {% block scripts %}
 <script>
+    var taskIndex = 0;
+    var percSum = 0;
+
+    function validate() {
+        var subName = $("#name");
+
+        if(subName.val().length == 0) {
+            alertify.error("You must specify a subject name");
+            return false;
+        } else if(percSum < 100) {
+            alertify.error("The percent sum can't be lower than 100%");
+            return false;
+        }
+        return true;
+    }
+
     $(document).ready(function () {
-        taskIndex = 0;
 
         $('#taskForm').on('click', '.addButton', function () {
 
-            var $template = $('#taskRowTemplate');
-            var $taskName = $('#taskName').val();
-            var $taskPercent = $('#taskPercent').val();
+            var template = $('#taskRowTemplate');
+            var taskName = $('#taskName').val();
+            var taskPercent = $('#taskPercent').val();
 
-            var $clone = $template
+            percSum += parseInt(taskPercent);
+            if(percSum > 100) {
+                $("#percentSumMsg").removeClass("hide");
+            } else {
+                $("#percentSumMsg").addClass("hide");
+            }
+
+            var $clone = template
                     .clone()
                     .removeClass('hide')
                     .removeAttr('id')
                     .attr('data-task-index', taskIndex)
-                    .insertBefore($template);
+                    .insertBefore(template);
+
+            $("table").removeClass("hide");
 
             // Update the name attributes
             $clone
-                    .find('[name="taskRowName"]').attr('name', 'task[' + taskIndex + '].name').text($taskName).end()
-                    .find('[name="taskRowPercent"]').attr('name', 'task[' + taskIndex + '].percent').text($taskPercent + " %").end();
+                    .find('[name="taskRowName"]').attr('name', 'task[' + taskIndex + '].name').text(taskName).end()
+                    .find('[name="taskRowPercent"]').attr('name', 'task[' + taskIndex + '].percent').text(taskPercent + " %").end();
 
             $('<input>').attr({
                 type: 'hidden',
                 name: 'task[' + taskIndex + '].name',
-                value: $taskName
+                value: taskName
             }).appendTo('#tasksData');
             $('<input>').attr({
                 type: 'hidden',
                 name: 'task[' + taskIndex + '].percent',
-                value: $taskPercent
+                value: taskPercent
             }).appendTo('#tasksData');
 
             taskIndex++;
         });
 
-        // Remove button click handler
-        $('#bookForm').on('click', '.removeButton', function () {
-            var $row = $(this).parents('.form-group'),
-                    index = $row.attr('data-book-index');
 
-            // Remove element containing the fields
-            $row.remove();
-        });
     });
 </script>
 
