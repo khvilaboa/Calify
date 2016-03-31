@@ -16,7 +16,8 @@ class SubjectsHandler(base.BaseHandler):
         values = self.getValues()
 
         if not action:  # index
-            values["subjects"] = db.Subject.query()
+            teacher = db.Teacher.getByEmail(self.getEmail())
+            values["subjects"] = db.Subject.getSubjectsByTeacher(teacher.key) if teacher else []
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
         elif action == "view":
             values["sub"] = db.Subject.get_by_id(long(idSub))

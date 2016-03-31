@@ -219,6 +219,14 @@ table th:hover {
     margin: 0 5px 0 5px;
 }
 
+.card-info {
+    height: 150px;
+}
+
+.card-info-title {
+    border-bottom: 1px solid #CCC;
+    margin-bottom: 10px;
+}
 
 /* DROPDOWN */
 

@@ -40,6 +40,13 @@ class Subject(ndb.Model):
         if task:
             taskKey.delete()
 
+    @staticmethod
+    def getSubjectsByTeacher(key):
+        sub = []
+        for s in Subject.query().fetch():
+            if key in s.teachers:
+                sub.append(s)
+        return sub
 
     @staticmethod
     def removeById(id):

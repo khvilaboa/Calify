@@ -14,6 +14,15 @@
 
 {% block content %}
 
+<div class="card card-info row">
+    <div class="col-xs-2"></div>
+    <div class="col-xs-10">
+        <div class="card-info-title"><h4>{{ sub.name }}</h4></div>
+        <!--<div><b>Description: </b>{{ sub.description }}</div>-->
+    </div>
+
+</div>
+
 <div class="row card-fixed-container">
     <div class="col-xs-4 no-margin">
         <div class="card-fixed card-fixed-active text-center" id="tasksTab">
@@ -47,7 +56,7 @@
             <tr data-id="{{ task.key.id() }}" onclick="window.document.location = '/tasks/calify/{{ task.key.id() }}'">
                 <td>{{ task.name }}</td>
                 <td>{{ task.percent }}%</td>
-                <td><img src="/img/delete.png" class="img-icon icon-delete" /></td>
+                <td><img src="/img/delete.png" class="img-icon icon-delete"/></td>
             </tr>
             {% endfor %}
             </tbody>
@@ -134,7 +143,7 @@
             <tr data-id="{{ st.key.id() }}">
                 <td>{{ st.name }}</td>
                 <td>{{ st.dni }}</td>
-                <td><img src="/img/delete.png" class="img-icon icon-delete" /></td>
+                <td><img src="/img/delete.png" class="img-icon icon-delete"/></td>
             </tr>
             {% endfor %}
             </tbody>
@@ -176,7 +185,7 @@
                 <tr data-id="{{ t.key.id() }}">
                     <td>{{ t.name }}</td>
                     <td>{{ t.email }}</td>
-                    <td><img src="/img/delete.png" class="img-icon icon-delete" /></td>
+                    <td><img src="/img/delete.png" class="img-icon icon-delete"/></td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -246,11 +255,11 @@
         var id = row.attr("data-id");
         var tableId = $(this).closest("table").attr("id");
 
-        if(tableId == "tableStudents") {
+        if (tableId == "tableStudents") {
             url = "/subjects/removestudent/{{sub.key.id()}}?studentId=" + id;
-        } else if(tableId == "tableTeachers") {
+        } else if (tableId == "tableTeachers") {
             url = "/subjects/removeteacher/{{sub.key.id()}}?teacherId=" + id;
-        } else if(tableId == "tableTasks") {
+        } else if (tableId == "tableTasks") {
             url = "/subjects/removetask/{{sub.key.id()}}?taskId=" + id;
         }
 
