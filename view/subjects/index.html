@@ -26,7 +26,7 @@
         <tbody>
         {% for subject in subjects %}
 
-        <tr data-id="{{ subject.key.id() }}" onclick="window.document.location = '/subjects/view/{{ subject.key.id() }}'">
+        <tr data-id="{{ subject.key.id() }}" class="with-pointer" onclick="window.document.location = '/subjects/view/{{ subject.key.id() }}'">
             <td>{{ subject.name }}</td>
             <td>{{ subject.name }}</td>
             <td><img src="/img/delete.png" class="img-icon icon-delete" /></td>

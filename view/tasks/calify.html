@@ -18,7 +18,7 @@
                 </thead>
                 <tbody>
                 {% for student, mark in students %}
-                <tr data-id="{{ student.key.id() }}">
+                <tr data-id="{{ student.key.id() }}" class="with-pointer">
                     <td>{{ student.name }}</td>
                     <td>{{ student.dni }}</td>
                     {% if mark == -1 %}
