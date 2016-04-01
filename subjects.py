@@ -15,14 +15,21 @@ class SubjectsHandler(base.BaseHandler):
         self.checkLogin()
         values = self.getValues()
 
+        if idSub != "":
+            sub = db.Subject.get_by_id(long(idSub))
+            teacher = db.Teacher.getByEmail(self.getEmail())
+
+            if teacher is not None and not sub.containsTeacher(teacher.key):
+                self.redirect("/")
+
         if not action:  # index
             teacher = db.Teacher.getByEmail(self.getEmail())
             values["subjects"] = db.Subject.getSubjectsByTeacher(teacher.key) if teacher else []
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
         elif action == "view":
-            values["sub"] = db.Subject.get_by_id(long(idSub))
-            values["students"] = [ stKey.get() for stKey in values["sub"].students ]
-            values["teachers"] = [ tKey.get() for tKey in values["sub"].teachers ]
+            values["sub"] = sub
+            values["students"] = sub.getStudents()
+            values["teachers"] = sub.getTeachers()
             template = JINJA_ENVIRONMENT.get_template('view/subjects/view.html')
         elif action == "test":  # Only for testing purposes
             """try:

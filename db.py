@@ -21,18 +21,25 @@ class Subject(ndb.Model):
         self.students.append(stKey)
         return self.put()
 
+    def removeStudent(self, stKey):
+        self.students.remove(stKey)
+        for mark in Mark.query(Mark.student == stKey):
+            mark.key.delete()
+        return self.put()
+
+
+    def getTeachers(self):
+        return [tKey.get() for tKey in self.teachers]
+
+    def containsTeacher(self, key):
+        return key in self.teachers
+
     def addTeacher(self, tKey):
         self.teachers.append(tKey)
         return self.put()
 
     def removeTeacher(self, tKey):
         self.teachers.remove(tKey)
-        return self.put()
-
-    def removeStudent(self, stKey):
-        self.students.remove(stKey)
-        for mark in Mark.query(Mark.student == stKey):
-            mark.key.delete()
         return self.put()
 
     def removeTask(self, taskKey):
