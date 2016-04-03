@@ -32,11 +32,11 @@
     };
 
     var barChartData = {
-        labels: ["AEDII", "ACI", "March", "April", "May", "June", "July"],
+        labels:{{ subjects | safe }},
         datasets: [{
-            label: 'Dataset 1',
-            backgroundColor: ["rgba(220,220,220,0.5)","rgba(220,220,220,0.5)","rgba(220,220,220,1)","rgba(0,0,0,0.5)","rgba(220,220,220,0.5)","rgba(220,220,220,0.5)","rgba(220,220,220,0.5)"],
-            data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()]
+            label: 'Students',
+            backgroundColor: [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
+            data: {{ studentsBySubject | safe }}
         }]
 
     };
@@ -59,7 +59,7 @@
                 },
                 title: {
                     display: true,
-                    text: 'Our 3 Favorite Datasets'
+                    text: 'Students by subject'
                 }
             }
         });

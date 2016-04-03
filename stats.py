@@ -11,13 +11,20 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 
 class StatsHandler(base.BaseHandler):
-    def get(self):
+    def get(self, subId):
         self.checkLogin()
         values = self.getValues()
 
-        template = JINJA_ENVIRONMENT.get_template('/view/stats/index.html')
+        if not subId:
+            teacher = db.Teacher.getByEmail(self.getEmail())
+            subjects = db.Subject.getSubjectsByTeacher(teacher.key)
+            values["subjects"] = "[" + ",".join(['"' + sub.name + '"' for sub in subjects]) + "]"
+            values["studentsBySubject"] = "[" + ",".join(['"' + str(len(sub.students)) + '"' for sub in subjects]) + "]"
+            #self.response.write()
+
+            template = JINJA_ENVIRONMENT.get_template('/view/stats/index.html')
         self.response.write(template.render(values))
 
 app = webapp2.WSGIApplication([
-    ('/stats', StatsHandler)
+    ('/stats/?([a-z]*)', StatsHandler)
 ], debug=True)
