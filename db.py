@@ -2,7 +2,6 @@
 
 from google.appengine.ext import ndb
 
-
 class Subject(ndb.Model):
     name = ndb.StringProperty(indexed=True)
     description = ndb.StringProperty(indexed=False)
@@ -84,6 +83,8 @@ class Subject(ndb.Model):
             sub.students = students
 
         return sub.put()
+
+
 
 
 
@@ -188,3 +189,38 @@ class Mark(ndb.Model):
     @staticmethod
     def getMarks(task):
         return Mark.query(Mark.task == task.key).fetch()
+
+
+ITEMS_PER_PAGE = 5
+def paginate(model, prevStr=None, nxtStr=None):
+    if not prevStr and not nxtStr:
+        cursor = ndb.Cursor()
+        objects, next_cursor, more = model.query().fetch_page(ITEMS_PER_PAGE, start_cursor=cursor)
+        prevStr = cursor.urlsafe()
+        nxtStr = next_cursor.urlsafe()
+        nxt = True if more else False
+        prev = False
+    elif nxtStr:
+        cursor = ndb.Cursor(urlsafe=nxtStr)
+        objects, next_cursor, more = model.query().fetch_page(ITEMS_PER_PAGE, start_cursor=cursor)
+        prevStr = nxtStr
+        nxtStr = next_cursor.urlsafe()
+        prev = True
+        nxt = True if more else False
+    elif prevStr:
+        cursor = ndb.Cursor(urlsafe=prevStr)
+        objects, next_cursor, more = model.query().fetch_page(ITEMS_PER_PAGE, start_cursor=cursor)
+        objects.reverse()
+        nxtStr = prevStr
+        prevStr = next_cursor.urlsafe()
+        prev = True if more else False
+        nxt = True
+
+    return {'objects': objects, 'next_cursor': nxtStr, 'prev_cursor': prevStr, 'prev': prev, 'next': nxt}
+
+def paginateArray(array, prevStr=None, nextStr=None):
+    prev = False
+    nxt = len(array) > ITEMS_PER_PAGE
+    prevStr = None
+    nxtStr = None
+    return {'objects': array[:ITEMS_PER_PAGE], 'next_cursor': nxtStr, 'prev_cursor': prevStr, 'prev': prev, 'next': nxt}

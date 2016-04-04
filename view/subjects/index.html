@@ -37,6 +37,15 @@
         </tbody>
     </table>
 </div>
+
+{% if prev %}
+<button class="btn btn-default">Previous</button>
+{% endif %}
+
+{% if next %}
+<button class="btn btn-default">Next</button>
+{% endif %}
+
 {% endblock %}
 
 {% block scripts %}

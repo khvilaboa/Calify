@@ -23,7 +23,11 @@ class SubjectsHandler(base.BaseHandler):
                 self.redirect("/")
 
         if not action:  # index
+            #self.response.write(db.Subject.paginate())
             teacher = db.Teacher.getByEmail(self.getEmail())
+            #data = db.paginateArray(db.Subject.getSubjectsByTeacher(teacher.key))
+            #data["subjects"] = data.pop("objects")
+            #values.update(data)
             values["subjects"] = db.Subject.getSubjectsByTeacher(teacher.key) if teacher else []
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
         elif action == "view":
