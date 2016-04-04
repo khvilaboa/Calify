@@ -52,7 +52,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for task in sub.tasks() %}
+            {% for task in tasks %}
             <tr data-id="{{ task.key.id() }}" class="with-pointer" onclick="window.document.location = '/tasks/calify/{{ task.key.id() }}'">
                 <td>{{ task.name }}</td>
                 <td>{{ task.percent }}%</td>

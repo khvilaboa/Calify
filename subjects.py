@@ -30,6 +30,7 @@ class SubjectsHandler(base.BaseHandler):
             values["sub"] = sub
             values["students"] = sub.getStudents()
             values["teachers"] = sub.getTeachers()
+            values["tasks"] = sub.getTasks()
             template = JINJA_ENVIRONMENT.get_template('view/subjects/view.html')
         elif action == "test":  # Only for testing purposes
             """try:

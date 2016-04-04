@@ -12,9 +12,13 @@
 
 {% block content %}
 
-<div class="card">
-    <div id="container" style="width: 50%; height: 25%;">
-        <canvas id="canvas" height="450" width="600"></canvas>
+<div class="card-title"> Statistics </div>
+<div class="card row">
+    <div class="col-xs-6">
+        <canvas id="canvasBars"></canvas>
+    </div>
+    <div class="col-xs-6">
+        <canvas id="canvasPie"></canvas>
     </div>
 </div>
 {% endblock %}
@@ -32,6 +36,7 @@
     };
 
     var barChartData = {
+
         labels:{{ subjects | safe }},
         datasets: [{
             label: 'Students',
@@ -41,21 +46,47 @@
 
     };
 
-    function updateLegend() {
-        $legendContainer = $('#legendContainer');
-        $legendContainer.empty();
-        $legendContainer.append(window.myBar.generateLegend());
-    }
+    var config = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                data: {{ marksByRanges | safe }},
+                backgroundColor: [
+                    "#4D5360",
+                    "#949FB1",
+                    "#FDB45C",
+                    "#46BFBD",
+                    "#F7464A"
+                ]
+            }],
+            labels: [
+                "Insufficient",
+                "Enough",
+                "Right",
+                "Remarkable",
+                "Outstanding"
+            ]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: 'Marks ranges'
+            }, animateScale : true
+        }
+    };
 
     window.onload = function () {
-        var ctx = document.getElementById("canvas").getContext("2d");
-        window.myBar = new Chart(ctx, {
+        var ctxBars = document.getElementById("canvasBars").getContext("2d");
+        var ctxPie = document.getElementById("canvasPie").getContext("2d");
+
+        window.myBar = new Chart(ctxBars, {
             type: 'bar',
             data: barChartData,
             options: {
                 responsive: true,
                 legend: {
-                    position: 'top',
+                    position: 'top'
                 },
                 title: {
                     display: true,
@@ -64,7 +95,8 @@
             }
         });
 
-        updateLegend();
+        //var myPieChart = new Chart(ctxPie).Pie(data,options);
+        new Chart(ctxPie, config);
     };
 </script>
 {% endblock %}

@@ -11,8 +11,14 @@ class Subject(ndb.Model):
     teachers = ndb.KeyProperty(kind="Teacher", repeated=True)
     students = ndb.KeyProperty(kind="Student", repeated=True)
 
-    def tasks(self):
+    def getTasks(self):
         return Task.query(Task.subject == self.key)
+
+    def getMarks(self):
+        m = []
+        for t in self.getTasks():
+            m += t.getMarks()
+        return m
 
     def getStudents(self):
         return [stKey.get() for stKey in self.students]
@@ -59,7 +65,7 @@ class Subject(ndb.Model):
     def removeById(id):
         sub = Subject.get_by_id(long(id))
         if sub:
-            for task in sub.tasks():
+            for task in sub.getTasks():
                 task.key.delete()
             sub.key.delete()
             return True
