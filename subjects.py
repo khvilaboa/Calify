@@ -3,6 +3,7 @@
 
 
 import webapp2, jinja2, os, db, base
+from google.appengine.ext import ndb
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -24,11 +25,23 @@ class SubjectsHandler(base.BaseHandler):
 
         if not action:  # index
             #self.response.write(db.Subject.paginate())
-            teacher = db.Teacher.getByEmail(self.getEmail())
+
+            #self.response.write(db.Subject.query(db.Subject.teachers == teacher.key).fetch())
+
+            #for i in db.Subject.query(db.Subject.teachers == teacher.key).fetch():
+                #self.response.write(i.name + "<br>")
+            #return
             #data = db.paginateArray(db.Subject.getSubjectsByTeacher(teacher.key))
             #data["subjects"] = data.pop("objects")
             #values.update(data)
-            values["subjects"] = db.Subject.getSubjectsByTeacher(teacher.key) if teacher else []
+            #n = self.request.get("n", None)
+
+            teacher = db.Teacher.getByEmail(self.getEmail())
+            data = db.paginate(db.Subject.getSubjectsByTeacher(teacher.key), db.Subject.key)
+            #self.response.write(data["nextStr"])
+            data["subjects"] = data.pop("objects")
+            values.update(data)
+            #values["subjects"] = db.Subject.getSubjectsByTeacher(teacher.key) if teacher else []
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
         elif action == "view":
             values["sub"] = sub
@@ -218,7 +231,43 @@ class SubjectsHandler(base.BaseHandler):
             return
         self.redirect("/subjects/view/" + idSub)
 
+class SearchHandler(base.BaseHandler):
+    def get(self):
+        self.checkLogin()
+
+        query = db.Subject.query()
+        page = self.request.get("p", None)
+        clicked = self.request.get("c", None)
+        data = {}
+
+        if not page and not clicked:
+            data = db.paginate(query, db.Subject.key)
+        elif clicked == "next":
+            data = db.paginate(query, db.Subject.key, None, page)
+        elif clicked == "prev":
+            data = db.paginate(query, db.Subject.key, page, None)
+
+        #data = db.paginate(query, None, page)
+        resp = ""
+
+        # Add the rows info
+        for subject in data["objects"]:
+            resp += "<tr data-id=\"%s\" class=\"with-pointer\" onclick=\"window.document.location = '/subjects/view/%s'\">" % (subject.key.id(),subject.key.id())
+            resp += "<td>%s</td>" % subject.name
+            resp += "<td>%s</td>" % subject.name
+            resp += "<td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>"
+
+        # Add the buttons info in a new line
+        resp += "\n"
+        if data["hasPrev"]:
+            resp += "<button class=\"btn btn-default\" id=\"prevPage\" data-id=\"%s\">Previous</button>" % data["prevStr"]
+        if data["hasNext"]:
+            resp += "<button class=\"btn btn-default\" id=\"nextPage\" data-id=\"%s\">Next</button>" % data["nextStr"]
+
+
+        self.response.write(resp)
 
 app = webapp2.WSGIApplication([
+    ('/subjects/search', SearchHandler),
     ('/subjects/?([a-z]*)/?([0-9]*)', SubjectsHandler)
 ], debug=True)

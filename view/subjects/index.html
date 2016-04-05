@@ -23,7 +23,7 @@
             <th>Actions</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody id="tableBody">
         {% for subject in subjects %}
 
         <tr data-id="{{ subject.key.id() }}" class="with-pointer" onclick="window.document.location = '/subjects/view/{{ subject.key.id() }}'">
@@ -38,18 +38,23 @@
     </table>
 </div>
 
-{% if prev %}
-<button class="btn btn-default">Previous</button>
-{% endif %}
+<div id="tableButtons">
+    {% if hasPrev %}
+    <button class="btn btn-default" id="prevPage" data-id="{{ prevStr }}">Previous</button>
+    {% endif %}
 
-{% if next %}
-<button class="btn btn-default">Next</button>
-{% endif %}
+    {% if hasNext %}
+    <button class="btn btn-default" id="nextPage" data-id="{{ nextStr }}">Next</button>
+    {% endif %}
+</div>
 
 {% endblock %}
 
 {% block scripts %}
 <script>
+    $(function () {
+
+    });
 
     $(".icon-delete").click(function (e) {
         e.stopPropagation();
@@ -67,6 +72,38 @@
                 });
             }
         });
+    });
+
+    $(document).on("click", "#prevPage", {}, function() {
+        var id = $(this).attr("data-id");
+
+        if(id != "") {
+            url = "/subjects/search?c=prev&p=" + id;
+            $.get(url, function (data, status) {
+                dataSp = data.split("\n");
+                rows = dataSp[0];
+                buttons = dataSp[1];
+
+                $("#tableBody").html(rows);
+                $("#tableButtons").html(buttons);
+            });
+        }
+    });
+
+    $(document).on("click", "#nextPage", {}, function() {
+        var id = $(this).attr("data-id");
+
+        if(id != "") {
+            url = "/subjects/search?c=next&p=" + id;
+            $.get(url, function (data, status) {
+                dataSp = data.split("\n");
+                rows = dataSp[0];
+                buttons = dataSp[1];
+
+                $("#tableBody").html(rows);
+                $("#tableButtons").html(buttons);
+            });
+        }
     });
 </script>
 {% endblock %}
