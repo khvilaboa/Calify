@@ -47,6 +47,7 @@
 
     function validMark(mark) {
         var maxMark = 10;
+
         try {
             markFloat = parseFloat(mark);
             return markFloat >= 0 && markFloat <= maxMark;
@@ -74,13 +75,17 @@
         markTd.children().select();
 
         markControl = $(".mark-control");
+
         markControl.click(function(e) { e.stopPropagation() });
+
         markControl.keyup(function(e) {
-            if(e.keyCode == 13) {
+            if(e.keyCode == 13) { // Enter key
                 selected = $("tbody > tr.rowSelected");
                 stId = selected.attr("data-id");
-                if(validMark(markControl.val())) {
-                    mark = markControl.val();
+
+                mark = (markControl.val()).replace(",", ".");
+
+                if(validMark(mark)) {
                     url = "/tasks/addnote/{{ task.key.id() }}/" + stId + "?mark=" + mark;
 
                     $.get(url, function (data, status) {
