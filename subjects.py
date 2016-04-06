@@ -249,7 +249,7 @@ class SearchHandler(base.BaseHandler):
         for subject in data["objects"]:
             resp += "<tr data-id=\"%s\" class=\"with-pointer\" onclick=\"window.document.location = '/subjects/view/%s'\">" % (subject.key.id(),subject.key.id())
             resp += "<td>%s</td>" % subject.name
-            resp += "<td>%s</td>" % subject.name
+            resp += "<td>%s</td>" % len(subject.students)
             resp += "<td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>"
 
         # Add the buttons info in a new line
