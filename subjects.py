@@ -242,7 +242,6 @@ class SearchHandler(base.BaseHandler):
         elif clicked == "prev":
             data = db.paginate(query, db.Subject.key, page, None)
 
-        #data = db.paginate(query, None, page)
         resp = ""
 
         # Add the rows info
@@ -259,8 +258,8 @@ class SearchHandler(base.BaseHandler):
         if data["hasNext"]:
             resp += "<button class=\"btn btn-default\" id=\"nextPage\" data-id=\"%s\">Next</button>" % data["nextStr"]
 
-
         self.response.write(resp)
+
 
 app = webapp2.WSGIApplication([
     ('/subjects/search', SearchHandler),

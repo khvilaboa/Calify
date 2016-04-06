@@ -130,7 +130,7 @@
 
     <div class="card">
         {% if sub.students %}
-        <table class="table table-hover" id="tableStudents">
+        <table class="table table-hover hide" id="tableStudents">
             <thead>
             <tr>
                 <th>Name</th>
@@ -138,19 +138,20 @@
                 <th>Actions</th>
             </tr>
             </thead>
-            <tbody>
-            {% for st in students %}
+            <tbody id="studentsTableBody">
+            <!--{% for st in students %}
             <tr data-id="{{ st.key.id() }}">
                 <td>{{ st.name }}</td>
                 <td>{{ st.dni }}</td>
                 <td><img src="/img/delete.png" class="img-icon icon-delete"/></td>
             </tr>
-            {% endfor %}
+            {% endfor %}-->
             </tbody>
         </table>
         {% else %}
         There aren't students in this subject yet.
         {% endif %}
+        <div class="card-row" id="studentsTableButtons"></div>
     </div>
 </div>
 
@@ -203,10 +204,50 @@
 {% block scripts %}
 
 <script>
-    $(document).ready(function () {
+    $(function () {
         $(".expandable-data").slideUp('fast');
         $("input[name='optAddStudents']").prop('checked', false);
+
+        // Charge initial data to the students table
+        url = "/students/search";
+        $.get(url, function (data, status) {
+            $("#tableStudents").removeClass("hide");
+            fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+        });
     });
+
+    function fillData(tableBody, tableButtons, data){
+        dataSp = data.split("\n");
+        rows = dataSp[0];
+        buttons = dataSp[1];
+
+        tableBody.html(rows);
+        tableButtons.html(buttons);
+    }
+
+    $(document).on("click", "#prevPage", {}, function() {
+        var id = $(this).attr("data-id");
+
+        if(id != "") {
+            url = "/students/search?c=prev&p=" + id;
+            $.get(url, function (data, status) {
+                fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+            });
+        }
+    });
+
+    $(document).on("click", "#nextPage", {}, function() {
+        var id = $(this).attr("data-id");
+
+        if(id != "") {
+            url = "/students/search?c=next&p=" + id;
+            $.get(url, function (data, status) {
+                fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+            });
+        }
+    });
+
+
     $(".card-fixed").click(function () {
         $(".card-fixed").removeClass("card-fixed-active");
         $(this).addClass("card-fixed-active");
@@ -269,5 +310,7 @@
         });
 
     });
+
+
 </script>
 {% endblock %}

@@ -15,10 +15,12 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
-- url: /stats(/.*)?
-  script: stats.app
 - url: /subjects(/.*)?
   script: subjects.app
+- url: /stats(/.*)?
+  script: stats.app
+- url: /students(/.*)?
+  script: students.app
 - url: /tasks(/.*)?
   script: tasks.app
 - url: /teachers(/.*)?
