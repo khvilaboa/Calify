@@ -60,6 +60,22 @@
 
         $("#tableBody").html(rows);
         $("#tableButtons").html(buttons);
+
+        $(".icon-delete").click(function(e) {
+            e.stopPropagation();
+            var row = $(this).closest("tr");
+            var id = row.attr("data-id");
+            var url = "/subjects/remove/" + id;
+
+            alertify.confirm("Seguro?", function (e) {
+                if (e) {
+                    $.post(url, function (data) {
+                        alertify.success("Teacher erased correctly");
+                        row.remove();
+                    });
+                }
+            });
+        });
     }
 
     $(function () {
@@ -71,23 +87,7 @@
     });
 
 
-    $(".icon-delete").click(function (e) {
-        e.stopPropagation();
 
-        var row = $(this).closest("tr");
-        var id = row.attr("data-id");
-        var url = "/subjects/remove/" + id;
-
-        alertify.confirm("Seguro?", function (e) {
-            if (e) {
-
-                $.post(url, function (data) {
-                    alertify.success("Teacher erased correctly");
-                    row.remove();
-                });
-            }
-        });
-    });
 
     $(document).on("click", "#prevPage", {}, function() {
         var id = $(this).attr("data-id");
