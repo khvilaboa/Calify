@@ -3,6 +3,7 @@
 
 
 import webapp2, jinja2, os, db, base
+from google.appengine.ext import ndb
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -16,18 +17,19 @@ class TasksHandler(base.BaseHandler):
         values = self.getValues()
 
         if action == "calify":
+            # Get task and subject entities
             task = db.Task.get_by_id(long(idTask))
             sub = task.subject.get()
+
+            # Recover marks of the task
             marks = {}
             for mark in task.getMarks():
                 marks[mark.student.id()] = mark.mark
-            students = [(student, marks.get(student.key.id(), -1)) for student in sub.getStudents()]
-            """self.response.write(marks)
-            self.response.write("<br><br>")
-            self.response.write(students)
-            self.response.write("<br><br>")
-            self.response.write(sub.getStudents())"""
 
+            try:
+                students = [(student, marks.get(student.key.id(), -1)) for student in students]
+            except Exception: # BadQueryError
+                students = []
 
             values["task"] = task
             values["subject"] = sub

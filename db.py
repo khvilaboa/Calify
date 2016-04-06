@@ -20,7 +20,7 @@ class Subject(ndb.Model):
         return m
 
     def getStudents(self):
-        return [stKey.get() for stKey in self.students]
+        return Student.query(Student.key.IN(self.students))
 
     def addStudent(self, stKey):
         self.students.append(stKey)

@@ -9,9 +9,21 @@ class SearchHandler(base.BaseHandler):
     def get(self):
         self.checkLogin()
 
-        query = db.Student.query()
+        subId = self.request.get("sub", None)
+        if not subId:
+            self.response.write(subId)
+            return
+
+        sub = db.Subject.get_by_id(long(subId))
+        if not sub:
+            return
+
+        query = sub.getStudents()
+        #query = db.Student.query()
+
         page = self.request.get("p", None)
         clicked = self.request.get("c", None)
+
         data = {}
 
         if not page and not clicked:
