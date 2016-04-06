@@ -15,7 +15,7 @@
 
 <div class="card-title">Subjects</div>
 <div class="card">
-    <table class="table table-hover no-sel">
+    <table class="table table-hover no-sel hide" id="tableSubjects">
         <thead>
         <tr>
             <th>Name</th>
@@ -24,15 +24,15 @@
         </tr>
         </thead>
         <tbody id="tableBody">
-        {% for subject in subjects %}
+        <!--{% for subject in subjects %}
 
-        <tr data-id="{{ subject.key.id() }}" class="with-pointer" onclick="window.document.location = '/subjects/view/{{ subject.key.id() }}'">
+         <tr data-id="{{ subject.key.id() }}" class="with-pointer" onclick="window.document.location = '/subjects/view/{{ subject.key.id() }}'">
             <td>{{ subject.name }}</td>
             <td>{{ subject.name }}</td>
             <td><img src="/img/delete.png" class="img-icon icon-delete" /></td>
         </tr>
 
-        {% endfor %}
+        {% endfor %}-->
 
         </tbody>
     </table>
@@ -52,9 +52,24 @@
 
 {% block scripts %}
 <script>
-    $(function () {
 
+    function fillData(data){
+        dataSp = data.split("\n");
+        rows = dataSp[0];
+        buttons = dataSp[1];
+
+        $("#tableBody").html(rows);
+        $("#tableButtons").html(buttons);
+    }
+
+    $(function () {
+        url = "/subjects/search";
+        $.get(url, function (data, status) {
+            $("#tableSubjects").removeClass("hide");
+            fillData(data);
+        });
     });
+
 
     $(".icon-delete").click(function (e) {
         e.stopPropagation();
@@ -80,12 +95,7 @@
         if(id != "") {
             url = "/subjects/search?c=prev&p=" + id;
             $.get(url, function (data, status) {
-                dataSp = data.split("\n");
-                rows = dataSp[0];
-                buttons = dataSp[1];
-
-                $("#tableBody").html(rows);
-                $("#tableButtons").html(buttons);
+                fillData(data);
             });
         }
     });
@@ -96,14 +106,11 @@
         if(id != "") {
             url = "/subjects/search?c=next&p=" + id;
             $.get(url, function (data, status) {
-                dataSp = data.split("\n");
-                rows = dataSp[0];
-                buttons = dataSp[1];
-
-                $("#tableBody").html(rows);
-                $("#tableButtons").html(buttons);
+                fillData(data);
             });
         }
     });
+
+
 </script>
 {% endblock %}

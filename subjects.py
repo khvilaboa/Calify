@@ -37,11 +37,6 @@ class SubjectsHandler(base.BaseHandler):
             #n = self.request.get("n", None)
 
             teacher = db.Teacher.getByEmail(self.getEmail())
-            data = db.paginate(db.Subject.getSubjectsByTeacher(teacher.key), db.Subject.key)
-            #self.response.write(data["nextStr"])
-            data["subjects"] = data.pop("objects")
-            values.update(data)
-            #values["subjects"] = db.Subject.getSubjectsByTeacher(teacher.key) if teacher else []
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
         elif action == "view":
             values["sub"] = sub

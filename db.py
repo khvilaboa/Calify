@@ -187,7 +187,7 @@ class Mark(ndb.Model):
         return Mark.query(Mark.task == task.key).fetch()
 
 
-ITEMS_PER_PAGE = 3
+ITEMS_PER_PAGE = 6
 def paginate(query, orderField, prevStr=None, nxtStr=None):
     if not prevStr and not nxtStr:
         cursor = ndb.Cursor()
