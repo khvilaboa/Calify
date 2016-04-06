@@ -2,6 +2,7 @@
 
 from google.appengine.ext import ndb
 
+
 class Subject(ndb.Model):
     name = ndb.StringProperty(indexed=True)
     description = ndb.StringProperty(indexed=False)
@@ -32,6 +33,8 @@ class Subject(ndb.Model):
             mark.key.delete()
         return self.put()
 
+    def searchStudents(self, s):
+        return Student.query(ndb.OR(Student.dni == s, Student.name == s))
 
     def getTeachers(self):
         return [tKey.get() for tKey in self.teachers]
@@ -69,7 +72,7 @@ class Subject(ndb.Model):
     @staticmethod
     def addOrUpdate(name, desc, year, teachers, students=[], key=None):
 
-        if key == None: # add
+        if key == None:  # add
             sub = Subject(name=name, description=desc, year=year, teachers=teachers, students=students)
         else:
             sub = key.get()
@@ -79,9 +82,6 @@ class Subject(ndb.Model):
             sub.students = students
 
         return sub.put()
-
-
-
 
 
 class Task(ndb.Model):
@@ -99,9 +99,9 @@ class Task(ndb.Model):
         return Mark.getMarks(self)
 
     @staticmethod
-    def addOrUpdate(subKey, name, percent, taskKey = None):
+    def addOrUpdate(subKey, name, percent, taskKey=None):
 
-        if taskKey == None: # add
+        if taskKey == None:  # add
             task = Task(subject=subKey, name=name, percent=percent)
         else:
             task = taskKey.get()
@@ -133,12 +133,10 @@ class Teacher(ndb.Model):
         return t.put()
 
 
-
-
 class Student(ndb.Model):
-    #email = ndb.StringProperty(indexed=False)
+    # email = ndb.StringProperty(indexed=False)
     dni = ndb.StringProperty(indexed=True)
-    name = ndb.StringProperty(indexed=False)
+    name = ndb.StringProperty(indexed=True)
 
     @staticmethod
     def exists(dni):
@@ -157,6 +155,7 @@ class Student(ndb.Model):
         else:
             st.name = name
         return st.put()
+
 
 class Mark(ndb.Model):
     mark = ndb.FloatProperty(indexed=False)
@@ -188,6 +187,8 @@ class Mark(ndb.Model):
 
 
 ITEMS_PER_PAGE = 8
+
+
 def paginate(query, orderField, prevStr=None, nxtStr=None):
     if not prevStr and not nxtStr:
         cursor = ndb.Cursor()
@@ -233,7 +234,7 @@ def paginate2(query, orderField, prevStr=None, nxtStr=None):
     elif prevStr:
         cursor = ndb.Cursor(urlsafe=prevStr)
         objects, next_cursor, more = query.order(-orderField).fetch_page(ITEMS_PER_PAGE, start_cursor=cursor)
-        #objects.reverse()
+        # objects.reverse()
         nxtStr = prevStr
         prevStr = next_cursor.urlsafe()
         prev = True if more else False

@@ -18,11 +18,17 @@ class SearchHandler(base.BaseHandler):
         if not sub:
             return
 
-        query = sub.getStudents()
+
         #query = db.Student.query()
 
         page = self.request.get("p", None)
+        search = self.request.get("s", None)
         clicked = self.request.get("c", None)
+
+        if search:
+            query = sub.searchStudents(search)
+        else:
+            query = sub.getStudents()
 
         data = {}
 

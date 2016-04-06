@@ -53,7 +53,8 @@
             </thead>
             <tbody>
             {% for task in tasks %}
-            <tr data-id="{{ task.key.id() }}" class="with-pointer" onclick="window.document.location = '/tasks/calify/{{ task.key.id() }}'">
+            <tr data-id="{{ task.key.id() }}" class="with-pointer"
+                onclick="window.document.location = '/tasks/calify/{{ task.key.id() }}'">
                 <td>{{ task.name }}</td>
                 <td>{{ task.percent }}%</td>
                 <td><img src="/img/delete.png" class="img-icon icon-delete"/></td>
@@ -118,7 +119,7 @@
                         subject</label>
                 </div>
                 <div class="expandable-data">
-                    sadfasdf
+                    <!-- TODO -->
                 </div>
 
                 <div class="text-right">
@@ -129,6 +130,16 @@
     </div>
 
     <div class="card">
+        <div class="card-row row form-group">
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="studentSearch" name="student"
+                       placeholder="Enter the student's name or dni">
+            </div>
+
+            <div class="col-sm-2">
+                <a id="studentSearchButton" class="btn btn-default"><i class="fa fa-search"></i> Search</a>
+            </div>
+        </div>
         {% if sub.students %}
         <table class="table table-hover hide" id="tableStudents">
             <thead>
@@ -204,49 +215,98 @@
 {% block scripts %}
 
 <script>
+
+    var subId = "{{ sub.key.id() }}";
+    var searchingStudent = false;
+
     $(function () {
         $(".expandable-data").slideUp('fast');
         $("input[name='optAddStudents']").prop('checked', false);
 
-        // Charge initial data to the students table
-        url = "/students/search";
+        initialStudentTableLoad();
+    });
+
+    // Charge initial data to the students table
+    function initialStudentTableLoad() {
+        url = "/students/search?sub=" + subId;
         $.get(url, function (data, status) {
             $("#tableStudents").removeClass("hide");
             fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
         });
-    });
+    }
 
-    function fillData(tableBody, tableButtons, data){
+    function fillData(tableBody, tableButtons, data) {
         dataSp = data.split("\n");
         rows = dataSp[0];
         buttons = dataSp[1];
 
         tableBody.html(rows);
         tableButtons.html(buttons);
+
+        $(".icon-delete").click(function (e) {
+            e.stopPropagation();
+
+            var row = $(this).closest("tr");
+            var id = row.attr("data-id");
+            var tableId = $(this).closest("table").attr("id");
+
+            if (tableId == "tableStudents") {
+                url = "/subjects/removestudent/{{sub.key.id()}}?studentId=" + id;
+            } else if (tableId == "tableTeachers") {
+                url = "/subjects/removeteacher/{{sub.key.id()}}?teacherId=" + id;
+            } else if (tableId == "tableTasks") {
+                url = "/subjects/removetask/{{sub.key.id()}}?taskId=" + id;
+            }
+
+            $.post(url, function (data) {
+                alertify.success("Student erased correctly");
+                row.remove();
+                initialStudentTableLoad();
+            });
+
+        });
     }
 
-    $(document).on("click", "#prevPage", {}, function() {
+    $(document).on("click", "#prevPage", {}, function () {
         var id = $(this).attr("data-id");
 
-        if(id != "") {
-            url = "/students/search?c=prev&p=" + id;
+        if (id != "") {
+            url = "/students/search?sub=" + subId + "&c=prev&p=" + id;
             $.get(url, function (data, status) {
                 fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
             });
         }
     });
 
-    $(document).on("click", "#nextPage", {}, function() {
+    $(document).on("click", "#nextPage", {}, function () {
         var id = $(this).attr("data-id");
 
-        if(id != "") {
-            url = "/students/search?c=next&p=" + id;
+        if (id != "") {
+            url = "/students/search?sub=" + subId + "&c=next&p=" + id;
             $.get(url, function (data, status) {
                 fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
             });
         }
     });
 
+    $("#studentSearchButton").click(function () {
+        s = $("#studentSearch").val().trim();
+        if (s.length != 0) {
+            url = "/students/search?sub=" + subId + "&s=" + s;
+            alert(url);
+            $.get(url, function (data, status) {
+                searchingStudent = true;
+                fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+            });
+        }
+    });
+
+    $("#studentSearch").keyup(function () {
+        if(searchingStudent) {
+            searchingStudent = false;
+            initialStudentTableLoad();
+        }
+    });
 
     $(".card-fixed").click(function () {
         $(".card-fixed").removeClass("card-fixed-active");
@@ -256,6 +316,7 @@
 
         $("#" + $(this).attr("id").slice(0, -3) + "Contents").removeClass("hide")
     });
+
     $(".expandable-click").click(function () {
         if ($(this).attr("data-expanded") == "0") {
             $(this).attr("data-expanded", "1");
@@ -267,10 +328,12 @@
             $("#dropDownImg").addClass("rotated");
         }
     });
+
     $(".expandable-radio").change(function () {
         $(".expandable-radio").next().slideUp();
         $(this).next().slideDown();
     });
+
     $("#teacherSearch").keyup(function () {
         s = $("#teacherSearch").val();
         if (s.length > 2) {
@@ -286,28 +349,6 @@
         } else {
             $("#teacherResults").addClass("hide");
         }
-
-    });
-
-    $(".icon-delete").click(function (e) {
-        e.stopPropagation();
-
-        var row = $(this).closest("tr");
-        var id = row.attr("data-id");
-        var tableId = $(this).closest("table").attr("id");
-
-        if (tableId == "tableStudents") {
-            url = "/subjects/removestudent/{{sub.key.id()}}?studentId=" + id;
-        } else if (tableId == "tableTeachers") {
-            url = "/subjects/removeteacher/{{sub.key.id()}}?teacherId=" + id;
-        } else if (tableId == "tableTasks") {
-            url = "/subjects/removetask/{{sub.key.id()}}?taskId=" + id;
-        }
-
-        $.post(url, function (data) {
-            alertify.success("Student erased correctly");
-            row.remove();
-        });
 
     });
 

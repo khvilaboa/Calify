@@ -26,6 +26,7 @@ class TasksHandler(base.BaseHandler):
             for mark in task.getMarks():
                 marks[mark.student.id()] = mark.mark
 
+            students = sub.getStudents()
             try:
                 students = [(student, marks.get(student.key.id(), -1)) for student in students]
             except Exception: # BadQueryError
