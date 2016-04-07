@@ -73,7 +73,7 @@
                  id="dropDownImg"> Add students
         </div>
         <div class="expandable-data">
-            <form method="POST" action="/subjects/addstudents/{{ sub.key.id() }}" enctype="multipart/form-data">
+            <form method="POST" action="/subjects/addstudents/{{ sub.key.id() }}" enctype="multipart/form-data" name="addStudentsForm">
                 <div class="radio expandable-radio">
                     <label><input type="radio" name="optAddStudents" value="file">From file</label>
                 </div>
@@ -123,7 +123,7 @@
                 </div>
 
                 <div class="text-right">
-                    <button type="submit" class="btn btn-default">Submit</button>
+                    <button onclick="if(validateManualStudent()) alertify.log('ok')" class="btn btn-default">Submit</button>
                 </div>
             </form>
         </div>
@@ -265,6 +265,28 @@
             });
 
         });
+    }
+
+    function validateManualStudent() {
+        var optSelected = $("input[type=radio]:checked").attr("value");
+        if (optSelected == "manual") {
+            var dni = $("#dni").val().trim().toUpperCase();
+            var name = $("#name").val().trim();
+
+            if (name == "") {
+                alertify.error("It's necessary to specify a name");
+                return false;
+            } else if(!validDni(dni)) {
+                alertify.error("DNI not valid");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function validDni(dni) {
+        var letters = "TRWAGMYFPDXBNJZSQVHLCKE";
+        return dni.search(/^[0-9]{8}[A-Z]$/i) != -1 && letters[parseInt(dni.substr(0,8)) % 23] == dni.substr(8);
     }
 
     $(document).on("click", "#prevPage", {}, function () {

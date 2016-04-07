@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<form role="form" method="POST">
+<form role="form" method="POST" name="subjectCreation">
     <div class="card-title">Subject data</div>
 
     <div class="card">
@@ -85,7 +85,7 @@
 
     <div class="form-group row no-margin">
         <div class="col-xs-12">
-            <button type="submit" class="btn btn-default" onclick="validate();">Submit</button>
+            <button type="button" class="btn btn-default" onclick="if(validate()) document.forms['subjectCreation'].submit();">Submit</button>
         </div>
     </div>
 
