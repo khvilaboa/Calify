@@ -120,66 +120,66 @@
         }
     }
 
-    $(document).ready(function () {
+    $('#taskForm').on('click', '.addButton', function () {
 
-        $('#taskForm').on('click', '.addButton', function () {
+        var template = $('#taskRowTemplate');
+        var taskName = $('#taskName').val();
+        var taskPercent = $('#taskPercent').val();
 
-            var template = $('#taskRowTemplate');
-            var taskName = $('#taskName').val();
-            var taskPercent = $('#taskPercent').val();
+        percSum += parseInt(taskPercent);
+        checkWarning();
 
-            percSum += parseInt(taskPercent);
+        var $clone = template
+                .clone()
+                .removeClass('hide')
+                .removeAttr('id')
+                .attr('data-task-index', taskIndex)
+                .insertBefore(template);
+
+        $("table").removeClass("hide");
+
+        // Update the name attributes
+        $clone
+                .find('[name="taskRowName"]').attr('name', 'task[' + taskIndex + '].name').text(taskName).end()
+                .find('[name="taskRowPercent"]').attr('name', 'task[' + taskIndex + '].percent').text(taskPercent + " %").end();
+
+        $('<input>').attr({
+            type: 'hidden',
+            name: 'task[' + taskIndex + '].name',
+            id: 'task[' + taskIndex + '].name',
+            value: taskName
+        }).appendTo('#tasksData');
+        $('<input>').attr({
+            type: 'hidden',
+            name: 'task[' + taskIndex + '].percent',
+            id: 'task[' + taskIndex + '].percent',
+            value: taskPercent
+        }).appendTo('#tasksData');
+
+        taskIndex++;
+    });
+
+    $(document).on('click', '.icon-delete', function () {
+            //var taskPercent = $('#taskPercent').val();
+            var taskRow = $(this).closest("tr");
+            var taskIndex = taskRow.attr("data-task-index");
+            var taskPercent = $("input[name='task[" + taskIndex + "].percent']").attr("value");
+
+            percSum -= taskPercent;
             checkWarning();
 
-            var $clone = template
-                    .clone()
-                    .removeClass('hide')
-                    .removeAttr('id')
-                    .attr('data-task-index', taskIndex)
-                    .insertBefore(template);
+            // Delete task data
+            $("input[name='task[" + taskIndex + "].name']").remove();
+            $("input[name='task[" + taskIndex + "].percent']").remove();
 
-            $("table").removeClass("hide");
+            // Hide the table if there isn't tasks
+            if(percSum == 0) $("table").addClass("hide");
 
-            // Update the name attributes
-            $clone
-                    .find('[name="taskRowName"]').attr('name', 'task[' + taskIndex + '].name').text(taskName).end()
-                    .find('[name="taskRowPercent"]').attr('name', 'task[' + taskIndex + '].percent').text(taskPercent + " %").end();
-
-            $('<input>').attr({
-                type: 'hidden',
-                name: 'task[' + taskIndex + '].name',
-                id: 'task[' + taskIndex + '].name',
-                value: taskName
-            }).appendTo('#tasksData');
-            $('<input>').attr({
-                type: 'hidden',
-                name: 'task[' + taskIndex + '].percent',
-                id: 'task[' + taskIndex + '].percent',
-                value: taskPercent
-            }).appendTo('#tasksData');
-
-            taskIndex++;
-
-            $(".icon-delete").click(function () {
-                var taskPercent = $('#taskPercent').val();
-                var taskRow = $(this).closest("tr");
-                var taskIndex = taskRow.attr("data-task-index");
-
-                percSum -= parseInt(taskPercent);
-                checkWarning();
-
-                // Hide the table if there isn't tasks
-                if(percSum == 0) $("table").addClass("hide");
-
-                // Deletion of elements
-                taskRow.remove();
-                $('task[' + taskIndex + '].name').remove();
-                $('task[' + taskIndex + '].percent').remove();
-            });
+            // Deletion of elements
+            taskRow.remove();
+            $('task[' + taskIndex + '].name').remove();
+            $('task[' + taskIndex + '].percent').remove();
         });
-
-
-    });
 </script>
 
 {% endblock %}

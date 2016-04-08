@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 
-import webapp2, jinja2, os, db, base
+import webapp2, jinja2, os, db, base, re
 from google.appengine.ext import ndb
 
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -112,17 +112,16 @@ class SubjectsHandler(base.BaseHandler):
 
             # Go throught all the tasks of the subject
             i = 0
-            taskName = self.request.get("task[%d].name" % i, "")
-            taskPercent = self.request.get("task[%d].percent" % i, "")  # TODO: check types
 
-            while taskName != "" and taskPercent != "":
+            for task in filter(lambda x: re.match('task[[0-9]*].name', x), list(self.request.POST)):
+                id = task[5:task.find(']')]
+                taskName = self.request.get(task)
+                taskPercent = self.request.get("task[%s].percent" % id)
+
                 db.Task.addOrUpdate(subKey, taskName, int(taskPercent))
 
-                i += 1
-                taskName = self.request.get("task[%d].name" % i, "")
-                taskPercent = self.request.get("task[%d].percent" % i, "")
-
             idSub = str(subKey.id())
+
         elif action == "addstudents" and idSub != "":
             opt = self.request.get("optAddStudents")
             if opt == "manual":
