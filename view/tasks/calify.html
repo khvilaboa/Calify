@@ -83,9 +83,8 @@
                 selected = $("tbody > tr.rowSelected");
                 stId = selected.attr("data-id");
 
-                mark = (markControl.val()).replace(",", ".");
-
-                if(validMark(mark)) {
+                if(validMark(markControl.val().replace(",", "."))) {
+                    mark = (markControl.val()).replace(",", ".");
                     url = "/tasks/addnote/{{ task.key.id() }}/" + stId + "?mark=" + mark;
 
                     $.get(url, function (data, status) {
