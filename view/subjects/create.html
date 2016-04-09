@@ -1,6 +1,6 @@
 {% extends '/view/base.html' %}
 
-{% block title %}Crear asignatura{% endblock %}
+{% block title %}{{ "Modify subject" if subject else "Create subject" }}{% endblock %}
 
 {% block content %}
 
@@ -13,7 +13,7 @@
                 <label class="control-label col-xs-2" for="name">Name:</label>
 
                 <div class="col-xs-4">
-                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
+                    <input type="text" class="form-control" id="name" name="name" value="{{ subject.name if subject else '' }}" placeholder="Enter name">
                 </div>
 
                 <!--<label class="control-label col-xs-2" for="pwd">Password:</label>
@@ -28,7 +28,7 @@
                 <label for="description" class="col-xs-12">Description:</label>
 
                 <div class="col-xs-12">
-                    <textarea class="form-control col-xs-12" rows="5" id="description" name="description"></textarea>
+                    <textarea class="form-control col-xs-12" rows="5" id="description" name="description">{{ subject.description if subject else '' }}</textarea>
                 </div>
             </div>
 
@@ -99,6 +99,12 @@
     var taskIndex = 0;
     var percSum = 0;
 
+    $(function () {
+        {% for t in tasks %}
+            addTask('{{ t.name | safe }}', '{{t.percent | safe }}');
+        {% endfor %}
+    });
+
     function validate() {
         var subName = $("#name");
 
@@ -120,11 +126,8 @@
         }
     }
 
-    $('#taskForm').on('click', '.addButton', function () {
-
+    function addTask(taskName, taskPercent) {
         var template = $('#taskRowTemplate');
-        var taskName = $('#taskName').val();
-        var taskPercent = $('#taskPercent').val();
 
         percSum += parseInt(taskPercent);
         checkWarning();
@@ -157,6 +160,14 @@
         }).appendTo('#tasksData');
 
         taskIndex++;
+    }
+
+    $('#taskForm').on('click', '.addButton', function () {
+
+        var taskName = $('#taskName').val();
+        var taskPercent = $('#taskPercent').val();
+
+        addTask(taskName, taskPercent);
     });
 
     $(document).on('click', '.icon-delete', function () {

@@ -102,11 +102,11 @@ class Task(ndb.Model):
     def addOrUpdate(subKey, name, percent, taskKey=None):
 
         if taskKey == None:  # add
-            task = Task(subject=subKey, name=name, percent=percent)
+            task = Task(subject=subKey, name=name, percent=int(percent))
         else:
             task = taskKey.get()
             task.name = name
-            task.percent = percent
+            task.percent = int(percent)
 
         return task.put()
 

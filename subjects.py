@@ -24,83 +24,31 @@ class SubjectsHandler(base.BaseHandler):
                 self.redirect("/")
 
         if not action:  # index
-            #self.response.write(db.Subject.paginate())
-
-            #self.response.write(db.Subject.query(db.Subject.teachers == teacher.key).fetch())
-
-            #for i in db.Subject.query(db.Subject.teachers == teacher.key).fetch():
-                #self.response.write(i.name + "<br>")
-            #return
-            #data = db.paginateArray(db.Subject.getSubjectsByTeacher(teacher.key))
-            #data["subjects"] = data.pop("objects")
-            #values.update(data)
-            #n = self.request.get("n", None)
-
-            teacher = db.Teacher.getByEmail(self.getEmail())
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
+
         elif action == "view":
             values["sub"] = sub
-            #values["students"] = sub.getStudents()
             values["teachers"] = sub.getTeachers()
             values["tasks"] = sub.getTasks()
             template = JINJA_ENVIRONMENT.get_template('view/subjects/view.html')
-        elif action == "test":  # Only for testing purposes
-            """try:
-                offset = int(self.request.get("offset"))
-            except ValueError:
-                offset = 0
 
-            students, cursor, more = db.Student.query().order(db.Student.name).fetch_page(10, offset)
-            self.response.write(offset)"""
-            task = db.Task.get_by_id(long(self.request.get("id")))
+        elif action == "create":
+            template = JINJA_ENVIRONMENT.get_template('view/subjects/create.html')
 
-            if task:
-                task.key.delete()
-            else:
-                self.response.write("vacio")
-
-            return
-        elif os.path.isfile('view/subjects/%s.html' % action):
-            template = JINJA_ENVIRONMENT.get_template('view/subjects/%s.html' % action)
+        elif action == "modify" and idSub != "":
+            values["subject"] = db.Subject.get_by_id(long(idSub))
+            values["tasks"] = values["subject"].getTasks()
+            template = JINJA_ENVIRONMENT.get_template('view/subjects/create.html')
         else:
             self.redirect("/")
             return
 
         self.response.write(template.render(values))
 
-        # subject = db.Subject(name = "EST", description = "aaaaaah!!!", year = 2015)
-        # subject.put()
-
-
-        """try:
-            self.response.write("Tareas de una asignatura:<br>")
-            for s in db.Task.query(ancestor=db.Subject.query().fetch()[0].key).fetch():
-                self.response.write(s.name + "<br>")
-
-            self.response.write("<br>porcentaje > 20%:<br>")
-            for s in ndb.gql("SELECT * FROM Task WHERE percent > :1", 20):
-                self.response.write(s.name)
-
-            self.response.write("<br>porcentaje = 20%:<br>")
-            for s in db.Task.query(db.Task.percent > 20).fetch():
-                self.response.write(s.name)
-
-            self.response.write("<br>prueba 2:<br>")
-            for s in db.Task.query(db.Task.name == "Examen parcial 2"):
-                self.response.write(s.name)
-
-        except Exception as e:
-            self.response.write("error: " + str(e))"""
-
-        """task = db.Task(parent=est.key, name="Examen parcial 1", percent=80)
-        task.put()
-        task = db.Task(parent=est.key, name="Examen parcial 2", percent=20)
-        task.put()"""
-
     def post(self, action, idSub):
         self.checkLogin()
 
-        if action == "create" and idSub == "":
+        if action == "create" and idSub == "": # Create subject
             # Teacher data
             teacherKey = db.Teacher.addOrUpdate(self.getEmail())
 
@@ -111,8 +59,6 @@ class SubjectsHandler(base.BaseHandler):
             subKey = db.Subject.addOrUpdate(name, desc, 2012, [teacherKey])
 
             # Go throught all the tasks of the subject
-            i = 0
-
             for task in filter(lambda x: re.match('task[[0-9]*].name', x), list(self.request.POST)):
                 id = task[5:task.find(']')]
                 taskName = self.request.get(task)
@@ -121,6 +67,46 @@ class SubjectsHandler(base.BaseHandler):
                 db.Task.addOrUpdate(subKey, taskName, int(taskPercent))
 
             idSub = str(subKey.id())
+
+        elif action == "modify" and idSub != "":  # Modify existing subject
+            sub = db.Subject.get_by_id(long(idSub))
+
+            if not sub:
+                self.redirect("/")
+
+            tasks = {}
+            for t in sub.getTasks().fetch():
+                tasks[t.name] = t.key
+
+            self.response.write(tasks)
+            self.response.write("<br>")
+
+            # Go throught all the tasks of the subject
+            for task in filter(lambda x: re.match('task[[0-9]*].name', x), list(self.request.POST)):
+                id = task[5:task.find(']')]
+                taskName = self.request.get(task)
+                taskPercent = self.request.get("task[%s].percent" % id)
+
+                self.response.write("%s <> %s<br>" % (taskName, taskPercent))
+
+                if taskName in tasks:
+                    taskKey = tasks[taskName]
+                    self.response.write("was: ")
+                    self.response.write(taskKey)
+                    self.response.write("<br>")
+                    db.Task.addOrUpdate(sub.key, taskName, taskPercent, taskKey)
+                    del tasks[taskName]
+                else:
+                    db.Task.addOrUpdate(sub.key, taskName, taskPercent)
+                    self.response.write("create<br>")
+
+            for task in tasks:
+                taskKey = tasks[task]
+                taskKey.delete()
+                self.response.write(task)
+                self.response.write("<br>remove")
+
+
 
         elif action == "addstudents" and idSub != "":
             opt = self.request.get("optAddStudents")
