@@ -23,6 +23,8 @@ class StatsHandler(base.BaseHandler):
             values["studentsBySubject"] = "[" + ",".join(['"' + str(len(sub.students)) + '"' for sub in subjects]) + "]"
 
             values["marksByRanges"] = "[" + ",".join(['"' + mark + '"' for mark in self.getMarksPercentages(subjects)]) + "]"
+            values["showMarksByRanges"] = values["marksByRanges"] != '["0","0","0","0","0"]'
+            self.response.write(values["showMarksByRanges"])
 
             template = JINJA_ENVIRONMENT.get_template('/view/stats/index.html')
         self.response.write(template.render(values))
@@ -43,7 +45,7 @@ class StatsHandler(base.BaseHandler):
                     marks[4] += 1
 
         marksSum = sum(marks)
-        return ["{0:.2f}".format(100*float(mark)/marksSum) for mark in marks]
+        return ["{0:.2f}".format(100*float(mark)/marksSum) if marksSum > 0 else "0" for mark in marks]
 
 app = webapp2.WSGIApplication([
     ('/stats/?([a-z]*)', StatsHandler)

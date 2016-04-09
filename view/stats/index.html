@@ -46,7 +46,8 @@
 
     };
 
-    var config = {
+    {% if showMarksByRanges %}
+    var configPie = {
         type: 'pie',
         data: {
             datasets: [{
@@ -75,10 +76,10 @@
             }, animateScale : true
         }
     };
+    {% endif %}
 
     window.onload = function () {
         var ctxBars = document.getElementById("canvasBars").getContext("2d");
-        var ctxPie = document.getElementById("canvasPie").getContext("2d");
 
         window.myBar = new Chart(ctxBars, {
             type: 'bar',
@@ -96,7 +97,10 @@
         });
 
         //var myPieChart = new Chart(ctxPie).Pie(data,options);
-        new Chart(ctxPie, config);
+        {% if showMarksByRanges %}
+        var ctxPie = document.getElementById("canvasPie").getContext("2d");
+        new Chart(ctxPie, configPie);
+        {% endif %}
     };
 </script>
 {% endblock %}
