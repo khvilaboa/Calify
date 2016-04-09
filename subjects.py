@@ -229,7 +229,8 @@ class SearchHandler(base.BaseHandler):
     def get(self):
         self.checkLogin()
 
-        query = db.Subject.query()
+        teacher = db.Teacher.getByEmail(self.getEmail())
+        query = db.Subject.getSubjectsByTeacher(teacher.key)
         page = self.request.get("p", None)
         clicked = self.request.get("c", None)
         data = {}
