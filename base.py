@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import webapp2
+import webapp2, db
 from google.appengine.api import users
 
 
@@ -21,9 +21,16 @@ class BaseHandler(webapp2.RequestHandler):
         self.checkLogin()
         return users.get_current_user().email()
 
+    def getUserId(self):
+        email = self.getEmail()
+        teacher = db.Teacher.getByEmail(email)
+        return teacher.key.id()
+
     def getValues(self):
+
         return {"logoutUrl": users.create_logout_url("/"),
-                "username": self.getUserName()}
+                "username": self.getUserName(),
+                "userid": self.getUserId()}
 
 
 

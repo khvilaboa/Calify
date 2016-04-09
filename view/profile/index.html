@@ -1,0 +1,32 @@
+{% extends '/view/base.html' %}
+
+{% block title %}{{ teacher.email }}{% endblock %}
+
+{% block brandtext %}
+
+{% endblock %}
+
+{% block navitems %}
+
+{% endblock %}
+
+{% block content %}
+<div class="card-title"> Profile</div>
+<div class="card row">
+    <div class="prof-info">
+        <div class="col-xs-3 col-xs-offset-2">
+            <img src="/img/user.png" class="img-rounded img-responsive img-profile prof-img"/>
+        </div>
+        <div class="col-xs-5">
+            <div class="prof-info-item"><span>Name:</span> {{ teacher.name if teacher.name else "-"}}</div>
+            <div class="prof-info-item"><span>Email:</span> {{ teacher.email }}</div>
+            <div class="prof-info-item"><span>Subjects:</span> {{ subjects }}</div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}
