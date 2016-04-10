@@ -72,18 +72,23 @@
                     $.post(url, function (data) {
                         alertify.success("Teacher erased correctly");
                         row.remove();
+                        initialSubjectTableLoad();
                     });
                 }
             });
         });
     }
 
-    $(function () {
+    function initialSubjectTableLoad() {
         url = "/subjects/search";
         $.get(url, function (data, status) {
             $("#tableSubjects").removeClass("hide");
             fillData(data);
         });
+    }
+
+    $(function () {
+        initialSubjectTableLoad();
     });
 
 

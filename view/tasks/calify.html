@@ -8,6 +8,18 @@
     <div class="card-title">{{subject.name}} > {{task.name}}</div>
 
     <div class="card">
+
+        <div class="card-row row form-group">
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="studentSearch" name="student"
+                       placeholder="Enter the student's name or dni">
+            </div>
+
+            <div class="col-sm-2">
+                <a id="studentSearchButton" class="btn btn-default"><i class="fa fa-search"></i> Search</a>
+            </div>
+        </div>
+
         <table class="table table-hover">
                 <thead>
                 <tr>
@@ -98,6 +110,8 @@
             }
         });
     });
+
+
 </script>
 
 {% endblock %}

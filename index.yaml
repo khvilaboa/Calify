@@ -19,3 +19,9 @@ indexes:
   properties:
   - name: __key__
     direction: desc
+
+- kind: Subject
+  properties:
+  - name: teachers
+  - name: __key__
+    direction: desc
