@@ -17,7 +17,8 @@
 <div class="card card-info row">
     <div class="col-xs-2"></div>
     <div class="col-xs-10">
-        <div class="card-info-title"><h4>{{ sub.name }}</h4></div>
+        <div class="card-info-title">
+            <h4>{{ sub.name }} <span class="pull-right"><a href="/subjects/modify/{{ sub.key.id() }}"><i class="fa fa-pencil"></i></a></span></h4> </div>
         <!--<div><b>Description: </b>{{ sub.description }}</div>-->
     </div>
 
