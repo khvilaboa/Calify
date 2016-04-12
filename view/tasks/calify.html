@@ -108,9 +108,6 @@
             bodyHtml += '<tr data-id=\"' + id + '\"><td>' + name + '</td><td>' + dni + '</td><td>' + ((mark=='-1')?'-':mark) + '</td></tr>';
             //bodyHtml += '<tr data-id=\"' + id + '\"><td>' + name + '</td><td>' + dni + '</td><td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>';
             //bodyHtml += '<tr data-id=\"' + id + '\"><td>' + name + '</td><td>' + dni + '</td><td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>';
-            /*resp += "<td>%s</td>" % student.name
-            resp += "<td>%s</td>" % student.dni
-            resp += "<td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>');*/
         }
         tableBody.html(bodyHtml);
         tableButtons.html(buttonsHtml);
@@ -125,18 +122,6 @@
 
         if (id != "") {
             url = "/students/search?t={{ task.key.id() }}&sub=" + subId + "&o=" + id;
-            alert(url);
-            $.get(url, function (data, status) {
-                fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
-            });
-        }
-    });
-
-    $(document).on("click", "#prevPage", {}, function () {
-        var id = $(this).attr("data-id");
-
-        if (id != "") {
-            url = "/students/search?t={{ task.key.id() }}&sub=" + subId + "&c=prev&p=" + id;
             alert(url);
             $.get(url, function (data, status) {
                 fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);

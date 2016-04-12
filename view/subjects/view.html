@@ -237,13 +237,31 @@
     }
 
     function fillData(tableBody, tableButtons, data) {
-        dataSp = data.split("\n");
-        rows = dataSp[0];
-        buttons = dataSp[1];
+        dataSp = data.split("\n\n");
 
-        tableBody.html(rows);
-        tableButtons.html(buttons);
+        rows = dataSp[0].split("\n");
+        bodyHtml = "";
 
+        buttons = dataSp[1].split("\n");
+        buttonsHtml = "";
+
+        if(buttons[0] != "-1") buttonsHtml += "<button class='btn btn-default pag-button' data-id='" + buttons[0] + "'>Previous</button>";
+        if(buttons[1] != "-1") buttonsHtml += "<button class='btn btn-default pag-button' data-id='" + buttons[1] + "'>Next</button>";
+
+        for(var r in rows) {
+            dataRow = rows[r].split("^^");
+            id = dataRow[0];
+            name = dataRow[1];
+            dni = dataRow[2];
+
+            bodyHtml += '<tr data-id=\"' + id + '\"><td>' + name + '</td><td>' + dni + '</td><td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>';
+        }
+
+        tableBody.html(bodyHtml);
+        tableButtons.html(buttonsHtml);
+
+
+        // Handler for the delete button
         $(".icon-delete").click(function (e) {
             e.stopPropagation();
 
@@ -264,9 +282,20 @@
                 row.remove();
                 initialStudentTableLoad();
             });
-
         });
     }
+
+    $(document).on("click", ".pag-button", {}, function () {
+        var id = $(this).attr("data-id");
+
+        if (id != "") {
+            url = "/students/search?sub=" + subId + "&o=" + id;
+            alert(url);
+            $.get(url, function (data, status) {
+                fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+            });
+        }
+    });
 
     function validateManualStudent() {
         var optSelected = $("input[type=radio]:checked").attr("value");
@@ -290,7 +319,7 @@
         return dni.search(/^[0-9]{8}[A-Z]$/i) != -1 && letters[parseInt(dni.substr(0,8)) % 23] == dni.substr(8);
     }
 
-    $(document).on("click", "#prevPage", {}, function () {
+    /*$(document).on("click", "#prevPage", {}, function () {
         var id = $(this).attr("data-id");
 
         if (id != "") {
@@ -310,7 +339,9 @@
                 fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
             });
         }
-    });
+    });*/
+
+
 
     $("#studentSearchButton").click(function () {
         s = $("#studentSearch").val().trim();
