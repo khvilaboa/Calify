@@ -226,20 +226,20 @@ class SearchHandler(base.BaseHandler):
 
         teacher = db.Teacher.getByEmail(self.getEmail())
         query = db.Subject.getSubjectsByTeacher(teacher.key)
-        page = self.request.get("p", None)
-        clicked = self.request.get("c", None)
+        off = self.request.get("o", None)
         data = {}
 
-        if not page and not clicked:
-            data = db.paginate(query, db.Subject.key)
-        elif clicked == "next":
-            data = db.paginate(query, db.Subject.key, None, page)
-        elif clicked == "prev":
-            data = db.paginate(query, db.Subject.key, page, None)
+        # Paginate the query (beginning after a offset if it's specified)
+        data = db.paginateOff(query, db.Student.key, int(off) if off else 0)
 
         resp = ""
+        for subject in data["objects"]:
+            resp += "%s^^%s^^%s\n" % (subject.key.id(), subject.name, len(subject.students))  # Data to be formatted in the JS code
 
-        # Add the rows info
+        # Add the buttons info (new offsets)
+        resp += "\n%d\n%d" % (data["prevOffset"], data["nextOffset"])
+
+        """# Add the rows info
         for subject in data["objects"]:
             resp += "<tr data-id=\"%s\" class=\"with-pointer\" onclick=\"window.document.location = '/subjects/view/%s'\">" % (subject.key.id(),subject.key.id())
             resp += "<td>%s</td>" % subject.name
@@ -251,7 +251,7 @@ class SearchHandler(base.BaseHandler):
         if data["hasPrev"]:
             resp += "<button class=\"btn btn-default\" id=\"prevPage\" data-id=\"%s\">Previous</button>" % data["prevStr"]
         if data["hasNext"]:
-            resp += "<button class=\"btn btn-default\" id=\"nextPage\" data-id=\"%s\">Next</button>" % data["nextStr"]
+            resp += "<button class=\"btn btn-default\" id=\"nextPage\" data-id=\"%s\">Next</button>" % data["nextStr"]"""
 
         self.response.write(resp)
 
