@@ -29,7 +29,7 @@ class TasksHandler(base.BaseHandler):
             students = sub.getStudents()
             try:
                 students = [(student, marks.get(student.key.id(), -1)) for student in students]
-            except Exception: # BadQueryError
+            except Exception:  # BadQueryError
                 students = []
 
             values["task"] = task

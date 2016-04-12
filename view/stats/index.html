@@ -35,6 +35,10 @@
         return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',.7)';
     };
 
+    function genData() {
+        alert(document.getElementById("canvasBars").get(0).toDataUrl('image/jpeg'));
+    }
+
     var barChartData = {
 
         labels:{{ subjects | safe }},
@@ -78,10 +82,16 @@
     };
     {% endif %}
 
+
+
+    barChart = "";
+
     window.onload = function () {
         var ctxBars = document.getElementById("canvasBars").getContext("2d");
 
-        window.myBar = new Chart(ctxBars, {
+
+
+        barChart = new Chart(ctxBars, {
             type: 'bar',
             data: barChartData,
             options: {
@@ -101,6 +111,9 @@
         var ctxPie = document.getElementById("canvasPie").getContext("2d");
         new Chart(ctxPie, configPie);
         {% endif %}
+
     };
+
+
 </script>
 {% endblock %}

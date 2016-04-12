@@ -8,7 +8,7 @@ class BaseHandler(webapp2.RequestHandler):
 
     def checkLogin(self):
         user = users.get_current_user()
-        if not user:
+        if user is None:
             self.redirect("/")
 
     def getUserName(self):
@@ -24,7 +24,7 @@ class BaseHandler(webapp2.RequestHandler):
     def getUserId(self):
         email = self.getEmail()
         teacher = db.Teacher.getByEmail(email)
-        return teacher.key.id()
+        return teacher.key.id() if teacher else None
 
     def getValues(self):
 

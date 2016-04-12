@@ -3,7 +3,8 @@
 
 
 import webapp2, jinja2, os, db, base, re
-from google.appengine.ext import ndb
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -25,7 +26,15 @@ class SubjectsHandler(base.BaseHandler):
 
         if not action:  # index
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
+        elif action == "pdf":
+            self.response.headers['Content-Type'] = 'application/pdf'
+            self.response.headers['Content-Disposition'] = 'attachment; filename=my.pdf'
+            c = canvas.Canvas(self.response.out, pagesize=A4)
 
+            c.drawString(100, 100, "Hello world")
+            c.showPage()
+            c.save()
+            return
         elif action == "view":
             values["sub"] = sub
             values["teachers"] = sub.getTeachers()

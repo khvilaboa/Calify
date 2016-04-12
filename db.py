@@ -216,28 +216,9 @@ def paginate(query, orderField, prevStr=None, nxtStr=None):
     return {'objects': objects, 'nextStr': nxtStr, 'prevStr': prevStr, 'hasPrev': prev, 'hasNext': nxt}
 
 
-def paginate2(query, orderField, prevStr=None, nxtStr=None):
-    if not prevStr and not nxtStr:
-        cursor = ndb.Cursor()
-        objects, next_cursor, more = query.order(orderField).fetch_page(ITEMS_PER_PAGE, start_cursor=cursor)
-        prevStr = cursor.urlsafe()
-        nxtStr = next_cursor.urlsafe()
-        nxt = True if more else False
-        prev = False
-    elif nxtStr:
-        cursor = ndb.Cursor(urlsafe=nxtStr)
-        objects, next_cursor, more = query.order(orderField).fetch_page(ITEMS_PER_PAGE, start_cursor=cursor)
-        prevStr = nxtStr
-        nxtStr = next_cursor.urlsafe()
-        prev = True
-        nxt = True if more else False
-    elif prevStr:
-        cursor = ndb.Cursor(urlsafe=prevStr)
-        objects, next_cursor, more = query.order(-orderField).fetch_page(ITEMS_PER_PAGE, start_cursor=cursor)
-        # objects.reverse()
-        nxtStr = prevStr
-        prevStr = next_cursor.urlsafe()
-        prev = True if more else False
-        nxt = True
+def paginateOff(query, order, offset=0):
+    objects, nextCursor, more = query.order(order).fetch_page(ITEMS_PER_PAGE, offset=offset)
+    prev_offset = max(offset - ITEMS_PER_PAGE, 0) if bool(offset) else -1
+    next_offset = offset + ITEMS_PER_PAGE if bool(more) else -1
 
-    return {'objects': objects, 'nextStr': nxtStr, 'prevStr': prevStr, 'hasPrev': prev, 'hasNext': nxt}
+    return {'objects': objects, 'prevOffset': prev_offset, 'nextOffset': next_offset}

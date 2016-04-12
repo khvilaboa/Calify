@@ -24,7 +24,6 @@ class StatsHandler(base.BaseHandler):
 
             values["marksByRanges"] = "[" + ",".join(['"' + mark + '"' for mark in self.getMarksPercentages(subjects)]) + "]"
             values["showMarksByRanges"] = values["marksByRanges"] != '["0","0","0","0","0"]'
-            self.response.write(values["showMarksByRanges"])
 
             template = JINJA_ENVIRONMENT.get_template('/view/stats/index.html')
         self.response.write(template.render(values))

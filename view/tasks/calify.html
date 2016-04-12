@@ -20,35 +20,37 @@
             </div>
         </div>
 
-        <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th>Student name</th>
-                    <th>Student dni</th>
-                    <th>Mark</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for student, mark in students %}
-                <tr data-id="{{ student.key.id() }}" class="with-pointer">
-                    <td>{{ student.name }}</td>
-                    <td>{{ student.dni }}</td>
-                    {% if mark == -1 %}
-                    <td>-</td>
-                    {% else %}
-                    <td>{{ mark }}</td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <table class="table table-hover hide" id="studentsTable">
+            <thead>
+            <tr>
+                <th>Student name</th>
+                <th>Student dni</th>
+                <th>Mark</th>
+            </tr>
+            </thead>
+            <tbody id="studentsTableBody">
+            <!--{% for student, mark in students %}
+            <tr data-id="{{ student.key.id() }}" class="with-pointer">
+                <td>{{ student.name }}</td>
+                <td>{{ student.dni }}</td>
+                {% if mark == -1 %}
+                <td>-</td>
+                {% else %}
+                <td>{{ mark }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}-->
+            </tbody>
+        </table>
+        <div id="studentsTableButtons"></div>
     </div>
 {% endblock %}
 
 
 {% block scripts %}
 <script>
-    mark = "";
+    var subId = "{{ subject.key.id() }}";
+    var mark = "";
 
     // Deselect a row
     function normRow(row) {
@@ -68,7 +70,81 @@
         }
     }
 
-    $("tbody > tr").click(function() {
+    function initialStudentTableLoad() {
+        url = "/students/search?t={{ task.key.id() }}&sub=" + subId;
+        alert(url);
+        $.get(url, function (data, status) {
+            $("#studentsTable").removeClass("hide");
+            fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+        });
+    }
+
+    function fillData(tableBody, tableButtons, data) {
+        dataSp = data.split("\n\n");
+
+        rows = dataSp[0].split("\n");
+        bodyHtml = "";
+
+        buttons = dataSp[1].split("\n");
+        buttonsHtml = "";
+
+        if(buttons[0] != "-1") {
+            buttonsHtml += "<button class='btn btn-default pag-button' data-id='" + buttons[0] + "'>Previous</button>";
+        }
+        if(buttons[1] != "-1") {
+            buttonsHtml += "<button class='btn btn-default pag-button' data-id='" + buttons[1] + "'>Next</button>";
+        }
+
+
+        //alert(buttons);
+
+        for(var r in rows) {
+            dataRow = rows[r].split("^^");
+            id = dataRow[0];
+            name = dataRow[1];
+            dni = dataRow[2];
+            mark = dataRow[3];
+
+            bodyHtml += '<tr data-id=\"' + id + '\"><td>' + name + '</td><td>' + dni + '</td><td>' + ((mark=='-1')?'-':mark) + '</td></tr>';
+            //bodyHtml += '<tr data-id=\"' + id + '\"><td>' + name + '</td><td>' + dni + '</td><td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>';
+            //bodyHtml += '<tr data-id=\"' + id + '\"><td>' + name + '</td><td>' + dni + '</td><td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>';
+            /*resp += "<td>%s</td>" % student.name
+            resp += "<td>%s</td>" % student.dni
+            resp += "<td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>');*/
+        }
+        tableBody.html(bodyHtml);
+        tableButtons.html(buttonsHtml);
+    }
+
+    $(function() {
+        initialStudentTableLoad();
+    });
+
+    $(document).on("click", ".pag-button", {}, function () {
+        var id = $(this).attr("data-id");
+
+        if (id != "") {
+            url = "/students/search?t={{ task.key.id() }}&sub=" + subId + "&o=" + id;
+            alert(url);
+            $.get(url, function (data, status) {
+                fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+            });
+        }
+    });
+
+    $(document).on("click", "#prevPage", {}, function () {
+        var id = $(this).attr("data-id");
+
+        if (id != "") {
+            url = "/students/search?t={{ task.key.id() }}&sub=" + subId + "&c=prev&p=" + id;
+            alert(url);
+            $.get(url, function (data, status) {
+                fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+            });
+        }
+    });
+
+    $(document).on("click", "tbody > tr", {}, function () {
 
         lastSelected = $("tbody > tr.rowSelected");
         if(lastSelected) {
@@ -100,7 +176,7 @@
                     url = "/tasks/addnote/{{ task.key.id() }}/" + stId + "?mark=" + mark;
 
                     $.get(url, function (data, status) {
-                        alertify.success("Nota anadida correctamente");
+                        alertify.success("Mark added correctly");
                     });
 
                 } else {
