@@ -15,6 +15,9 @@
 
 <div class="card-title">Subjects</div>
 <div class="card">
+    <div id="loading" class="text-center">
+        <img src="/img/loader.gif" class="img-loading" />
+    </div>
     <table class="table table-hover no-sel hide" id="subjectsTable">
         <thead>
         <tr>
@@ -38,15 +41,7 @@
     </table>
 </div>
 
-<div id="tableButtons">
-    {% if hasPrev %}
-    <button class="btn btn-default" id="prevPage" data-id="{{ prevStr }}">Previous</button>
-    {% endif %}
-
-    {% if hasNext %}
-    <button class="btn btn-default" id="nextPage" data-id="{{ nextStr }}">Next</button>
-    {% endif %}
-</div>
+<div id="tableButtons"></div>
 
 {% endblock %}
 
@@ -62,6 +57,7 @@
 
         $.get(url, function (data, status) {
             $("#subjectsTable").removeClass("hide");
+            $("#loading").addClass("hide");
             fillData($("#subjectsTableBody"), $("#tableButtons"), data);
         });
     }
@@ -84,7 +80,7 @@
             name = dataRow[1];
             dni = dataRow[2];
 
-            bodyHtml += '<tr data-id=\"' + id + '\"><td>' + name + '</td><td>' + dni + '</td><td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>';
+            bodyHtml += '<tr data-id=\"' + id + '\" class="with-pointer" onclick="window.document.location = \'/subjects/view/' + id + '\'"><td>' + name + '</td><td>' + dni + '</td><td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>';
         }
 
         tableBody.html(bodyHtml);

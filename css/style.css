@@ -285,6 +285,12 @@ input[type=file] {
     font-weight: bold;
 }
 
+/* LOADING */
+.img-loading {
+    width: 30px;
+    height: 30px;
+}
+
 
 /* AUXILIAR */
 
