@@ -50,6 +50,7 @@
 {% block scripts %}
 <script>
     var subId = "{{ subject.key.id() }}";
+    var taskId = "{{ task.key.id() }}";
     var mark = "";
 
     // Deselect a row
@@ -167,6 +168,25 @@
                 normRow(selected);
             }
         });
+    });
+
+    $("#studentSearchButton").click(function () {
+        s = $("#studentSearch").val().trim();
+        if (s.length != 0) {
+            url = "/students/search?sub=" + subId + "&s=" + s + "&t=" + taskId;
+
+            $.get(url, function (data, status) {
+                searchingStudent = true;
+                fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+            });
+        }
+    });
+
+    $("#studentSearch").keyup(function () {
+        if(searchingStudent) {
+            searchingStudent = false;
+            initialStudentTableLoad();
+        }
     });
 
 
