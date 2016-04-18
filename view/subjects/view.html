@@ -252,8 +252,10 @@
         itemsPerPage = parseInt(pages[3]);
 
         if(buttons[0] != "-1") buttonsHtml += "<li class='with-pointer pag-button' data-id='" + buttons[0] + "'>&laquo;</li>";
-        for(var i=leftPage; i <= rightPage; i+= itemsPerPage) {
-            buttonsHtml += "<li class='with-pointer pag-button" + ((i==curPage)?" active":"") + "' data-id='" + i + "'>" + i + "</li>";
+        if(buttons[0] != "-1" || buttons[1] != "-1") {
+            for(var i=leftPage; i <= rightPage; i+= itemsPerPage) {
+                buttonsHtml += "<li class='with-pointer pag-button" + ((i==curPage)?" active":"") + "' data-id='" + i + "'>" + (i/itemsPerPage+1) + "</li>";
+            }
         }
         if(buttons[1] != "-1") buttonsHtml += "<li class='with-pointer pag-button' data-id='" + buttons[1] + "'>&raquo;</li>";
 

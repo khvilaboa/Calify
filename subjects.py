@@ -236,22 +236,20 @@ class SearchHandler(base.BaseHandler):
         for subject in data["objects"]:
             resp += "%s^^%s^^%s\n" % (subject.key.id(), subject.name, len(subject.students))  # Data to be formatted in the JS code
 
-        # Add the buttons info (new offsets)
-        resp += "\n%d\n%d" % (data["prevOffset"], data["nextOffset"])
+        if len(data["objects"]):
+            # Add the buttons info (new offsets)
+            resp += "\n%d\n%d" % (data["prevOffset"], data["nextOffset"])
 
-        """# Add the rows info
-        for subject in data["objects"]:
-            resp += "<tr data-id=\"%s\" class=\"with-pointer\" onclick=\"window.document.location = '/subjects/view/%s'\">" % (subject.key.id(),subject.key.id())
-            resp += "<td>%s</td>" % subject.name
-            resp += "<td>%s</td>" % len(subject.students)
-            resp += "<td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>"
+            # Add the nearest pages info
+            lenQuery = len(query.fetch())
+            maxPage = max(0, 8*((lenQuery - 1)//8))
+            curPage = data["curOffset"]
+            leftPage = max(0, curPage-2*db.ITEMS_PER_PAGE)
+            rightPage = min(curPage+2*db.ITEMS_PER_PAGE, maxPage)
+            resp += "\n\n%d\n%d\n%d\n%d" % (leftPage, rightPage, curPage, db.ITEMS_PER_PAGE)
 
-        # Add the buttons info in a new line
-        resp += "\n"
-        if data["hasPrev"]:
-            resp += "<button class=\"btn btn-default\" id=\"prevPage\" data-id=\"%s\">Previous</button>" % data["prevStr"]
-        if data["hasNext"]:
-            resp += "<button class=\"btn btn-default\" id=\"nextPage\" data-id=\"%s\">Next</button>" % data["nextStr"]"""
+            self.response.write("%s-%s-%s" % (maxPage, curPage, lenQuery))
+            self.response.write("<br>")
 
         self.response.write(resp)
 

@@ -41,7 +41,7 @@
     </table>
 </div>
 
-<div id="tableButtons"></div>
+<div id="tableButtons" class="pagination-wrapper"></div>
 
 {% endblock %}
 
@@ -69,10 +69,23 @@
         bodyHtml = "";
 
         buttons = dataSp[1].split("\n");
-        buttonsHtml = "";
+        buttonsHtml = "<ul class='pagination'>";
 
-        if(buttons[0] != "-1") buttonsHtml += "<button class='btn btn-default pag-button' data-id='" + buttons[0] + "'>Previous</button>";
-        if(buttons[1] != "-1") buttonsHtml += "<button class='btn btn-default pag-button' data-id='" + buttons[1] + "'>Next</button>";
+        pages = dataSp[2].split("\n");
+        leftPage = parseInt(pages[0]);
+        rightPage = parseInt(pages[1]);
+        curPage = parseInt(pages[2]);
+        itemsPerPage = parseInt(pages[3]);
+
+        if(buttons[0] != "-1") buttonsHtml += "<li class='with-pointer pag-button' data-id='" + buttons[0] + "'>&laquo;</li>";
+        if(buttons[0] != "-1" || buttons[1] != "-1") {
+            for(var i=leftPage; i <= rightPage; i+= itemsPerPage) {
+                buttonsHtml += "<li class='with-pointer pag-button" + ((i==curPage)?" active":"") + "' data-id='" + i + "'>" + (i/itemsPerPage+1) + "</li>";
+            }
+        }
+        if(buttons[1] != "-1") buttonsHtml += "<li class='with-pointer pag-button' data-id='" + buttons[1] + "'>&raquo;</li>";
+
+        buttonsHtml += "</ul>";
 
         for(var r in rows) {
             dataRow = rows[r].split("^^");
