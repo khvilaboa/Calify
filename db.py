@@ -113,6 +113,7 @@ class Task(ndb.Model):
 
 class Teacher(ndb.Model):
     email = ndb.StringProperty(indexed=True)
+    name = ndb.StringProperty(indexed=True)
 
     @staticmethod
     def exists(email):

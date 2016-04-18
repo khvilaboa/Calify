@@ -18,9 +18,20 @@
             <img src="/img/user.png" class="img-rounded img-responsive img-profile prof-img"/>
         </div>
         <div class="col-xs-5">
-            <div class="prof-info-item"><span>Name:</span> {{ teacher.name if teacher.name else "-"}}</div>
-            <div class="prof-info-item"><span>Email:</span> {{ teacher.email }}</div>
-            <div class="prof-info-item"><span>Subjects:</span> {{ subjects }}</div>
+            <form action="/profile/modify" method="POST">
+                <div class="prof-info-item"><span>Name:</span>
+
+                    {% if own %}
+                    <input type="text" class="form-control" id="name" name="name"
+                           value="{{ teacher.name if teacher.name else '' }}" placeholder="Enter name">
+                    {% else %} {{ teacher.name if teacher.name else "-"}} {% endif %}
+                </div>
+                <div class="prof-info-item"><span>Email:</span> {{ teacher.email }}</div>
+                <div class="prof-info-item"><span>Subjects:</span> {{ subjects }}</div>
+                {% if own %}
+                <div class="prof-info-item"><button type="submit" class="btn btn-default">Modify</button></div>
+                {% endif %}
+            </form>
         </div>
     </div>
 </div>
