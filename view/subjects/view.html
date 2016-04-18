@@ -175,7 +175,7 @@
                     <input type="email" class="form-control" id="teacherSearch" name="teacherEmail"
                            placeholder="Enter the teacher's email">
 
-                    <div class="searchResults hide" id="teacherResults">asdf</div>
+                    <div class="searchResults hide" id="teacherResults"></div>
                 </div>
 
                 <div class="col-sm-2">
@@ -195,8 +195,8 @@
                 </thead>
                 <tbody>
                 {% for t in teachers %}
-                <tr data-id="{{ t.key.id() }}">
-                    <td>{{ t.name }}</td>
+                <tr onclick="window.document.location = '/profile/{{ t.key.id() }}'"  data-id="{{ t.key.id() }}">
+                    <td>{% if t.name %}{{ t.name }}{% else %}-{% endif %}</td>
                     <td>{{ t.email }}</td>
                     <td><img src="/img/delete.png" class="img-icon icon-delete"/></td>
                 </tr>

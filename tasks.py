@@ -13,7 +13,9 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 class TasksHandler(base.BaseHandler):
     def get(self, action, idTask, idSt):
-        self.checkLogin()
+        if not self.loggedIn():
+            self.redirect("/")
+            return
         values = self.getValues()
 
         if action == "calify":

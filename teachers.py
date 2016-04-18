@@ -27,7 +27,9 @@ class CrudHandler(base.BaseHandler):
 
 class SearchHandler(base.BaseHandler):
     def get(self):
-        self.checkLogin()
+        if not self.loggedIn():
+            self.redirect("/")
+            return
         s = self.request.get("s")
         for teacher in db.Teacher.query().order(-db.Teacher.email):
             if teacher.email.find(s) != -1:

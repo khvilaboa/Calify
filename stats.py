@@ -12,7 +12,9 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 class StatsHandler(base.BaseHandler):
     def get(self, subId):
-        self.checkLogin()
+        if not self.loggedIn():
+            self.redirect("/")
+            return
         values = self.getValues()
 
         if not subId:

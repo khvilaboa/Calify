@@ -6,10 +6,9 @@ from google.appengine.api import users
 
 class BaseHandler(webapp2.RequestHandler):
 
-    def checkLogin(self):
+    def loggedIn(self):
         user = users.get_current_user()
-        if user is None:
-            self.redirect("/")
+        return user is not None
 
     def getUserName(self):
         user = self.getEmail()
@@ -18,7 +17,6 @@ class BaseHandler(webapp2.RequestHandler):
         return user
 
     def getEmail(self):
-        self.checkLogin()
         return users.get_current_user().email()
 
     def getUserId(self):

@@ -14,7 +14,14 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 class SubjectsHandler(base.BaseHandler):
     def get(self, action, idSub):
-        self.checkLogin()
+        if not self.loggedIn():
+            self.redirect("/")
+            return
+        if not db.Teacher.exists(self.getEmail()):
+            db.Teacher.addOrUpdate(self.getEmail())
+            self.response.write("creating")
+            return
+
         values = self.getValues()
 
         if idSub != "":
@@ -55,7 +62,9 @@ class SubjectsHandler(base.BaseHandler):
         self.response.write(template.render(values))
 
     def post(self, action, idSub):
-        self.checkLogin()
+        if not self.loggedIn():
+            self.redirect("/")
+            return
 
         if action == "create" and idSub == "": # Create subject
             # Teacher data
@@ -222,7 +231,9 @@ class SubjectsHandler(base.BaseHandler):
 
 class SearchHandler(base.BaseHandler):
     def get(self):
-        self.checkLogin()
+        if not self.loggedIn():
+            self.redirect("/")
+            return
 
         teacher = db.Teacher.getByEmail(self.getEmail())
         query = db.Subject.getSubjectsByTeacher(teacher.key)
@@ -241,16 +252,14 @@ class SearchHandler(base.BaseHandler):
             resp += "\n%d\n%d" % (data["prevOffset"], data["nextOffset"])
 
             # Add the nearest pages info
-            lenQuery = len(query.fetch())
+            lenQuery = query.count()  #len(query.fetch())
             maxPage = max(0, 8*((lenQuery - 1)//8))
             curPage = data["curOffset"]
             leftPage = max(0, curPage-2*db.ITEMS_PER_PAGE)
             rightPage = min(curPage+2*db.ITEMS_PER_PAGE, maxPage)
             resp += "\n\n%d\n%d\n%d\n%d" % (leftPage, rightPage, curPage, db.ITEMS_PER_PAGE)
-
-            self.response.write("%s-%s-%s" % (maxPage, curPage, lenQuery))
-            self.response.write("<br>")
-
+        #else:
+            #resp = "-1"
         self.response.write(resp)
 
 

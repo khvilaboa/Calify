@@ -12,7 +12,9 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 class StatsHandler(base.BaseHandler):
     def get(self, teachId):
-        self.checkLogin()
+        if not self.loggedIn():
+            self.redirect("/")
+            return
         values = self.getValues()
 
         teacher = db.Teacher.get_by_id(long(teachId))
@@ -30,7 +32,9 @@ class StatsHandler(base.BaseHandler):
             self.response.write(template.render(values))
 
     def post(self):
-        self.checkLogin()
+        if not self.loggedIn():
+            self.redirect("/")
+            return
 
         # Modify teacher
         teacher = db.Teacher.getByEmail(self.getEmail())
