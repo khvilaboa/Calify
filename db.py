@@ -195,4 +195,4 @@ def paginateOff(query, order, offset=0):
     prev_offset = max(offset - ITEMS_PER_PAGE, 0) if bool(offset) else -1
     next_offset = offset + ITEMS_PER_PAGE if bool(more) else -1
 
-    return {'objects': objects, 'prevOffset': prev_offset, 'nextOffset': next_offset}
+    return {'objects': objects, 'prevOffset': prev_offset, 'nextOffset': next_offset, 'curOffset': offset}

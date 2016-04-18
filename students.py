@@ -49,8 +49,17 @@ class SearchHandler(base.BaseHandler):
             resp += "^^%s" % marks.get(student.key.id(), "-1") if taskId else ""  # Add marks if the destination is a task view
             resp += "\n"
 
-        # Add the buttons info (new offsets)
-        resp += "\n%d\n%d" % (data["prevOffset"], data["nextOffset"])
+        if len(data["objects"]):
+            # Add the buttons info (new offsets)
+            resp += "\n%d\n%d" % (data["prevOffset"], data["nextOffset"])
+
+            # Add the nearest pages info
+            lenQuery = len(query.fetch())
+            maxPage = lenQuery - lenQuery % db.ITEMS_PER_PAGE
+            curPage = data["curOffset"]
+            leftPage = max(0, curPage-2*db.ITEMS_PER_PAGE)
+            rightPage = min(curPage+2*db.ITEMS_PER_PAGE, maxPage)
+            resp += "\n\n%d\n%d\n%d\n%d" % (leftPage, rightPage, curPage, db.ITEMS_PER_PAGE)
 
         self.response.write(resp)
 
