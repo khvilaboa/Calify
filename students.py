@@ -54,7 +54,7 @@ class SearchHandler(base.BaseHandler):
             resp += "\n%d\n%d" % (data["prevOffset"], data["nextOffset"])
 
             # Add the nearest pages info
-            lenQuery = len(query.fetch())
+            lenQuery = query.count()  #len(query.fetch())
             maxPage = max(0, 8*((lenQuery - 1)//8))
             curPage = data["curOffset"]
             leftPage = max(0, curPage-2*db.ITEMS_PER_PAGE)
