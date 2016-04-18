@@ -258,8 +258,7 @@ class SearchHandler(base.BaseHandler):
             leftPage = max(0, curPage-2*db.ITEMS_PER_PAGE)
             rightPage = min(curPage+2*db.ITEMS_PER_PAGE, maxPage)
             resp += "\n\n%d\n%d\n%d\n%d" % (leftPage, rightPage, curPage, db.ITEMS_PER_PAGE)
-        #else:
-            #resp = "-1"
+
         self.response.write(resp)
 
 
