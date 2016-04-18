@@ -80,16 +80,18 @@
             name = dataRow[1];
             dni = dataRow[2];
 
-            bodyHtml += '<tr data-id=\"' + id + '\" class="with-pointer" onclick="window.document.location = \'/subjects/view/' + id + '\'"><td>' + name + '</td><td>' + dni + '</td><td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>';
+            bodyHtml += '<tr data-id=\"' + id + '\" class="with-pointer" onclick="window.document.location = \'/subjects/view/' + id + '\'"><td>' + name + '</td><td>' + dni + '</td><td><img src=\"/img/edit.png\" class=\"img-icon\"  onclick=\"window.document.location = \'/subjects/modify/' + id + '\'"/><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>';
         }
 
         tableBody.html(bodyHtml);
         tableButtons.html(buttonsHtml);
 
+        $(".img-icon").click(function(e) {
+            e.stopPropagation();
+        });
 
         // Handler for the delete button
         $(".icon-delete").click(function(e) {
-            e.stopPropagation();
             var row = $(this).closest("tr");
             var id = row.attr("data-id");
             var url = "/subjects/remove/" + id;
