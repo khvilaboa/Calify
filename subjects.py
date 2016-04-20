@@ -17,10 +17,8 @@ class SubjectsHandler(base.BaseHandler):
         if not self.loggedIn():
             self.redirect("/")
             return
-        if not db.Teacher.exists(self.getEmail()):
+        if not db.Teacher.exists(self.getEmail()):  # If the user doesn't exist in the BD (first log in) add it
             db.Teacher.addOrUpdate(self.getEmail())
-            self.response.write("creating")
-            return
 
         values = self.getValues()
 

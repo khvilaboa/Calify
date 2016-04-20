@@ -36,7 +36,7 @@
         </tr>
 
         {% endfor %}-->
-
+        <div id="noSubjects" class="hide">There aren't teachers in this subject.</div>
         </tbody>
     </table>
 </div>
@@ -56,10 +56,19 @@
         url = "/subjects/search";
 
         $.get(url, function (data, status) {
-            $("#subjectsTable").removeClass("hide");
             $("#loading").addClass("hide");
-            fillData($("#subjectsTableBody"), $("#tableButtons"), data);
-            alert("Data: " + data + "\nStatus: " + status);
+
+            if(status == "success") {
+                if(data != "") {
+                    //alert("Data: " + data + "\nStatus: " + status);
+                    $("#subjectsTable").removeClass("hide");
+                    fillData($("#subjectsTableBody"), $("#tableButtons"), data);
+                } else {
+                    $("#noSubjects").removeClass("hide");
+                }
+            } else {
+                alertify.error("There was a problem loading the subjects");
+            }
         });
     }
 
@@ -110,12 +119,16 @@
             var id = row.attr("data-id");
             var url = "/subjects/remove/" + id;
 
-            alertify.confirm("Seguro?", function (e) {
+            alertify.confirm("Are you sure that you want to delete the subject?", function (e) {
                 if (e) {
-                    $.post(url, function (data) {
-                        alertify.success("Teacher erased correctly");
-                        row.remove();
-                        initialSubjectTableLoad();
+                    $.post(url, function (data, status) {
+                        if(status == "success") {
+                            alertify.success("Subject erased correctly");
+                            row.remove();
+                            initialSubjectTableLoad();
+                        } else {
+                            alertify.error("There was a problem deleting the subject");
+                        }
                     });
                 }
             });
@@ -129,7 +142,15 @@
         if (id != "") {
             url = "/subjects/search?o=" + id;
             $.get(url, function (data, status) {
-                fillData($("#subjectsTableBody"), $("#tableButtons"), data);
+                if(status == "success") {
+                    if(data != "") {
+                        alert("Data: " + data + "\nStatus: " + status);
+                        $("#subjectsTable").removeClass("hide");
+                        fillData($("#subjectsTableBody"), $("#tableButtons"), data);
+                    }
+                } else {
+                    alertify.error("There was a problem loading the subjects");
+                }
             });
         }
     });

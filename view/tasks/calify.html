@@ -42,6 +42,8 @@
             {% endfor %}-->
             </tbody>
         </table>
+        <div id="noStudents" class="hide">There aren't students in this subject yet.</div>
+        <div id="noStudentsSearch" class="hide">There aren't matches.</div>
         <div id="studentsTableButtons" class="pagination-wrapper"></div>
     </div>
 {% endblock %}
@@ -75,8 +77,20 @@
         url = "/students/search?t={{ task.key.id() }}&sub=" + subId;
 
         $.get(url, function (data, status) {
-            $("#studentsTable").removeClass("hide");
-            fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+
+        });
+
+        $.get(url, function (data, status) {
+            if(status == "success") {
+                if(data != "") {
+                    $("#studentsTable").removeClass("hide");
+                    fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+                } else {
+                    $("#noStudents").removeClass("hide");
+                }
+            } else {
+                alertify.error("There was a problem loading the students");
+            }
         });
     }
 
@@ -131,7 +145,18 @@
             url = "/students/search?t={{ task.key.id() }}&sub=" + subId + "&o=" + id;
 
             $.get(url, function (data, status) {
-                fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+                if (status == "success") {
+                    if (data != "") {
+                        $("#noStudents").addClass("hide");
+                        $("#noStudentsSearch").addClass("hide");
+                        $("#studentsTable").removeClass("hide");
+                        fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+                    } else {
+                        $("#noStudents").removeClass("hide");
+                    }
+                } else {
+                    alertify.error("There was a problem loading the students");
+                }
             });
         }
     });
@@ -168,11 +193,15 @@
                     url = "/tasks/addnote/{{ task.key.id() }}/" + stId + "?mark=" + mark;
 
                     $.get(url, function (data, status) {
-                        alertify.success("Mark added correctly");
+                        if(status == "success") {
+                            alertify.success("Mark added correctly");
+                        } else {
+                            alertify.error("There was an error submitting the mark");
+                        }
                     });
 
                 } else {
-                    alertify.error("Nota no valida");
+                    alertify.error("Mark not valid");
                 }
                 normRow(selected);
             }
@@ -185,8 +214,17 @@
             url = "/students/search?sub=" + subId + "&s=" + s + "&t=" + taskId;
 
             $.get(url, function (data, status) {
-                searchingStudent = true;
-                fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+                if(status == "success") {
+                    if(data != "") {
+                        fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+                    } else {
+                        $("#noStudents").addClass("hide");
+                        $("#noStudentsSearch").removeClass("hide");
+                    }
+                    searchingStudent = true;
+                } else {
+                    alertify.error("There was a problem loading the students");
+                }
             });
         }
     });

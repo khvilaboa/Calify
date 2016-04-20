@@ -63,7 +63,6 @@
             {% endfor %}
             </tbody>
         </table>
-
     </div>
 </div>
 
@@ -161,7 +160,7 @@
             </tbody>
         </table>
         {% else %}
-        There aren't students in this subject yet.
+        <div id="noStudents" class="hide">There aren't students in this subject yet.</div>
         {% endif %}
         <div class="card-row pagination-wrapper" id="studentsTableButtons"></div>
     </div>
@@ -231,8 +230,16 @@
     function initialStudentTableLoad() {
         url = "/students/search?sub=" + subId;
         $.get(url, function (data, status) {
-            $("#tableStudents").removeClass("hide");
-            fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+            if(status == "success") {
+                if(data != "") {
+                    $("#tableStudents").removeClass("hide");
+                    fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+                } else {
+                    $("#noStudents").removeClass("hide");
+                }
+            } else {
+                alertify.error("There was a problem loading the students");
+            }
         });
     }
 
@@ -291,9 +298,14 @@
             }
 
             $.post(url, function (data) {
-                alertify.success("Student erased correctly");
-                row.remove();
-                initialStudentTableLoad();
+
+                if(status == "success") {
+                    alertify.success("Student erased correctly");
+                    row.remove();
+                    initialStudentTableLoad();
+                } else {
+                    alertify.error("There was a problem deleting the subject");
+                }
             });
         });
     }
@@ -304,7 +316,15 @@
         if (id != "") {
             url = "/students/search?sub=" + subId + "&o=" + id;
             $.get(url, function (data, status) {
-                fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+                if(status == "success") {
+                    if(data != "") {
+                        fillData($("#studentsTableBody"), $("#studentsTableButtons"), data);
+                    } else {
+                        $("#noStudents").removeClass("hide");
+                    }
+                } else {
+                    alertify.error("There was a problem loading the students");
+                }
             });
         }
     });
