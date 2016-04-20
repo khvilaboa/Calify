@@ -25,3 +25,8 @@ indexes:
   - name: teachers
   - name: __key__
     direction: desc
+
+- kind: Task
+  properties:
+  - name: subject
+  - name: order

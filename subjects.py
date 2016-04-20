@@ -43,7 +43,7 @@ class SubjectsHandler(base.BaseHandler):
         elif action == "view":
             values["sub"] = sub
             values["teachers"] = sub.getTeachers()
-            values["tasks"] = sub.getTasks()
+            values["tasks"] = sub.getTasks().order(db.Task.order)
             template = JINJA_ENVIRONMENT.get_template('view/subjects/view.html')
 
         elif action == "create":
@@ -64,7 +64,7 @@ class SubjectsHandler(base.BaseHandler):
             self.redirect("/")
             return
 
-        if action == "create" and idSub == "": # Create subject
+        if action == "create" and idSub == "":  # Create subject
             # Teacher data
             teacherKey = db.Teacher.addOrUpdate(self.getEmail())
 
@@ -80,7 +80,7 @@ class SubjectsHandler(base.BaseHandler):
                 taskName = self.request.get(task)
                 taskPercent = self.request.get("task[%s].percent" % id)
 
-                db.Task.addOrUpdate(subKey, taskName, int(taskPercent))
+                db.Task.addOrUpdate(subKey, taskName, int(taskPercent), int(id))
 
             idSub = str(subKey.id())
 
@@ -110,10 +110,10 @@ class SubjectsHandler(base.BaseHandler):
                     self.response.write("was: ")
                     self.response.write(taskKey)
                     self.response.write("<br>")
-                    db.Task.addOrUpdate(sub.key, taskName, taskPercent, taskKey)
+                    db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id), taskKey)
                     del tasks[taskName]
                 else:
-                    db.Task.addOrUpdate(sub.key, taskName, taskPercent)
+                    db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id))
                     self.response.write("create<br>")
 
             for task in tasks:
