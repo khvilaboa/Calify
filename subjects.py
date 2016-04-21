@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-
 import webapp2, jinja2, os, db, base, re
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -151,29 +150,46 @@ class SubjectsHandler(base.BaseHandler):
                 # Get params data
                 filename = self.request.get("filename")
                 separator = self.request.get("separator")
-                csvLines = self.request.POST["filename"].value.split("\r\n")
+                lines = self.request.POST["filename"].value.split("\r\n")
 
-                # Get the subject from the datastore
-                sub = db.Subject.get_by_id(long(idSub))
+                filename = self.request.POST["filename"].filename
 
-                # Parse CSV
-                header = csvLines[0].decode('utf-8').lower().split(separator)
+                if filename.endswith(".csv"):
+                    # Get the subject from the datastore
+                    sub = db.Subject.get_by_id(long(idSub))
 
-                nameInd = header.index("nombre")
-                dniInd = header.index("dni")
+                    # Parse CSV
+                    header = lines[0].decode('utf-8').lower().split(separator)
 
-                for line in csvLines[1:]:
-                    fields = line.decode('utf-8').split(separator)
-                    name = fields[nameInd]
-                    dni = fields[dniInd]
-                    self.response.write(fields[nameInd] + ", " + fields[dniInd] + "<br>")
+                    nameInd = header.index("nombre")
+                    dniInd = header.index("dni")
 
-                    # Get student from the datastore (create it if not exist)
-                    stKey = db.Student.addOrUpdate(dni, name)
+                    for line in lines[1:]:
+                        fields = line.decode('utf-8').split(separator)
+                        name = fields[nameInd]
+                        dni = fields[dniInd]
+                        self.response.write(fields[nameInd] + ", " + fields[dniInd] + "<br>")
 
-                    # Add the student to the subject
-                    if stKey not in sub.students:
-                        sub.addStudent(stKey)
+                        # Get student from the datastore (create it if not exist)
+                        stKey = db.Student.addOrUpdate(dni, name)
+
+                        # Add the student to the subject
+                        if stKey not in sub.students:
+                            sub.addStudent(stKey)
+                elif filename.endswith(".xls"):
+                    sub = db.Subject.get_by_id(long(idSub))
+                    buff = []
+                    for l in lines:
+                        if re.match("\<tr ", l):
+                            buff = []
+                        elif re.match("\<font", l):
+                            buff.append(re.sub("\<.*\>", "", re.sub("\</.*.>", "", l)))
+                        elif re.match("\</tr\>", l) and len(buff) > 1:
+                            self.response.write(buff[0] + ", " + buff[1] + "<br>")
+                            stKey = db.Student.addOrUpdate(buff[0], buff[1])
+                            if stKey not in sub.students:
+                                sub.addStudent(stKey)
+                            buff = []
 
             elif opt == "subject":
                 pass
