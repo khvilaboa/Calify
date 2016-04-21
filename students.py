@@ -33,35 +33,42 @@ class SearchHandler(base.BaseHandler):
         else:
             query = sub.getStudents()
 
-        # Paginate the query (beginning after a offset if it's specified)
-        data = db.paginateOff(query, db.Student.key, int(off) if off else 0)
-
-        # If the user is in a task view retrieve the mark for each of the selected students
-        marks = {}
-        if taskId:
-            task = db.Task.get_by_id(long(taskId))
-            for mark in task.getMarks():
-                marks[mark.student.id()] = mark.mark
+        try:
+            lenQuery = query.count()  #len(query.fetch())
+        except Exception:
+            lenQuery = 0
 
         resp = ""
 
-        # Add the rows info
-        for student in data["objects"]:
-            resp += "%s^^%s^^%s" % (student.key.id(), student.name, student.dni)  # Data to be formatted in the JS code
-            resp += "^^%s" % marks.get(student.key.id(), "-1") if taskId else ""  # Add marks if the destination is a task view
-            resp += "\n"
+        if lenQuery > 0:
+            # Paginate the query (beginning after a offset if it's specified)
+            data = db.paginateOff(query, db.Student.key, int(off) if off else 0)
 
-        if len(data["objects"]):
-            # Add the buttons info (new offsets)
-            resp += "\n%d\n%d" % (data["prevOffset"], data["nextOffset"])
+            # If the user is in a task view retrieve the mark for each of the selected students
+            marks = {}
+            if taskId:
+                task = db.Task.get_by_id(long(taskId))
+                for mark in task.getMarks():
+                    marks[mark.student.id()] = mark.mark
 
-            # Add the nearest pages info
-            lenQuery = query.count()  #len(query.fetch())
-            maxPage = max(0, 8*((lenQuery - 1)//8))
-            curPage = data["curOffset"]
-            leftPage = max(0, curPage-2*db.ITEMS_PER_PAGE)
-            rightPage = min(curPage+2*db.ITEMS_PER_PAGE, maxPage)
-            resp += "\n\n%d\n%d\n%d\n%d" % (leftPage, rightPage, curPage, db.ITEMS_PER_PAGE)
+
+
+            # Add the rows info
+            for student in data["objects"]:
+                resp += "%s^^%s^^%s" % (student.key.id(), student.name, student.dni)  # Data to be formatted in the JS code
+                resp += "^^%s" % marks.get(student.key.id(), "-1") if taskId else ""  # Add marks if the destination is a task view
+                resp += "\n"
+
+            if len(data["objects"]):
+                # Add the buttons info (new offsets)
+                resp += "\n%d\n%d" % (data["prevOffset"], data["nextOffset"])
+
+                # Add the nearest pages info
+                maxPage = max(0, 8*((lenQuery - 1)//8))
+                curPage = data["curOffset"]
+                leftPage = max(0, curPage-2*db.ITEMS_PER_PAGE)
+                rightPage = min(curPage+2*db.ITEMS_PER_PAGE, maxPage)
+                resp += "\n\n%d\n%d\n%d\n%d" % (leftPage, rightPage, curPage, db.ITEMS_PER_PAGE)
 
         self.response.write(resp)
 

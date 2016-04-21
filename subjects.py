@@ -51,7 +51,7 @@ class SubjectsHandler(base.BaseHandler):
 
         elif action == "modify" and idSub != "":
             values["subject"] = db.Subject.get_by_id(long(idSub))
-            values["tasks"] = values["subject"].getTasks()
+            values["tasks"] = values["subject"].getTasks().order(db.Task.order)
             template = JINJA_ENVIRONMENT.get_template('view/subjects/create.html')
         else:
             self.redirect("/")
@@ -79,8 +79,11 @@ class SubjectsHandler(base.BaseHandler):
                 id = task[5:task.find(']')]
                 taskName = self.request.get(task)
                 taskPercent = self.request.get("task[%s].percent" % id)
+                taskMaxMark = self.request.get("task[%s].maxmark" % id)
+                taskInformative = self.request.get("task[%s].informative" % id)
+                taskExtra = self.request.get("task[%s].extra" % id)
 
-                db.Task.addOrUpdate(subKey, taskName, int(taskPercent), int(id))
+                db.Task.addOrUpdate(subKey, taskName, int(taskPercent), int(id), int(taskMaxMark), taskInformative == "true", taskExtra == "true")
 
             idSub = str(subKey.id())
 
@@ -102,6 +105,9 @@ class SubjectsHandler(base.BaseHandler):
                 id = task[5:task.find(']')]
                 taskName = self.request.get(task)
                 taskPercent = self.request.get("task[%s].percent" % id)
+                taskMaxMark = self.request.get("task[%s].maxmark" % id)
+                taskInformative = self.request.get("task[%s].informative" % id)
+                taskExtra = self.request.get("task[%s].extra" % id)
 
                 self.response.write("%s <> %s<br>" % (taskName, taskPercent))
 
@@ -110,10 +116,10 @@ class SubjectsHandler(base.BaseHandler):
                     self.response.write("was: ")
                     self.response.write(taskKey)
                     self.response.write("<br>")
-                    db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id), taskKey)
+                    db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id), int(taskMaxMark), taskInformative == "true", taskExtra == "true", taskKey)
                     del tasks[taskName]
                 else:
-                    db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id))
+                    db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id), int(taskMaxMark), taskInformative == "true", taskExtra == "true")
                     self.response.write("create<br>")
 
             for task in tasks:

@@ -302,7 +302,7 @@
                 url = "/subjects/removetask/{{sub.key.id()}}?taskId=" + id;
             }
 
-            $.post(url, function (data) {
+            $.post(url, function (data, status) {
 
                 if(status == "success") {
                     alertify.success("Student erased correctly");

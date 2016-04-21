@@ -43,29 +43,44 @@
 
     <div class="card" id="taskForm">
         <div class="form-group row card-row">
-            <label class="col-xs-1 control-label">Name</label>
+            <label class="col-xs-2 col-lg-1 control-label">Name</label>
 
-            <div class="col-xs-4">
+            <div class="col-xs-4 col-lg-5">
                 <input type="text" class="form-control" name="taskName" placeholder="Name" id="taskName"/>
             </div>
-            <label class="col-xs-1 control-label">Percent</label>
+            <label class="col-xs-2 col-lg-1 control-label">Percent</label>
 
-            <div class="col-xs-4">
+            <div class="col-xs-4 col-lg-5">
                 <input type="number" class="form-control" name="taskPercent" placeholder="Percent" min="0" max="100"
                        id="taskPercent"/>
             </div>
+        </div>
 
-            <div class="col-xs-1">
-                <button type="button" class="btn btn-default addButton"><i class="fa fa-plus"></i></button>
+        <div class="form-group row card-row">
+            <label class="col-xs-2 col-lg-1 control-label">Max mark</label>
+
+            <div class="col-xs-4 col-lg-5">
+                <input type="text" class="form-control" name="taskMaxMark" placeholder="Mark" id="taskMaxMark"/>
+            </div>
+
+            <div class="checkbox col-xs-6">
+              <label class="checkbox-inline"><input type="checkbox" value="" name="taskInformative" id="taskInformative">Only informative</label>
+              <label class="checkbox-inline"><input type="checkbox" value="" name="taskExtra" id="taskExtra">Extra points</label>
             </div>
         </div>
 
+        <div class="form-group row card-row">
+            <div class="col-xs-12">
+                <button type="button" class="btn btn-default addButton pull-right"><i class="fa fa-plus"></i> Add</button>
+            </div>
+        </div>
 
         <table class="table table-hover hide">
             <thead>
             <tr>
                 <th>Name</th>
                 <th>Percent</th>
+                <th>Max mark</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -73,6 +88,7 @@
             <tr class="hide" id="taskRowTemplate">
                 <td name="taskRowName"></td>
                 <td name="taskRowPercent"></td>
+                <td name="taskRowMaxMark"></td>
                 <td name="taskRowActions"><img src="/img/up.png" class="img-icon move-icon" name="up" /><img src="/img/down.png" class="img-icon move-icon" name="down" /><img src="/img/delete.png" class="img-icon icon-delete" /></td>
             </tr>
             </tbody>
@@ -102,7 +118,7 @@
 
     $(function () {
         {% for t in tasks %}
-            addTask('{{ t.name | safe }}', '{{t.percent | safe }}');
+            addTask('{{ t.name | safe }}', '{{t.percent | safe }}', '{{t.maxmark | safe }}', '{{t.informative | safe }}', '{{t.extra | safe }}');
         {% endfor %}
     });
 
@@ -127,7 +143,7 @@
         }
     }
 
-    function addTask(taskName, taskPercent) {
+    function addTask(taskName, taskPercent, taskMaxMark, taskInformative, taskExtra) {
         var template = $('#taskRowTemplate');
 
         percSum += parseInt(taskPercent);
@@ -146,19 +162,35 @@
         // Update the name attributes
         $clone
                 .find('[name="taskRowName"]').attr('name', 'task[' + taskIndex + '].name').text(taskName).end()
-                .find('[name="taskRowPercent"]').attr('name', 'task[' + taskIndex + '].percent').text(taskPercent + " %").end();
+                .find('[name="taskRowPercent"]').attr('name', 'task[' + taskIndex + '].percent').text(taskPercent + " %").end()
+                .find('[name="taskRowMaxMark"]').attr('name', 'task[' + taskIndex + '].maxmark').text(taskMaxMark).end();
+                //.find('[name="taskInformative"]').attr('name', 'task[' + taskIndex + '].informative').text(taskInformative).end()
+                //.find('[name="taskExtra"]').attr('name', 'task[' + taskIndex + '].extra').text(taskIndex).end();
 
         $('<input>').attr({
             type: 'hidden',
             name: 'task[' + taskIndex + '].name',
-            id: 'task[' + taskIndex + '].name',
             value: taskName
         }).appendTo('#tasksData');
         $('<input>').attr({
             type: 'hidden',
             name: 'task[' + taskIndex + '].percent',
-            id: 'task[' + taskIndex + '].percent',
             value: taskPercent
+        }).appendTo('#tasksData');
+        $('<input>').attr({
+            type: 'hidden',
+            name: 'task[' + taskIndex + '].maxmark',
+            value: taskMaxMark
+        }).appendTo('#tasksData');
+        $('<input>').attr({
+            type: 'hidden',
+            name: 'task[' + taskIndex + '].informative',
+            value: taskInformative
+        }).appendTo('#tasksData');
+        $('<input>').attr({
+            type: 'hidden',
+            name: 'task[' + taskIndex + '].extra',
+            value: taskExtra
         }).appendTo('#tasksData');
 
         taskIndex++;
@@ -168,8 +200,11 @@
 
         var taskName = $('#taskName').val();
         var taskPercent = $('#taskPercent').val();
+        var taskMaxMark = $('#taskMaxMark').val();
+        var taskInformative = $('#taskInformative').is(':checked');
+        var taskExtra = $('#taskExtra').is(':checked');
 
-        addTask(taskName, taskPercent);
+        addTask(taskName, taskPercent, taskMaxMark, taskInformative, taskExtra);
     });
 
     $(document).on('click', '.icon-delete', function () {
@@ -185,6 +220,9 @@
         // Delete task data
         $("input[name='task[" + taskIndex + "].name']").remove();
         $("input[name='task[" + taskIndex + "].percent']").remove();
+        $("input[name='task[" + taskIndex + "].maxmark']").remove();
+        $("input[name='task[" + taskIndex + "].informative']").remove();
+        $("input[name='task[" + taskIndex + "].extra']").remove();
 
         // Hide the table if there isn't tasks
         if(percSum == 0) $("table").addClass("hide");
@@ -203,72 +241,68 @@
         var num;
 
         // Set temporal values to the current row data
-        var taskNameData = $("input[name='task[" + currentNum + "].name']");
-        taskNameData.attr("name", "tmpName");
-        taskNameData.attr("id", "tmpName");
-        var taskPercentData= $("input[name='task[" + currentNum + "].percent']");
-        taskPercentData.attr("name", "tmpPercent");
-        taskPercentData.attr("id", "tmpPercent");
+        var taskNameData = $("input[name='task[" + currentNum + "].name']").attr("name", "tmp");
+        var taskPercentData = $("input[name='task[" + currentNum + "].percent']").attr("name", "tmp");
+        var taskMaxMarkData = $("input[name='task[" + currentNum + "].maxmark']").attr("name", "tmp");
+        var taskInformativeData = $("input[name='task[" + currentNum + "].informative']").attr("name", "tmp");
+        var taskExtraData = $("input[name='task[" + currentNum + "].extra']").attr("name", "tmp");
+
+        taskNameData.attr("name", "tmp");
+        taskPercentData.attr("name", "tmp");
+        taskMaxMarkData.attr("name", "tmp");
+        taskInformativeData.attr("name", "tmp");
+        taskExtraData.attr("name", "tmp");
+
+        var hasNext = false;
 
         if(dir == "up") {
             // Get the nearest id less than the current
             num = currentNum-1;
             while(num >= 0 && $("input[name='task[" + num + "].name']").length == 0) num--;
+            hasNext = num >= 0;
+        } else if(dir == "down") {
+            num = currentNum + 1;
+            while(num < numTasks && $("input[name='task[" + num + "].name']").length == 0) num++;
+            hasNext = num < numTasks;
+        }
+        if(hasNext) {
+            // Exchage IDs and names
+            var taskNameDataTmp = $("input[name='task[" + num + "].name']");
+            var taskPercentDataTmp = $("input[name='task[" + num + "].percent']");
+            var taskMaxMarkDataTmp = $("input[name='task[" + num + "].maxmark']");
+            var taskInformativeDataTmp = $("input[name='task[" + num + "].informative']");
+            var taskExtraDataTmp = $("input[name='task[" + num + "].extra']");
 
-            if(num >= 0) {
-                // Exchage IDs and names
-                var taskNameDataTmp = $("input[name='task[" + num + "].name']");
-                taskNameDataTmp.attr("name", "task[" + currentNum + "].name");
-                taskNameDataTmp.attr("id", "task[" + currentNum + "].name");
-                var taskPercentDataTmp = $("input[name='task[" + num + "].percent']");
-                taskPercentDataTmp.attr("name", "task[" + currentNum + "].percent");
-                taskPercentDataTmp.attr("id", "task[" + currentNum + "].percent");
+            taskNameDataTmp.attr("name", "task[" + currentNum + "].name");
+            taskPercentDataTmp.attr("name", "task[" + currentNum + "].percent");
+            taskMaxMarkDataTmp.attr("name", "task[" + currentNum + "].maxmark");
+            taskInformativeDataTmp.attr("name", "task[" + currentNum + "].informative");
+            taskExtraDataTmp.attr("name", "task[" + currentNum + "].extra");
 
-                taskNameData.attr("name", "task[" + num + "].name");
-                taskNameData.attr("id", "task[" + num + "].name");
-                taskPercentData.attr("name", "task[" + num + "].percent");
-                taskPercentData.attr("id", "task[" + num + "].percent");
 
-                // Update row IDs
+            taskNameData.attr("name", "task[" + num + "].name");
+            taskPercentData.attr("name", "task[" + num + "].percent");
+            taskMaxMarkData.attr("name", "task[" + num + "].maxmark");
+            taskInformativeData.attr("name", "task[" + num + "].informative");
+            taskExtraData.attr("name", "task[" + num + "].extra");
+
+            // Update row IDs
+            if(dir == "up") {
                 taskRow.prev().attr("data-task-index", currentNum);
                 taskRow.attr("data-task-index", num);
                 taskRow.after(taskRow.prev());
             } else {
-                taskNameData.attr("name", "task[" + currentNum + "].name");
-                taskNameData.attr("id", "task[" + currentNum + "].name");
-                taskPercentData.attr("name", "task[" + currentNum + "].percent");
-                taskPercentData.attr("id", "task[" + currentNum + "].percent");
-            }
-
-        } else if(dir == "down") {
-            // Get the nearest id greater than the current
-            num = currentNum + 1;
-            while(num < numTasks && $("input[name='task[" + num + "].name']").length == 0) num++;
-
-            if(num < numTasks) {
-                // Exchage IDs and names
-                var taskNameDataTmp = $("input[name='task[" + num + "].name']");
-                taskNameDataTmp.attr("name", "task[" + currentNum + "].name");
-                taskNameDataTmp.attr("id", "task[" + currentNum + "].name");
-                var taskPercentDataTmp = $("input[name='task[" + num + "].percent']");
-                taskPercentDataTmp.attr("name", "task[" + currentNum + "].percent");
-                taskPercentDataTmp.attr("id", "task[" + currentNum + "].percent");
-
-                taskNameData.attr("name", "task[" + num + "].name");
-                taskNameData.attr("id", "task[" + num + "].name");
-                taskPercentData.attr("name", "task[" + num + "].percent");
-                taskPercentData.attr("id", "task[" + num + "].percent");
-
-                // Update row IDs
                 taskRow.next().attr("data-task-index", currentNum);
                 taskRow.attr("data-task-index", num);
                 taskRow.before(taskRow.next());
-            } else {
-                taskNameData.attr("name", "task[" + currentNum + "].name");
-                taskNameData.attr("id", "task[" + currentNum + "].name");
-                taskPercentData.attr("name", "task[" + currentNum + "].percent");
-                taskPercentData.attr("id", "task[" + currentNum + "].percent");
             }
+
+        } else {
+            taskNameData.attr("name", "task[" + currentNum + "].name");
+            taskPercentData.attr("name", "task[" + currentNum + "].percent");
+            taskMaxMarkData.attr("name", "task[" + currentNum + "].maxmark");
+            taskInformativeData.attr("name", "task[" + currentNum + "].informative");
+            taskExtraData.attr("name", "task[" + currentNum + "].extra");
         }
     });
 </script>

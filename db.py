@@ -88,6 +88,9 @@ class Task(ndb.Model):
     name = ndb.StringProperty(indexed=True)
     percent = ndb.IntegerProperty(indexed=True)
     order = ndb.IntegerProperty(indexed=True)
+    maxmark = ndb.IntegerProperty(indexed=True)
+    informative = ndb.BooleanProperty(indexed=False)
+    extra = ndb.BooleanProperty(indexed=False)
 
     subject = ndb.KeyProperty(kind='Subject')
 
@@ -100,10 +103,10 @@ class Task(ndb.Model):
         return Mark.getMarks(self)
 
     @staticmethod
-    def addOrUpdate(subKey, name, percent, order, taskKey=None):
+    def addOrUpdate(subKey, name, percent, order, maxMark, informative, extra, taskKey=None):
 
-        if taskKey == None:  # add
-            task = Task(subject=subKey, name=name, order=order, percent=int(percent))
+        if taskKey is None:  # add
+            task = Task(subject=subKey, name=name, order=order, percent=int(percent), maxmark=maxMark, informative=informative, extra=extra)
         else:
             task = taskKey.get()
             task.name = name
