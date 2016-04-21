@@ -7,8 +7,8 @@
 {% endblock %}
 
 {% block navitems %}
+
 <li><a href="/subjects/create"><i class="fa fa-plus"></i> New</a></li>
-<li class="visibleOnRowSelect hide"><a href="#" id="deleteAction"><i class="fa fa-times"></i> Delete</a></li>
 {% endblock %}
 
 {% block content %}
@@ -18,7 +18,7 @@
     <div id="loading" class="text-center">
         <img src="/img/loader.gif" class="img-loading" />
     </div>
-    <table class="table table-hover no-sel hide" id="subjectsTable">
+    <table class="table table-hover table-responsive no-sel hide" id="subjectsTable">
         <thead>
         <tr>
             <th>Name</th>

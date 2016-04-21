@@ -21,24 +21,57 @@
 </head>
 
 <body>
-<nav class="navbar navbar-default fixed-nav">
+<!--<nav class="navbar navbar-default fixed-nav">
 
     <div class="navbar-header">
         <a class="navbar-brand" href="#">Calify {% block brandtext %}{% endblock %}</a>
     </div>
 
     <ul class="nav navbar-nav">
-        {% block navitems %}{% endblock %}
+        {% block navitemss %}{% endblock %}
     </ul>
 
     <ul class="nav navbar-nav pull-right">
         <li><a href="{{ logoutUrl }}"><i class="fa fa-sign-in"></i></a></li>
     </ul>
 
+</nav>-->
+
+<!-- BEGIN DEFAULT NAVABAR -->
+<nav class="navbar navbar-default fixed-nav">
+
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                data-target="#collapsed-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Calify</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="collapsed-navbar">
+        <ul class="nav navbar-nav">
+            {% block navitems %}{% endblock %}
+            <li class="visible-xs"><a href="/subjects"><i class="fa fa-book"></i> Subjects</a></li>
+            <li class="visible-xs"><a href="/stats"><i class="fa fa-line-chart"></i> Statistics</a></li>
+            <li class="visible-xs"><a href="/profile/{{ userid }}"><i class="fa fa-user"></i> Profile</a></li>
+            <li class="visible-xs"><a href="{{ logoutUrl }}"><i class="fa fa-sign-in"></i> Log out</a></li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+
+        </ul>
+    </div>
+    <!-- /.navbar-collapse -->
+
 </nav>
+<!-- END DEFAULT NAVABAR -->
 
 
-<div class="sidebar fixed-sidebar">
+<div class="sidebar fixed-sidebar" id="sidebar">
     <a class="sb-user-info" href="#">
         <div class="sb-user">
             <img class="img-circle sb-user-img" src="/img/user.png">
@@ -66,6 +99,48 @@
 <script src="/js/jquery-2.2.2.min.js"></script>
 <script src="/js/alertify.min.js"></script>
 <script src="/js/Chart.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+
+<script>
+
+    function updateAnimations() {
+        width = $(window).width();
+        var mode = '';
+        if (width < 768) {
+            mode = "#000";
+        }
+        else if (width < 992) {
+            mode = "#555";
+        }
+        else if (width < 1200) {
+            mode = "#888";
+        }
+        else if (width > 1200) {
+            mode = "#eee";
+        }
+        if (width < 768) {
+            $("#sidebar").addClass("sidebar-close");
+            $(".contents").addClass("contents-close");
+            $(".navbar-header").addClass("navbar-header-close");
+        }
+        else {
+            $("#sidebar").removeClass("sidebar-close");
+            $(".contents").removeClass("contents-close");
+            $(".navbar-header").removeClass("navbar-header-close");
+        }
+
+        //$(".contents").css("background-color", mode);
+    }
+
+    $(document).ready(function () {
+        updateAnimations();
+        $(window).resize(function () {
+            updateAnimations();
+        });
+    });
+
+
+</script>
 
 {% block scripts %}{% endblock %}
 </body>
