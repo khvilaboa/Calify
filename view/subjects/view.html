@@ -14,7 +14,7 @@
 
 {% block content %}
 
-<div class="card card-info row">
+<div class="card card-info row" id="card-info">
     <div class="col-xs-2"></div>
     <div class="col-xs-10">
         <div class="card-info-title">
@@ -25,17 +25,17 @@
 </div>
 
 <div class="row card-fixed-container">
-    <div class="col-xs-4 no-margin">
+    <div class="col-xs-12 col-sm-4 no-margin">
         <div class="card-fixed card-fixed-active text-center with-pointer" id="tasksTab">
             <img src="/img/card-img-task.png" class="card-fixed-img"><span class="card-fixed-text"> Tasks</span>
         </div>
     </div>
-    <div class="col-xs-4 no-margin">
+    <div class="col-xs-12 col-sm-4 no-margin">
         <div class="card-fixed text-center with-pointer" id="studentsTab">
             <img src="/img/card-img-user.png" class="card-fixed-img"><span class="card-fixed-text"> Students</span>
         </div>
     </div>
-    <div class="col-xs-4 no-margin">
+    <div class="col-xs-12 col-sm-4 no-margin">
         <div class="card-fixed text-center with-pointer" id="teachersTab">
             <img src="/img/card-img-user.png" class="card-fixed-img"><span class="card-fixed-text"> Teachers</span>
         </div>
@@ -227,7 +227,32 @@
         $("input[name='optAddStudents']").prop('checked', false);
 
         initialStudentTableLoad();
+        updateViewAnimations();
+
+        $(window).resize(function () {
+            updateViewAnimations();
+        });
     });
+
+    function updateViewAnimations() {
+        width = $(window).width();
+
+        if (width < 768) {
+            $("#tasksTab").removeClass("card-fixed").removeClass("card-fixed-reduced").addClass("card-fixed-reduced");
+            $("#studentsTab").removeClass("card-fixed").removeClass("card-fixed-reduced").addClass("card-fixed-reduced");
+            $("#teachersTab").removeClass("card-fixed").removeClass("card-fixed-reduced").addClass("card-fixed-reduced");
+            $(".card-fixed-container > div").addClass("no-padding");
+            $("#card-info").removeClass("card-info").removeClass("card-info-reduced").addClass("card-info-reduced");
+        }
+        else {
+            $("#tasksTab").removeClass("card-fixed").removeClass("card-fixed-reduced").addClass("card-fixed");
+            $("#studentsTab").removeClass("card-fixed").removeClass("card-fixed-reduced").addClass("card-fixed");
+            $("#teachersTab").removeClass("card-fixed").removeClass("card-fixed-reduced").addClass("card-fixed");
+            $(".card-fixed-container > div").removeClass("no-padding");
+            $("#card-info").removeClass("card-info").removeClass("card-info-reduced").addClass("card-info");
+        }
+    }
+
 
     // Charge initial data to the students table
     function initialStudentTableLoad() {

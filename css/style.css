@@ -217,6 +217,16 @@ table th:hover {
     display: block;
 }
 
+.card-fixed-reduced {
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 5px;
+    margin: 0 0 5px 0;
+    height: 45px;
+    padding: 0;
+    display: block;
+}
+
 .card-fixed-active {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
@@ -242,6 +252,11 @@ table th:hover {
 
 .card-info {
     height: 150px;
+}
+
+.card-info-reduced {
+    margin-bottom: 5px !important;
+    height: 120px;
 }
 
 .card-info-title {
@@ -316,7 +331,7 @@ input[type=file] {
 ul.pagination {
     display: inline-block;
     padding: 0;
-    margin: 0;
+    margin: 15px 0 0 0;
 }
 
 ul.pagination li {
@@ -348,6 +363,13 @@ canvas {
 }
 
 /* AUXILIAR */
+.form-margin-correct {
+    margin-bottom: 10px;
+}
+
+.form-padding-correct {
+
+}
 
 .no-sel {
     -webkit-user-select: none;
@@ -364,9 +386,18 @@ canvas {
     margin: 0 !important;
 }
 
+.no-margin-sides {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
 .sides-margin {
     margin-left: 5px;
     margin-right: 5px;
+}
+
+.no-padding {
+    padding: 0 !important;
 }
 
 .rotated {

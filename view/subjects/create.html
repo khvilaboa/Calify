@@ -10,9 +10,9 @@
     <div class="card">
 
             <div class="form-group row card-row">
-                <label class="control-label col-xs-2" for="name">Name:</label>
+                <label class="control-label col-sm-2" for="name">Name:</label>
 
-                <div class="col-xs-4">
+                <div class="col-sm-10 ">
                     <input type="text" class="form-control" id="name" name="name" value="{{ subject.name if subject else '' }}" placeholder="Enter name">
                 </div>
 
@@ -43,27 +43,25 @@
 
     <div class="card" id="taskForm">
         <div class="form-group row card-row">
-            <label class="col-xs-2 col-lg-1 control-label">Name</label>
+            <label class="col-sm-2 control-label form-margin-correct">Name</label>
 
-            <div class="col-xs-4 col-lg-5">
+            <div class="col-sm-4 form-margin-correct no-margin-sides">
                 <input type="text" class="form-control" name="taskName" placeholder="Name" id="taskName"/>
             </div>
-            <label class="col-xs-2 col-lg-1 control-label">Percent</label>
+            <label class="col-sm-2 control-label form-margin-correct">Percent</label>
 
-            <div class="col-xs-4 col-lg-5">
+            <div class="col-sm-4 form-margin-correct">
                 <input type="number" class="form-control" name="taskPercent" placeholder="Percent" min="0" max="100"
                        id="taskPercent"/>
             </div>
-        </div>
 
-        <div class="form-group row card-row">
-            <label class="col-xs-2 col-lg-1 control-label">Max mark</label>
+            <label class="col-sm-2 control-label form-margin-correct">Max mark</label>
 
-            <div class="col-xs-4 col-lg-5">
+            <div class="col-sm-4 form-margin-correct">
                 <input type="text" class="form-control" name="taskMaxMark" placeholder="Mark" id="taskMaxMark"/>
             </div>
 
-            <div class="checkbox col-xs-6">
+            <div class="checkbox col-sm-6">
               <label class="checkbox-inline"><input type="checkbox" value="" name="taskInformative" id="taskInformative">Only informative</label>
               <label class="checkbox-inline"><input type="checkbox" value="" name="taskExtra" id="taskExtra">Extra points</label>
             </div>
@@ -101,7 +99,7 @@
 
     <div class="form-group row no-margin">
         <div class="col-xs-12">
-            <button type="button" class="btn btn-default" onclick="if(validate()) document.forms['subjectCreation'].submit();">Submit</button>
+            <button type="button" class="btn btn-default" onclick="if(validate()) document.forms['subjectCreation'].submit();">Create</button>
         </div>
     </div>
 
