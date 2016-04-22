@@ -23,6 +23,7 @@ class StatsHandler(base.BaseHandler):
 
             values["subjects"] = "[" + ",".join(['"' + sub.name + '"' for sub in subjects]) + "]"
             values["studentsBySubject"] = "[" + ",".join(['"' + str(len(sub.students)) + '"' for sub in subjects]) + "]"
+            values["avgMarkBySubject"] = "[" + ",".join(['"' + mark + '"' for mark in self.getMeanMarkBySubject(subjects)]) + "]"
 
             values["marksByRanges"] = "[" + ",".join(['"' + mark + '"' for mark in self.getMarksPercentages(subjects)]) + "]"
             values["showMarksByRanges"] = values["marksByRanges"] != '["0","0","0","0","0"]'
@@ -47,6 +48,13 @@ class StatsHandler(base.BaseHandler):
 
         marksSum = sum(marks)
         return ["{0:.2f}".format(100*float(mark)/marksSum) if marksSum > 0 else "0" for mark in marks]
+
+    def getMeanMarkBySubject(self, subjects):
+        avgMarkBySubject = []
+        for sub in subjects:
+            marks = sub.getMarks()
+            avgMarkBySubject.append("{0:.2f}".format(float(sum([m.mark for m in sub.getMarks()])) / len(marks) if len(marks) > 0 else 0))
+        return avgMarkBySubject
 
 app = webapp2.WSGIApplication([
     ('/stats/?([a-z]*)', StatsHandler)

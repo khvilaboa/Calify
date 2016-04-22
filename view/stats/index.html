@@ -15,11 +15,14 @@
 <div class="card-title"> Statistics </div>
 <div class="card row">
     <div class="col-xs-12 col-md-6">
-        <canvas id="canvasBars"></canvas>
+        <canvas id="canvasBarsNumStudents"></canvas>
     </div>
     <hr class="visible-xs">
     <div class="col-xs-12 col-md-6">
         <canvas id="canvasPie"></canvas>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        <canvas id="canvasBarsMeanMarks"></canvas>
     </div>
 </div>
 {% endblock %}
@@ -40,13 +43,24 @@
         alert(document.getElementById("canvasBars").get(0).toDataUrl('image/jpeg'));
     }
 
-    var barChartData = {
+    var barChartDataNumStudents = {
 
         labels:{{ subjects | safe }},
         datasets: [{
             label: 'Students',
             backgroundColor: [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
             data: {{ studentsBySubject | safe }}
+        }]
+
+    };
+
+    var barChartDataMeanMarks = {
+
+        labels:{{ subjects | safe }},
+        datasets: [{
+            label: 'Mean Mark',
+            backgroundColor: [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
+            data: {{ avgMarkBySubject | safe }}
         }]
 
     };
@@ -88,13 +102,12 @@
     barChart = "";
 
     window.onload = function () {
-        var ctxBars = document.getElementById("canvasBars").getContext("2d");
+        var ctxBarsNumStudents = document.getElementById("canvasBarsNumStudents").getContext("2d");
+        var ctxBarsMeanMarks = document.getElementById("canvasBarsMeanMarks").getContext("2d");
 
-
-
-        barChart = new Chart(ctxBars, {
+        barChartNumStudents = new Chart(ctxBarsNumStudents, {
             type: 'bar',
-            data: barChartData,
+            data: barChartDataNumStudents,
             options: {
                 responsive: true,
                 legend: {
@@ -103,6 +116,21 @@
                 title: {
                     display: true,
                     text: 'Students by subject'
+                }
+            }
+        });
+
+        barChartMeanMark = new Chart(ctxBarsMeanMarks, {
+            type: 'bar',
+            data: barChartDataMeanMarks,
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Mean mark by subject'
                 }
             }
         });
