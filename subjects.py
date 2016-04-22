@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-import webapp2, jinja2, os, db, base, re
+import webapp2, jinja2, os, db, base, re, time
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 
@@ -52,6 +52,35 @@ class SubjectsHandler(base.BaseHandler):
             values["subject"] = db.Subject.get_by_id(long(idSub))
             values["tasks"] = values["subject"].getTasks().order(db.Task.order)
             template = JINJA_ENVIRONMENT.get_template('view/subjects/create.html')
+        elif action == "export" and idSub != "":
+            self.response.headers['Content-Type'] = 'text/csv'
+            filename = self.getUserName() + "_" + str(time.time()).replace(".", "") + ".csv"
+            self.response.headers['Content-Disposition'] = 'attachment; filename=' + filename
+
+            sub = db.Subject.get_by_id(long(idSub))
+            tasksInfo = sub.getTasks()
+            tasksMarks = {task.key: {m.student: m.mark for m in task.getMarks()} for task in sub.getTasks()}
+            students = sub.getStudents()
+
+            """self.response.write(tasksMarks)
+            self.response.write("<br><br>")
+            self.response.write(self.getUserName() + "_" + str(time.time()).replace(".","") + ".csv")
+            self.response.write("<br><br>")"""
+
+            fileContent = ""
+            for st in students:
+                #self.response.write(st.name + "<br>")
+                weightedAvg = 0
+                for task in tasksInfo:
+                    mark = (tasksMarks[task.key].get(st.key) / task.maxmark) * 10 * (task.percent/100.0)
+                    weightedAvg += mark
+                    """self.response.write(task.name + " (" + str(task.percent) + "%, " + str(task.maxmark) + "): ")
+                    self.response.write("%s, %s" % (tasksMarks[task.key].get(st.key) / task.maxmark * 10, mark))
+                    self.response.write("<br>")
+                self.response.write("Final mark: %s<br><br>" % weightedAvg)"""
+                fileContent += "%s;%s\n" % (st.dni, weightedAvg)
+            self.response.write(fileContent)
+            return
         else:
             self.redirect("/")
             return
