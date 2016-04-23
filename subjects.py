@@ -71,14 +71,23 @@ class SubjectsHandler(base.BaseHandler):
             for st in students:
                 #self.response.write(st.name + "<br>")
                 weightedAvg = 0
+                extraPoints = 0
                 for task in tasksInfo:
-                    mark = (tasksMarks[task.key].get(st.key) / task.maxmark) * 10 * (task.percent/100.0)
+                    rawMark = tasksMarks[task.key].get(st.key, None)
+                    if not rawMark or task.informative:
+                        continue
+                    elif task.extra:
+                        extraPoints += rawMark
+                        continue
+                    mark = (rawMark / task.maxmark) * 10 * (task.percent/100.0)
                     weightedAvg += mark
                     """self.response.write(task.name + " (" + str(task.percent) + "%, " + str(task.maxmark) + "): ")
-                    self.response.write("%s, %s" % (tasksMarks[task.key].get(st.key) / task.maxmark * 10, mark))
-                    self.response.write("<br>")
-                self.response.write("Final mark: %s<br><br>" % weightedAvg)"""
-                fileContent += "%s;%s\n" % (st.dni, weightedAvg)
+                    self.response.write("%s, %s, %s" % (rawMark, rawMark / task.maxmark * 10, mark))
+                    self.response.write("<br>")"""
+                """self.response.write("Final mark: %s<br>" % weightedAvg)
+                self.response.write("Extra: %s<br>" % extraPoints)
+                self.response.write("Final mark with extra: %s<br><br>" % (weightedAvg+extraPoints))"""
+                fileContent += "%s;%s\n" % (st.dni, weightedAvg+extraPoints)
             self.response.write(fileContent)
             return
         else:
