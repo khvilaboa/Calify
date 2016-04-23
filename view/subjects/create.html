@@ -259,9 +259,18 @@
             while(num >= 0 && $("input[name='task[" + num + "].name']").length == 0) num--;
             hasNext = num >= 0;
         } else if(dir == "down") {
-            num = currentNum + 1;
-            while(num < numTasks && $("input[name='task[" + num + "].name']").length == 0) num++;
-            hasNext = num < numTasks;
+
+            num = 999999;
+
+            $("tbody > tr").each(function() {
+                numTmp = $(this).attr("data-task-index");
+
+                if(numTmp != undefined && numTmp > currentNum && numTmp < num) {
+                    num = numTmp;
+                }
+            });
+
+            hasNext = num != 999999;
         }
         if(hasNext) {
             // Exchage IDs and names
