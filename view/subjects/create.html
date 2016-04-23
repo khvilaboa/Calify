@@ -51,7 +51,7 @@
             <label class="col-sm-2 control-label form-margin-correct">Percent</label>
 
             <div class="col-sm-4 form-margin-correct">
-                <input type="number" class="form-control" name="taskPercent" placeholder="Percent" min="0" max="100"
+                <input type="text" class="form-control" name="taskPercent" placeholder="Percent" min="0" max="100"
                        id="taskPercent"/>
             </div>
 
@@ -69,7 +69,8 @@
 
         <div class="form-group row card-row">
             <div class="col-xs-12">
-                <button type="button" class="btn btn-default addButton pull-right"><i class="fa fa-plus"></i> Add</button>
+                <button type="button" class="btn btn-default addButton pull-right" id="taskAdd"><i class="fa fa-plus"></i> Add</button>
+                <button type="button" class="btn btn-default addButton pull-right hide" id="taskEdit"><i class="fa fa-pencil"></i> Edit</button>
             </div>
         </div>
 
@@ -87,7 +88,7 @@
                 <td name="taskRowName"></td>
                 <td name="taskRowPercent"></td>
                 <td name="taskRowMaxMark"></td>
-                <td name="taskRowActions"><img src="/img/up.png" class="img-icon move-icon" name="up" /><img src="/img/down.png" class="img-icon move-icon" name="down" /><img src="/img/delete.png" class="img-icon icon-delete" /></td>
+                <td name="taskRowActions"><img src="/img/up.png" class="img-icon move-icon" name="up" /><img src="/img/down.png" class="img-icon move-icon" name="down" /><img src="/img/edit.png" class="img-icon edit-icon" /><img src="/img/delete.png" class="img-icon icon-delete" /></td>
             </tr>
             </tbody>
         </table>
@@ -118,6 +119,8 @@
         {% for t in tasks %}
             addTask('{{ t.name | safe }}', '{{t.percent | safe }}', '{{t.maxmark | safe }}', '{{t.informative | safe }}', '{{t.extra | safe }}');
         {% endfor %}
+
+        clearCurrentTask();
     });
 
     function validate() {
@@ -133,6 +136,34 @@
         return true;
     }
 
+    function validateTask() {
+        var taskName = $("#taskName").val();
+        var taskPercent = $("#taskPercent").val();
+        var taskMaxMark = $("#taskMaxMark").val();
+        var taskInformative = $("#taskInformative").prop('checked');
+        var taskExtra = $("#taskExtra").prop('checked');
+
+        alert(taskPercent);
+
+        if (taskName.length == 0) {
+            alertify.error("You must specify a task name");
+            return false;
+        } else if (taskPercent.length == 0 && !taskInformative && !taskExtra) {
+            alertify.error("You must specify a percentage for the task");
+            return false;
+        } else if(!(/[0-9]+/.test(taskPercent) && !taskInformative && !taskExtra)) {
+            alertify.error("The percetage specified is not valid");
+            return false;
+        } else if(taskMaxMark.length == 0) {
+            alertify.error("You must specify a max mark for the task");
+            return false;
+        } else if(!(/[0-9]+/.test(taskMaxMark))) {
+            alertify.error("The maximum mark specified is not valid");
+            return false;
+        }
+        return true;
+    }
+
     function checkWarning() {
         if(percSum > 100) {
             $("#percentSumMsg").removeClass("hide");
@@ -143,9 +174,12 @@
 
     function addTask(taskName, taskPercent, taskMaxMark, taskInformative, taskExtra) {
         var template = $('#taskRowTemplate');
+        var affectPerc = taskInformative.toString().toLowerCase() == "false" && taskExtra.toString().toLowerCase() == "false";
 
-        percSum += parseInt(taskPercent);
-        numTasks += 1;
+        if(affectPerc) {
+            percSum += parseInt(taskPercent);
+        }
+
         checkWarning();
 
         var $clone = template
@@ -160,7 +194,7 @@
         // Update the name attributes
         $clone
                 .find('[name="taskRowName"]').attr('name', 'task[' + taskIndex + '].name').text(taskName).end()
-                .find('[name="taskRowPercent"]').attr('name', 'task[' + taskIndex + '].percent').text(taskPercent + " %").end()
+                .find('[name="taskRowPercent"]').attr('name', 'task[' + taskIndex + '].percent').text(((affectPerc)?taskPercent+" %":"-")).end()
                 .find('[name="taskRowMaxMark"]').attr('name', 'task[' + taskIndex + '].maxmark').text(taskMaxMark).end();
                 //.find('[name="taskInformative"]').attr('name', 'task[' + taskIndex + '].informative').text(taskInformative).end()
                 //.find('[name="taskExtra"]').attr('name', 'task[' + taskIndex + '].extra').text(taskIndex).end();
@@ -173,7 +207,7 @@
         $('<input>').attr({
             type: 'hidden',
             name: 'task[' + taskIndex + '].percent',
-            value: taskPercent
+            value: ((affectPerc)?taskPercent:-1)
         }).appendTo('#tasksData');
         $('<input>').attr({
             type: 'hidden',
@@ -194,7 +228,22 @@
         taskIndex++;
     }
 
+    function editTask(taskName, taskPercent, taskMaxMark, taskInformative, taskExtra) {
+        var ind = /task\[([0-9]*)\]\.name/.exec($("input[name $= '.name'][value = '" + $("#taskName").val() + "']").attr("name"))[1];
+        var affectPerc = taskInformative.toString().toLowerCase() == "false" && taskExtra.toString().toLowerCase() == "false";
+
+        // Update data
+        $("input[name='task[" + ind + "].percent']").attr("value", ((affectPerc)?taskPercent:-1));
+        $("input[name='task[" + ind + "].maxmark']").attr("value", taskMaxMark);
+        $("input[name='task[" + ind + "].informative']").attr("value", taskInformative);
+        $("input[name='task[" + ind + "].extra']").attr("value", taskExtra);
+
+        clearCurrentTask();
+    }
+
     $('#taskForm').on('click', '.addButton', function () {
+
+        if(!validateTask()) return;
 
         var taskName = $('#taskName').val();
         var taskPercent = $('#taskPercent').val();
@@ -202,7 +251,13 @@
         var taskInformative = $('#taskInformative').is(':checked');
         var taskExtra = $('#taskExtra').is(':checked');
 
-        addTask(taskName, taskPercent, taskMaxMark, taskInformative, taskExtra);
+        if(existsCurrentTask()) {
+            editTask(taskName, taskPercent, taskMaxMark, taskInformative, taskExtra);
+        } else {
+            addTask(taskName, taskPercent, taskMaxMark, taskInformative, taskExtra);
+        }
+
+        clearCurrentTask();
     });
 
     $(document).on('click', '.icon-delete', function () {
@@ -210,9 +265,14 @@
         var taskRow = $(this).closest("tr");
         var taskIndex = taskRow.attr("data-task-index");
         var taskPercent = $("input[name='task[" + taskIndex + "].percent']").attr("value");
+        var taskInformative = $("input[name='task[" + taskIndex + "].informative']").attr("value");
+        var taskExtra = $("input[name='task[" + taskIndex + "].extra']").attr("value");
+        var affectPerc = taskInformative.toString().toLowerCase() == "false" && taskExtra.toString().toLowerCase() == "false";
 
-        percSum -= taskPercent;
-        numTasks -= 1;
+        if(affectPerc) {
+            percSum -= taskPercent;
+        }
+
         checkWarning();
 
         // Delete task data
@@ -312,6 +372,64 @@
             taskExtraData.attr("name", "task[" + currentNum + "].extra");
         }
     });
+
+    $(document).on('click', '.edit-icon', function () {
+        var taskRow = $(this).closest("tr");
+        var tasksData = $("#tasksData");
+        var currentNum = parseInt(taskRow.attr("data-task-index"));
+
+        var taskNameData = $("input[name='task[" + currentNum + "].name']").attr("value");
+        var taskPercentData = $("input[name='task[" + currentNum + "].percent']").attr("value");
+        var taskMaxMarkData = $("input[name='task[" + currentNum + "].maxmark']").attr("value");
+        var taskInformativeData = $("input[name='task[" + currentNum + "].informative']").attr("value");
+        var taskExtraData = $("input[name='task[" + currentNum + "].extra']").attr("value");
+
+        var affectPerc = taskInformativeData.toString().toLowerCase() == "false" && taskExtraData.toString().toLowerCase() == "false";
+
+        $("#taskName").val(taskNameData);
+        $("#taskPercent").val(affectPerc?taskPercentData:"");
+        $("#taskMaxMark").val(taskMaxMarkData);
+        $("#taskInformative").prop('checked', taskInformativeData.toString().toLowerCase() == "true");
+        $("#taskExtra").prop('checked', taskExtraData.toString().toLowerCase() == "true");
+        updatePercentFieldStatus();
+        updateButtonAppearance();
+    });
+
+    $(document).on('change', '#taskInformative,#taskExtra', function () {
+        updatePercentFieldStatus();
+    });
+
+    function updatePercentFieldStatus() {
+        $("#taskPercent").prop('disabled', $("#taskInformative").is(":checked") || $("#taskExtra").is(":checked"));
+    }
+
+    $(document).on('keyup', '#taskName', function () {
+        updateButtonAppearance();
+    });
+
+    function updateButtonAppearance() {
+        $("#taskAdd").addClass("hide");
+        $("#taskEdit").addClass("hide");
+
+        if(existsCurrentTask()) {
+            $("#taskEdit").removeClass("hide");
+        } else {
+            $("#taskAdd").removeClass("hide");
+        }
+    }
+
+    function existsCurrentTask() {
+        return $("input[name $= '.name'][value = '" + $("#taskName").val() + "']").length > 0;
+    }
+
+    function clearCurrentTask() {
+        $("#taskName").val("");
+        $("#taskPercent").val("");
+        $("#taskMaxMark").val("");
+        $("#taskInformative").prop('checked', false);
+        $("#taskExtra").prop('checked', false);
+        updatePercentFieldStatus();
+    }
 </script>
 
 {% endblock %}
