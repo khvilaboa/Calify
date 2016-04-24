@@ -21,8 +21,7 @@ class StatsHandler(base.BaseHandler):
 
         values = self.getValues()
 
-        locale = self.request.GET.get('locale', 'es_ES')
-        i18n.get_i18n().set_locale(locale)
+        i18n.get_i18n().set_locale(self.getLanguage())
 
         if not subId:
             teacher = db.Teacher.getByEmail(self.getEmail())

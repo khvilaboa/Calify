@@ -3,12 +3,14 @@
 
 
 import webapp2, jinja2, os, db, base
-from google.appengine.ext import ndb
+from webapp2_extras import i18n
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
-    extensions=['jinja2.ext.autoescape'],
+    extensions=['jinja2.ext.i18n', 'jinja2.ext.autoescape'],
     autoescape=True)
+
+JINJA_ENVIRONMENT.install_gettext_translations(i18n)
 
 
 class TasksHandler(base.BaseHandler):
@@ -17,6 +19,7 @@ class TasksHandler(base.BaseHandler):
             self.redirect("/")
             return
         values = self.getValues()
+        i18n.get_i18n().set_locale(self.getLanguage())
 
         if action == "calify":
             # Get task and subject entities

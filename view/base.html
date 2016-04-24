@@ -62,7 +62,21 @@
         </ul>
 
         <ul class="nav navbar-nav navbar-right">
-
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-globe"></i>
+                    <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="/profile/{{ userid }}?lang=es_ES"><img src="/img/es.png"> {{ _("Spanish") }}</a>
+                    </li>
+                    <li>
+                        <a href="/profile/{{ userid }}?lang=gl_GL"><img src="/img/gl.png"> {{ _("Galician") }}</a>
+                    </li>
+                    <li>
+                        <a href="/profile/{{ userid }}?lang=en_US"><img src="/img/en.png"> {{ _("English") }}</a>
+                    </li>
+                </ul>
+            </li>
         </ul>
     </div>
     <!-- /.navbar-collapse -->
@@ -80,7 +94,7 @@
     </a>
 
     <ul class="sb-items">
-        <li class="sb-header"><span>NAVIGATION</span></li>
+        <li class="sb-header"><span>{{ _("NAVIGATION") }}</span></li>
         <li class="sb-item"><a href="/subjects"><i class="fa fa-book"></i> {{ _("Subjects") }}</a></li>
         <li class="sb-item"><a href="/stats"><i class="fa fa-line-chart"></i> {{ _("Statistics") }}</a></li>
         <li class="sb-item"><a href="/profile/{{ userid }}"><i class="fa fa-user"></i> {{ _("Profile") }}</a></li>

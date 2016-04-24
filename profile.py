@@ -12,16 +12,23 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 JINJA_ENVIRONMENT.install_gettext_translations(i18n)
 
-class StatsHandler(base.BaseHandler):
+class ProfileHandler(base.BaseHandler):
     def get(self, teachId):
         if not self.loggedIn():
             self.redirect("/")
             return
         values = self.getValues()
-        locale = self.request.GET.get('locale', 'es_ES')
-        i18n.get_i18n().set_locale(locale)
+        i18n.get_i18n().set_locale(self.getLanguage())
 
         teacher = db.Teacher.get_by_id(long(teachId))
+        lang = self.request.get("lang", None)
+        if lang is not None:
+            teacher.setLanguage(lang)
+            referrer = self.request.headers.get('referer')
+            if referrer:
+                return self.redirect(referrer)
+            return self.redirect("/")
+
 
         if not teachId or not teacher:
             self.redirect("/")
@@ -40,14 +47,15 @@ class StatsHandler(base.BaseHandler):
             self.redirect("/")
             return
 
-        # Modify teacher
-        teacher = db.Teacher.getByEmail(self.getEmail())
-        teacher.name = self.request.get("name")
-        teacher.put()
+        name = self.request.get("name", None)
+        if name is not None:
+            # Modify teacher
+            db.Teacher.addOrUpdate(self.getEmail(), self.request.get("name", None))
 
-        self.redirect("/profile/%s" % teacher.key.id())
+            self.redirect("/profile/%s" % self.getUserId())
+            return
 
 app = webapp2.WSGIApplication([
-    ('/profile/?([0-9]*)', StatsHandler),
-    ('/profile/modify', StatsHandler)
+    ('/profile/?([0-9]*)', ProfileHandler),
+    ('/profile/modify', ProfileHandler)
 ], debug=True)

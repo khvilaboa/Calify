@@ -106,7 +106,8 @@ class Task(ndb.Model):
     def addOrUpdate(subKey, name, percent, order, maxMark, informative, extra, taskKey=None):
 
         if taskKey is None:  # add
-            task = Task(subject=subKey, name=name, order=order, percent=int(percent), maxmark=maxMark, informative=informative, extra=extra)
+            task = Task(subject=subKey, name=name, order=order, percent=int(percent), maxmark=maxMark,
+                        informative=informative, extra=extra)
         else:
             task = taskKey.get()
             task.name = name
@@ -119,6 +120,11 @@ class Task(ndb.Model):
 class Teacher(ndb.Model):
     email = ndb.StringProperty(indexed=True)
     name = ndb.StringProperty(indexed=True)
+    language = ndb.StringProperty(indexed=False)
+
+    def setLanguage(self, lang):
+        self.language = lang
+        return self.put()
 
     @staticmethod
     def exists(email):
@@ -130,12 +136,14 @@ class Teacher(ndb.Model):
         return teacher[0] if len(teacher) > 0 else None
 
     @staticmethod
-    def addOrUpdate(email):
+    def addOrUpdate(email, name, lang=None):
         t = Teacher.getByEmail(email)
         if t is None:
-            t = Teacher(email=email)
+            if lang is None: lang = "en_US"
+            t = Teacher(email=email, language=lang)
         else:
-            t.email = email
+            t.name = name
+            if lang is not None: t.language = lang
         return t.put()
 
 

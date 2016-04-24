@@ -18,6 +18,11 @@ class BaseHandler(webapp2.RequestHandler):
     def getEmail(self):
         return users.get_current_user().email()
 
+    def getLanguage(self):
+        email = self.getEmail()
+        teacher = db.Teacher.getByEmail(email)
+        return teacher.language
+
     def getUserId(self):
         email = self.getEmail()
         teacher = db.Teacher.getByEmail(email)

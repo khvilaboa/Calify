@@ -19,11 +19,10 @@ class SubjectsHandler(base.BaseHandler):
             self.redirect("/")
             return
         if not db.Teacher.exists(self.getEmail()):  # If the user doesn't exist in the BD (first log in) add it
-            db.Teacher.addOrUpdate(self.getEmail())
+            db.Teacher.addOrUpdate(self.getEmail(), "", "en_US")
 
         values = self.getValues()
-        locale = self.request.GET.get('locale', 'es_ES')
-        i18n.get_i18n().set_locale(locale)
+        i18n.get_i18n().set_locale(self.getLanguage())
 
         if idSub != "":
             sub = db.Subject.get_by_id(long(idSub))
