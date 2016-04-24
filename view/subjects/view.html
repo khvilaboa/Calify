@@ -18,7 +18,7 @@
     <div class="col-xs-2"></div>
     <div class="col-xs-10">
         <div class="card-info-title">
-            <h4>{{ sub.name }} <span class="pull-right"><a href="/subjects/modify/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-pencil"></i></a><a href="/subjects/export/{{ sub.key.id() }}" class="sides-margin"><i class="fa fa-download"></i></a></span></h4> </div>
+            <h4>{{ sub.name }} <span class="pull-right"><a href="/subjects/modify/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-pencil"></i></a><a href="/subjects/export/{{ sub.key.id()}}" class="sides-margin"><i class="fa fa-download"></i></a></span></h4> </div>
         <!--<div><b>Description: </b>{{ sub.description }}</div>-->
     </div>
 
@@ -27,17 +27,17 @@
 <div class="row card-fixed-container">
     <div class="col-xs-12 col-sm-4 no-margin">
         <div class="card-fixed card-fixed-active text-center with-pointer" id="tasksTab">
-            <img src="/img/card-img-task.png" class="card-fixed-img"><span class="card-fixed-text"> Tasks</span>
+            <img src="/img/card-img-task.png" class="card-fixed-img"><span class="card-fixed-text"> {{ _("Tasks") }}</span>
         </div>
     </div>
     <div class="col-xs-12 col-sm-4 no-margin">
         <div class="card-fixed text-center with-pointer" id="studentsTab">
-            <img src="/img/card-img-user.png" class="card-fixed-img"><span class="card-fixed-text"> Students</span>
+            <img src="/img/card-img-user.png" class="card-fixed-img"><span class="card-fixed-text"> {{ _("Students") }}</span>
         </div>
     </div>
     <div class="col-xs-12 col-sm-4 no-margin">
         <div class="card-fixed text-center with-pointer" id="teachersTab">
-            <img src="/img/card-img-user.png" class="card-fixed-img"><span class="card-fixed-text"> Teachers</span>
+            <img src="/img/card-img-user.png" class="card-fixed-img"><span class="card-fixed-text"> {{ _("Teachers") }}</span>
         </div>
     </div>
 </div>
@@ -47,9 +47,9 @@
         <table class="table table-hover" id="tableTasks">
             <thead>
             <tr>
-                <th>Name</th>
-                <th>Percent</th>
-                <th>Actions</th>
+                <th>{{ _("Name") }}</th>
+                <th>{{ _("Percent") }}</th>
+                <th>{{ _("Actions") }}</th>
             </tr>
             </thead>
             <tbody>
@@ -70,22 +70,22 @@
     <div class="card">
         <div class="expandable-click" data-expanded="0">
             <img src="/img/dropdown.png" class="img-icon rotated"
-                 id="dropDownImg"> Add students
+                 id="dropDownImg"> {{ _("Add students") }}
         </div>
         <div class="expandable-data">
             <form method="POST" action="/subjects/addstudents/{{ sub.key.id() }}" enctype="multipart/form-data" name="addStudentsForm">
                 <div class="radio expandable-radio">
-                    <label><input type="radio" name="optAddStudents" value="file">From file</label>
+                    <label><input type="radio" name="optAddStudents" value="file">{{ _("From file") }}</label>
                 </div>
                 <div class="expandable-data">
                     <div class="form-group row">
-                        <label class="control-label col-sm-1" for="filename">File name:</label>
+                        <label class="control-label col-sm-1" for="filename">{{ _("File name") }}:</label>
 
                         <div class="col-sm-5">
                             <input type="file" class="form-control" id="filename" name="filename">
                         </div>
 
-                        <label class="control-label col-sm-1" for="separator">Separator:</label>
+                        <label class="control-label col-sm-1" for="separator">{{ _("Separator") }}:</label>
 
                         <div class="col-sm-5">
                             <input type="text" class="form-control" id="separator" name="separator" value=";">
@@ -94,18 +94,18 @@
                 </div>
 
                 <div class="radio expandable-radio">
-                    <label><input type="radio" name="optAddStudents" value="manual">Manually</label>
+                    <label><input type="radio" name="optAddStudents" value="manual">{{ _("Manually") }}</label>
                 </div>
                 <div class="expandable-data">
                     <div class="form-group row">
-                        <label class="control-label col-sm-1" for="name">Name:</label>
+                        <label class="control-label col-sm-1" for="name">{{ _("Name") }}:</label>
 
                         <div class="col-sm-5">
                             <input type="text" class="form-control" id="name" name="name"
                                    placeholder="Enter the student's name">
                         </div>
 
-                        <label class="control-label col-sm-1" for="dni">DNI:</label>
+                        <label class="control-label col-sm-1" for="dni">{{ _("DNI") }}:</label>
 
                         <div class="col-sm-5">
                             <input type="text" class="form-control" id="dni" name="dni" placeholder="Enter DNI">
@@ -114,16 +114,12 @@
 
                 </div>
 
-                <div class="radio disabled">
-                    <label><input type="radio" name="optAddStudents" value="subject" disabled>From another
-                        subject</label>
-                </div>
                 <div class="expandable-data">
                     <!-- TODO -->
                 </div>
 
                 <div class="text-right">
-                    <button type="button" onclick="if(validateManualStudent()) document.forms['addStudentsForm'].submit();" class="btn btn-default">Submit</button>
+                    <button type="button" onclick="if(validateManualStudent()) document.forms['addStudentsForm'].submit();" class="btn btn-default">{{ _("Add") }}</button>
                 </div>
             </form>
         </div>
@@ -140,7 +136,7 @@
             </div>
 
             <div class="col-sm-2">
-                <a id="studentSearchButton" class="btn btn-default"><i class="fa fa-search"></i> Search</a>
+                <a id="studentSearchButton" class="btn btn-default"><i class="fa fa-search"></i> {{ _("Search") }}</a>
             </div>
         </div>
         {% if sub.students %}
@@ -163,7 +159,7 @@
             </tbody>
         </table>
         {% else %}
-        <div id="noStudents" class="hide">There aren't students in this subject yet.</div>
+        <div id="noStudents" class="hide">{{ _("There aren't students in this subject yet") }}.</div>
         {% endif %}
         <div class="card-row pagination-wrapper" id="studentsTableButtons"></div>
     </div>
@@ -190,9 +186,9 @@
             <table class="table table-hover" id="tableTeachers">
                 <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Actions</th>
+                    <th>{{ _("Name") }}</th>
+                    <th>{{ _("Email") }}</th>
+                    <th>{{ _("Actions") }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -207,7 +203,7 @@
             </table>
         </div>
         {% else %}
-        There aren't teachers in this subject.
+        {{ _("There aren't teachers in this subject") }}.
         {% endif %}
     </div>
 </div>
@@ -268,7 +264,7 @@
                     $("#noStudents").removeClass("hide");
                 }
             } else {
-                alertify.error("There was a problem loading the students");
+                alertify.error('{{ _("There was a problem loading the students") }}');
             }
         });
     }
@@ -330,11 +326,11 @@
             $.post(url, function (data, status) {
 
                 if(status == "success") {
-                    alertify.success("Student erased correctly");
+                    alertify.success('{{ _("Student erased correctly") }}');
                     row.remove();
                     initialStudentTableLoad();
                 } else {
-                    alertify.error("There was a problem deleting the subject");
+                    alertify.error('{{ _("There was a problem deleting the subject") }}');
                 }
             });
         });
@@ -353,7 +349,7 @@
                         $("#noStudents").removeClass("hide");
                     }
                 } else {
-                    alertify.error("There was a problem loading the students");
+                    alertify.error('{{ _("There was a problem loading the students") }}');
                 }
             });
         }
@@ -366,10 +362,10 @@
             var name = $("#name").val().trim();
 
             if (name == "") {
-                alertify.error("It's necessary to specify a name");
+                alertify.error('{{ _("It\'s necessary to specify a name") }}');
                 return false;
             } else if(!validDni(dni)) {
-                alertify.error("DNI not valid");
+                alertify.error('{{ _("DNI not valid") }}');
                 return false;
             }
         }

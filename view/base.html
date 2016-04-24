@@ -55,10 +55,10 @@
     <div class="collapse navbar-collapse" id="collapsed-navbar">
         <ul class="nav navbar-nav">
             {% block navitems %}{% endblock %}
-            <li class="visible-xs"><a href="/subjects"><i class="fa fa-book"></i> Subjects</a></li>
-            <li class="visible-xs"><a href="/stats"><i class="fa fa-line-chart"></i> Statistics</a></li>
-            <li class="visible-xs"><a href="/profile/{{ userid }}"><i class="fa fa-user"></i> Profile</a></li>
-            <li class="visible-xs"><a href="{{ logoutUrl }}"><i class="fa fa-sign-in"></i> Log out</a></li>
+            <li class="visible-xs"><a href="/subjects"><i class="fa fa-book"></i> {{ _("Subjects") }}</a></li>
+            <li class="visible-xs"><a href="/stats"><i class="fa fa-line-chart"></i> {{ _("Statistics") }}</a></li>
+            <li class="visible-xs"><a href="/profile/{{ userid }}"><i class="fa fa-user"></i> {{ _("Profile") }}</a></li>
+            <li class="visible-xs"><a href="{{ logoutUrl }}"><i class="fa fa-sign-in"></i> {{ _("Log out") }}</a></li>
         </ul>
 
         <ul class="nav navbar-nav navbar-right">
@@ -81,10 +81,10 @@
 
     <ul class="sb-items">
         <li class="sb-header"><span>NAVIGATION</span></li>
-        <li class="sb-item"><a href="/subjects"><i class="fa fa-book"></i> Subjects</a></li>
-        <li class="sb-item"><a href="/stats"><i class="fa fa-line-chart"></i> Statistics</a></li>
-        <li class="sb-item"><a href="/profile/{{ userid }}"><i class="fa fa-user"></i> Profile</a></li>
-        <li class="sb-item"><a href="{{ logoutUrl }}"><i class="fa fa-sign-in"></i> Log out</a></li>
+        <li class="sb-item"><a href="/subjects"><i class="fa fa-book"></i> {{ _("Subjects") }}</a></li>
+        <li class="sb-item"><a href="/stats"><i class="fa fa-line-chart"></i> {{ _("Statistics") }}</a></li>
+        <li class="sb-item"><a href="/profile/{{ userid }}"><i class="fa fa-user"></i> {{ _("Profile") }}</a></li>
+        <li class="sb-item"><a href="{{ logoutUrl }}"><i class="fa fa-sign-in"></i> {{ _("Log out") }}</a></li>
     </ul>
 </div>
 

@@ -18,16 +18,16 @@
                        placeholder="Enter the student's name or dni">
             </div>
 
-            <a id="studentSearchButton" class="btn btn-default"><i class="fa fa-search"></i> Search</a>
+            <a id="studentSearchButton" class="btn btn-default"><i class="fa fa-search"></i> {{ _("Search") }}</a>
 
         </div>
 
         <table class="table table-hover hide" id="studentsTable">
             <thead>
             <tr>
-                <th>Student name</th>
-                <th>Student dni</th>
-                <th>Mark</th>
+                <th>{{ _("Student name") }}</th>
+                <th>{{ _("Student DNI") }}</th>
+                <th>{{ _("Search") }}</th>
             </tr>
             </thead>
             <tbody id="studentsTableBody">
@@ -44,8 +44,8 @@
             {% endfor %}-->
             </tbody>
         </table>
-        <div id="noStudents" class="hide">There aren't students in this subject yet.</div>
-        <div id="noStudentsSearch" class="hide">There aren't matches.</div>
+        <div id="noStudents" class="hide">{{ _("There aren't students in this subject yet") }}.</div>
+        <div id="noStudentsSearch" class="hide">{{ _("There aren't matches") }}.</div>
         <div id="studentsTableButtons" class="pagination-wrapper"></div>
     </div>
 {% endblock %}
@@ -134,7 +134,7 @@
                     $("#noStudents").removeClass("hide");
                 }
             } else {
-                alertify.error("There was a problem loading the students");
+                alertify.error('{{ _("There was a problem loading the students") }}');
             }
         });
     }
@@ -156,7 +156,7 @@
                         $("#noStudents").removeClass("hide");
                     }
                 } else {
-                    alertify.error("There was a problem loading the students");
+                    alertify.error('{{ _("There was a problem loading the students") }}');
                 }
             });
         }
@@ -195,14 +195,14 @@
 
                     $.get(url, function (data, status) {
                         if(status == "success") {
-                            alertify.success("Mark added correctly");
+                            alertify.success('{{ _("Mark added correctly") }}');
                         } else {
-                            alertify.error("There was an error submitting the mark");
+                            alertify.error('{{ _("There was an error submitting the mark") }}');
                         }
                     });
 
                 } else {
-                    alertify.error("Mark not valid");
+                    alertify.error('{{ _("Mark not valid") }}');
                 }
                 normRow(selected);
             }
@@ -224,7 +224,7 @@
                     }
                     searchingStudent = true;
                 } else {
-                    alertify.error("There was a problem loading the students");
+                    alertify.error('{{ _("There was a problem loading the students") }}';
                 }
             });
         }

@@ -4,12 +4,14 @@
 import webapp2, jinja2, os, db, base, re, time
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
+from webapp2_extras import i18n
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
-    extensions=['jinja2.ext.autoescape'],
+    extensions=['jinja2.ext.i18n', 'jinja2.ext.autoescape'],
     autoescape=True)
 
+JINJA_ENVIRONMENT.install_gettext_translations(i18n)
 
 class SubjectsHandler(base.BaseHandler):
     def get(self, action, idSub):
@@ -20,6 +22,8 @@ class SubjectsHandler(base.BaseHandler):
             db.Teacher.addOrUpdate(self.getEmail())
 
         values = self.getValues()
+        locale = self.request.GET.get('locale', 'es_ES')
+        i18n.get_i18n().set_locale(locale)
 
         if idSub != "":
             sub = db.Subject.get_by_id(long(idSub))

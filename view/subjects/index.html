@@ -8,12 +8,12 @@
 
 {% block navitems %}
 
-<li><a href="/subjects/create"><i class="fa fa-plus"></i> New</a></li>
+<li><a href="/subjects/create"><i class="fa fa-plus"></i> {{ _("New subject") }}</a></li>
 {% endblock %}
 
 {% block content %}
 
-<div class="card-title">Subjects</div>
+<div class="card-title">{{ _("Subjects") }}</div>
 <div class="card">
     <div id="loading" class="text-center">
         <img src="/img/loader.gif" class="img-loading" />
@@ -21,9 +21,9 @@
     <table class="table table-hover table-responsive no-sel hide" id="subjectsTable">
         <thead>
         <tr>
-            <th>Name</th>
-            <th>Students</th>
-            <th>Actions</th>
+            <th>{{ _("Name") }}</th>
+            <th>{{ _("Students") }}</th>
+            <th>{{ _("Actions") }}</th>
         </tr>
         </thead>
         <tbody id="subjectsTableBody">
@@ -36,7 +36,7 @@
         </tr>
 
         {% endfor %}-->
-        <div id="noSubjects" class="hide">There aren't teachers in this subject.</div>
+        <div id="noSubjects" class="hide">'{{ _("There aren't subyects yet") }}'.</div>
         </tbody>
     </table>
 </div>
@@ -67,7 +67,7 @@
                     $("#noSubjects").removeClass("hide");
                 }
             } else {
-                alertify.error("There was a problem loading the subjects");
+                alertify.error('{{ _("There was a problem loading the subjects") }}');
             }
         });
     }
@@ -119,15 +119,15 @@
             var id = row.attr("data-id");
             var url = "/subjects/remove/" + id;
 
-            alertify.confirm("Are you sure that you want to delete the subject?", function (e) {
+            alertify.confirm('{{ _("Are you sure that you want to delete the subject?") }}', function (e) {
                 if (e) {
                     $.post(url, function (data, status) {
                         if(status == "success") {
-                            alertify.success("Subject erased correctly");
+                            alertify.success('{{ _("Subject erased correctly") }}');
                             row.remove();
                             initialSubjectTableLoad();
                         } else {
-                            alertify.error("There was a problem deleting the subject");
+                            alertify.error('{{ _("There was a problem deleting the subject") }}');
                         }
                     });
                 }
@@ -149,7 +149,7 @@
                         fillData($("#subjectsTableBody"), $("#tableButtons"), data);
                     }
                 } else {
-                    alertify.error("There was a problem loading the subjects");
+                    alertify.error('{{ _("There was a problem loading the subjects") }}');
                 }
             });
         }

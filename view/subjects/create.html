@@ -1,19 +1,19 @@
 {% extends '/view/base.html' %}
 
-{% block title %}{{ "Modify subject" if subject else "Create subject" }}{% endblock %}
+{% block title %}{{ _("Modify subject") if subject else _("Create subject") }}{% endblock %}
 
 {% block content %}
 
 <form role="form" method="POST" name="subjectCreation">
-    <div class="card-title">Subject data</div>
+    <div class="card-title">{{ _("Subject data") }}</div>
 
     <div class="card">
 
             <div class="form-group row card-row">
-                <label class="control-label col-sm-2" for="name">Name:</label>
+                <label class="control-label col-sm-2" for="name">{{ _("Name") }}:</label>
 
                 <div class="col-sm-10 ">
-                    <input type="text" class="form-control" id="name" name="name" value="{{ subject.name if subject else '' }}" placeholder="Enter name">
+                    <input type="text" class="form-control" id="name" name="name" value="{{ subject.name if subject else '' }}">
                 </div>
 
                 <!--<label class="control-label col-xs-2" for="pwd">Password:</label>
@@ -25,7 +25,7 @@
 
 
             <div class="form-group row card-row">
-                <label for="description" class="col-xs-12">Description:</label>
+                <label for="description" class="col-xs-12">{{ _("Description") }}:</label>
 
                 <div class="col-xs-12">
                     <textarea class="form-control col-xs-12" rows="5" id="description" name="description">{{ subject.description if subject else '' }}</textarea>
@@ -39,48 +39,48 @@
         </div>
     </div>-->
 
-    <div class="card-title">Tasks</div>
+    <div class="card-title">{{ _("Tasks") }}</div>
 
     <div class="card" id="taskForm">
         <div class="form-group row card-row">
-            <label class="col-sm-2 control-label form-margin-correct">Name</label>
+            <label class="col-sm-2 control-label form-margin-correct">{{ _("Name") }}</label>
 
             <div class="col-sm-4 form-margin-correct no-margin-sides">
                 <input type="text" class="form-control" name="taskName" placeholder="Name" id="taskName"/>
             </div>
-            <label class="col-sm-2 control-label form-margin-correct">Percent</label>
+            <label class="col-sm-2 control-label form-margin-correct">{{ _("Percent") }}</label>
 
             <div class="col-sm-4 form-margin-correct">
                 <input type="text" class="form-control" name="taskPercent" placeholder="Percent" min="0" max="100"
                        id="taskPercent"/>
             </div>
 
-            <label class="col-sm-2 control-label form-margin-correct">Max mark</label>
+            <label class="col-sm-2 control-label form-margin-correct">{{ _("Max mark") }}</label>
 
             <div class="col-sm-4 form-margin-correct">
                 <input type="text" class="form-control" name="taskMaxMark" placeholder="Mark" id="taskMaxMark"/>
             </div>
 
             <div class="checkbox col-sm-6">
-              <label class="checkbox-inline"><input type="checkbox" value="" name="taskInformative" id="taskInformative">Only informative</label>
-              <label class="checkbox-inline"><input type="checkbox" value="" name="taskExtra" id="taskExtra">Extra points</label>
+              <label class="checkbox-inline"><input type="checkbox" value="" name="taskInformative" id="taskInformative">{{ _("Only informative") }}</label>
+              <label class="checkbox-inline"><input type="checkbox" value="" name="taskExtra" id="taskExtra">{{ _("Extra points") }}</label>
             </div>
         </div>
 
         <div class="form-group row card-row">
             <div class="col-xs-12">
-                <button type="button" class="btn btn-default addButton pull-right" id="taskAdd"><i class="fa fa-plus"></i> Add</button>
-                <button type="button" class="btn btn-default addButton pull-right hide" id="taskEdit"><i class="fa fa-pencil"></i> Edit</button>
+                <button type="button" class="btn btn-default addButton pull-right" id="taskAdd"><i class="fa fa-plus"></i> {{ _("Add") }}</button>
+                <button type="button" class="btn btn-default addButton pull-right hide" id="taskEdit"><i class="fa fa-pencil"></i> {{ _("Edit") }}</button>
             </div>
         </div>
 
         <table class="table table-hover hide">
             <thead>
             <tr>
-                <th>Name</th>
-                <th>Percent</th>
-                <th>Max mark</th>
-                <th>Actions</th>
+                <th>{{ _("Name") }}</th>
+                <th>{{ _("Percent") }}</th>
+                <th>{{ _("Max mark") }}</th>
+                <th>{{ _("Actions") }}</th>
             </tr>
             </thead>
             <tbody>
@@ -93,14 +93,14 @@
             </tbody>
         </table>
 
-        <div class="card-row hide" id="percentSumMsg"><img src="/img/warning.png" class="img-icon" /> The sum of the percentages is greater than 100%.</div>
+        <div class="card-row hide" id="percentSumMsg"><img src="/img/warning.png" class="img-icon" /> {{ _("The sum of the percentages is greater than 100%") }}.</div>
 
     </div>
 
 
     <div class="form-group row no-margin">
         <div class="col-xs-12">
-            <button type="button" class="btn btn-default" onclick="if(validate()) document.forms['subjectCreation'].submit();">Create</button>
+            <button type="button" class="btn btn-default" onclick="if(validate()) document.forms['subjectCreation'].submit();">{{ _("Create") }}</button>
         </div>
     </div>
 
@@ -127,10 +127,10 @@
         var subName = $("#name");
 
         if(subName.val().length == 0) {
-            alertify.error("You must specify a subject name");
+            alertify.error('{{ _("You must specify a subject name") }}');
             return false;
         } else if(percSum < 100) {
-            alertify.error("The percent sum can't be lower than 100%");
+            alertify.error("{{ _("The percent sum can\'t be lower than 100%") | safe }}");
             return false;
         }
         return true;
@@ -143,22 +143,20 @@
         var taskInformative = $("#taskInformative").prop('checked');
         var taskExtra = $("#taskExtra").prop('checked');
 
-        alert(taskPercent);
-
         if (taskName.length == 0) {
-            alertify.error("You must specify a task name");
+            alertify.error('{{ _("You must specify a task name") }}');
             return false;
         } else if (taskPercent.length == 0 && !taskInformative && !taskExtra) {
-            alertify.error("You must specify a percentage for the task");
+            alertify.error('{{ _("You must specify a percentage for the task") }}');
             return false;
         } else if(!(/[0-9]+/.test(taskPercent) && !taskInformative && !taskExtra)) {
-            alertify.error("The percetage specified is not valid");
+            alertify.error('{{ _("The percetage specified is not valid") }}');
             return false;
         } else if(taskMaxMark.length == 0) {
-            alertify.error("You must specify a max mark for the task");
+            alertify.error('{{ _("You must specify a max mark for the task") }}');
             return false;
         } else if(!(/[0-9]+/.test(taskMaxMark))) {
-            alertify.error("The maximum mark specified is not valid");
+            alertify.error('{{ _("The maximum mark specified is not valid") }}');
             return false;
         }
         return true;
