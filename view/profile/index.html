@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="card-title"> Profile</div>
+<div class="card-title"> {{ _("Profile") }}</div>
 <div class="card row">
     <div class="prof-info">
         <div class="col-xs-3 col-xs-offset-2">
@@ -19,17 +19,17 @@
         </div>
         <div class="col-xs-5">
             <form action="/profile/modify" method="POST">
-                <div class="prof-info-item"><span>Name:</span>
+                <div class="prof-info-item"><span>{{ _("Name") }}:</span>
 
                     {% if own %}
                     <input type="text" class="form-control" id="name" name="name"
                            value="{{ teacher.name if teacher.name else '' }}" placeholder="Enter name">
                     {% else %} {{ teacher.name if teacher.name else "-"}} {% endif %}
                 </div>
-                <div class="prof-info-item"><span>Email:</span> {{ teacher.email }}</div>
-                <div class="prof-info-item"><span>Subjects:</span> {{ subjects }}</div>
+                <div class="prof-info-item"><span>{{ _("Email") }}:</span> {{ teacher.email }}</div>
+                <div class="prof-info-item"><span>{{ _("Subjects") }}:</span> {{ subjects }}</div>
                 {% if own %}
-                <div class="prof-info-item"><button type="submit" class="btn btn-default">Modify</button></div>
+                <div class="prof-info-item"><button type="submit" class="btn btn-default">{{ _("Modify") }}</button></div>
                 {% endif %}
             </form>
         </div>

@@ -3,11 +3,14 @@
 
 
 import webapp2, jinja2, os, db, base
+from webapp2_extras import i18n
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
-    extensions=['jinja2.ext.autoescape'],
+    extensions=['jinja2.ext.i18n', 'jinja2.ext.autoescape'],
     autoescape=True)
+
+JINJA_ENVIRONMENT.install_gettext_translations(i18n)
 
 
 class StatsHandler(base.BaseHandler):
@@ -15,7 +18,11 @@ class StatsHandler(base.BaseHandler):
         if not self.loggedIn():
             self.redirect("/")
             return
+
         values = self.getValues()
+
+        locale = self.request.GET.get('locale', 'es_ES')
+        i18n.get_i18n().set_locale(locale)
 
         if not subId:
             teacher = db.Teacher.getByEmail(self.getEmail())
@@ -29,7 +36,12 @@ class StatsHandler(base.BaseHandler):
             values["showMarksByRanges"] = values["marksByRanges"] != '["0","0","0","0","0"]'
 
             template = JINJA_ENVIRONMENT.get_template('/view/stats/index.html')
-        self.response.write(template.render(values))
+
+            self.response.write(template.render(values))
+            return
+
+        self.redirect("/")
+
 
     def getMarksPercentages(self, subjects):
         marks = [0, 0, 0, 0, 0]

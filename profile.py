@@ -3,12 +3,14 @@
 
 
 import webapp2, jinja2, os, db, base
+from webapp2_extras import i18n
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
-    extensions=['jinja2.ext.autoescape'],
+    extensions=['jinja2.ext.i18n', 'jinja2.ext.autoescape'],
     autoescape=True)
 
+JINJA_ENVIRONMENT.install_gettext_translations(i18n)
 
 class StatsHandler(base.BaseHandler):
     def get(self, teachId):
@@ -16,6 +18,8 @@ class StatsHandler(base.BaseHandler):
             self.redirect("/")
             return
         values = self.getValues()
+        locale = self.request.GET.get('locale', 'es_ES')
+        i18n.get_i18n().set_locale(locale)
 
         teacher = db.Teacher.get_by_id(long(teachId))
 

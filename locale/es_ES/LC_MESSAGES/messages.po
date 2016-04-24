@@ -1,0 +1,80 @@
+# Spanish (Spain) translations for PROJECT.
+# Copyright (C) 2016 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2016-04-24 18:49+0200\n"
+"PO-Revision-Date: 2016-04-23 21:49+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es_ES\n"
+"Language-Team: es_ES <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: view/profile/index.html:14
+msgid "Profile"
+msgstr "Perfil"
+
+#: view/profile/index.html:22
+msgid "Name"
+msgstr "Nombre"
+
+#: view/profile/index.html:29
+msgid "Email"
+msgstr "Email"
+
+#: view/profile/index.html:30
+msgid "Subjects"
+msgstr "Asignaturas"
+
+#: view/profile/index.html:32
+msgid "Modify"
+msgstr "Modificar"
+
+#: view/stats/index.html:15
+msgid "Statistics"
+msgstr "Estadísticas"
+
+#: view/stats/index.html:46
+msgid "Students"
+msgstr "Estudiantes"
+
+#: view/stats/index.html:57
+msgid "Mean mark"
+msgstr "Nota media"
+
+#: view/stats/index.html:79
+msgid "Insufficient"
+msgstr "Insuficiente"
+
+#: view/stats/index.html:80
+msgid "Enough"
+msgstr "Suficiente"
+
+#: view/stats/index.html:81
+msgid "Right"
+msgstr "Bien"
+
+#: view/stats/index.html:82
+msgid "Remarkable"
+msgstr "Notable"
+
+#: view/stats/index.html:83
+msgid "Outstanding"
+msgstr "Excelente"
+
+#: view/stats/index.html:114
+msgid "Students by subject"
+msgstr "Estudiantes por asignatura"
+
+#: view/stats/index.html:129
+msgid "Mean mark by subject"
+msgstr "Nota media por asignatura"
+

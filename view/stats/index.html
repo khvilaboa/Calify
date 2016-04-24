@@ -12,7 +12,7 @@
 
 {% block content %}
 
-<div class="card-title"> Statistics </div>
+<div class="card-title"> {{ _("Statistics") }} </div>
 <div class="card row">
     <div class="col-xs-12 col-md-6">
         <canvas id="canvasBarsNumStudents"></canvas>
@@ -39,15 +39,11 @@
         return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',.7)';
     };
 
-    function genData() {
-        alert(document.getElementById("canvasBars").get(0).toDataUrl('image/jpeg'));
-    }
-
     var barChartDataNumStudents = {
 
         labels:{{ subjects | safe }},
         datasets: [{
-            label: 'Students',
+            label: '{{ _("Students") }}',
             backgroundColor: [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
             data: {{ studentsBySubject | safe }}
         }]
@@ -58,7 +54,7 @@
 
         labels:{{ subjects | safe }},
         datasets: [{
-            label: 'Mean Mark',
+            label: '{{ _("Mean mark") }}',
             backgroundColor: [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
             data: {{ avgMarkBySubject | safe }}
         }]
@@ -80,18 +76,18 @@
                 ]
             }],
             labels: [
-                "Insufficient",
-                "Enough",
-                "Right",
-                "Remarkable",
-                "Outstanding"
+                '{{ _("Insufficient") }}',
+                '{{ _("Enough") }}',
+                '{{ _("Right") }}',
+                '{{ _("Remarkable") }}',
+                '{{ _("Outstanding") }}'
             ]
         },
         options: {
             responsive: true,
             title: {
                 display: true,
-                text: 'Marks ranges'
+                text: '{{ _("Marks ranges") }}'
             }, animateScale : true
         }
     };
@@ -115,7 +111,7 @@
                 },
                 title: {
                     display: true,
-                    text: 'Students by subject'
+                    text: '{{ _("Students by subject") }}'
                 }
             }
         });
@@ -130,7 +126,7 @@
                 },
                 title: {
                     display: true,
-                    text: 'Mean mark by subject'
+                    text: '{{ _("Mean mark by subject") }}'
                 }
             }
         });

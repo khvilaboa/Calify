@@ -3,7 +3,6 @@
 import webapp2, db
 from google.appengine.api import users
 
-
 class BaseHandler(webapp2.RequestHandler):
 
     def loggedIn(self):
@@ -32,6 +31,6 @@ class BaseHandler(webapp2.RequestHandler):
 
 
 
-app = webapp2.WSGIApplication([
+"""app = webapp2.WSGIApplication([
     ('/', BaseHandler)
-], debug=True)
+], debug=True)"""
