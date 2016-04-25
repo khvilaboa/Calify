@@ -194,6 +194,11 @@ table th:hover {
     text-transform: uppercase;
 }
 
+.card-title > a {
+    color: inherit;
+    text-decoration: none;
+}
+
 .card {
 
     border: 1px solid rgba(0, 0, 0, 0.18);
@@ -251,7 +256,7 @@ table th:hover {
 }
 
 .card-info {
-    height: 150px;
+    height: 120px;
 }
 
 .card-info-reduced {
@@ -355,6 +360,18 @@ ul.pagination li:hover:not(.active) {
 
 div.pagination-wrapper {
     text-align: center;
+}
+
+/* OTHER */
+.return-button {
+    border: solid rgba(0,0,0,0.2) thin;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+}
+
+.return-button > img {
+    width: 20px;
+    height: 20px;
 }
 
 /* STATS */

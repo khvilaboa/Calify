@@ -4,9 +4,31 @@
 
 {% block content %}
 
+    <!--<div class="card-title"><a href="/subjects/view/{{ subject.key.id() }}">{{subject.name}}</a> > {{task.name}}</div>-->
 
-    <div class="card-title">{{subject.name}} > {{task.name}}</div>
+    <a href="/subjects/view/{{ subject.key.id() }}" class="btn btn-default return-button"><img src="/img/back.png"></a>
 
+    <div class="card card-info row" id="card-info">
+        <div class="col-xs-12">
+            <div class="card-info-title">
+                <h4>{{ task.name }} <span class="pull-right"><a href="/subjects/modify/{{ subject.key.id() }}"><i class="fa fa-pencil"></i></a></span></h4>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-4">
+                    <div>{{ _("Percentage") }}: {{ task.percent }}%</div>
+                    <div>{{ _("Maximum mark") }}: {{ task.maxmark }}</div>
+                </div>
+                <div class="col-xs-4">
+                    <div>{{ _("Informative") }}: {% if task.percent %}{{ _("Yes") }}{% else %}{{ _("No") }}{% endif %}</div>
+                    <div>{{ _("Extra points") }}: {% if task.extra %}{{ _("Yes") }}{% else %}{{ _("No") }}{% endif %}</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card-title">{{ _("Marks") }}</div>
     <div class="card">
         <div id="loading" class="text-center">
             <img src="/img/loader.gif" class="img-loading" />
@@ -66,7 +88,7 @@
 
     // Determine if a mark is valid (numeric from 0 to the maximum mark)
     function validMark(mark) {
-        var maxMark = 10;
+        var maxMark = {{ task.maxmark }};
 
         try {
             markFloat = parseFloat(mark);
@@ -108,6 +130,7 @@
             name = dataRow[1];
             dni = dataRow[2];
             mark = dataRow[3];
+            if(mark.endsWith(".0")) mark = mark.substring(0, mark.length-2);
 
             bodyHtml += '<tr data-id=\"' + id + '\"><td>' + name + '</td><td>' + dni + '</td><td>' + ((mark=='-1')?'-':mark) + '</td></tr>';
         }
@@ -188,9 +211,11 @@
             if(e.keyCode == 13) { // Enter key
                 selected = $("tbody > tr.rowSelected");
                 stId = selected.attr("data-id");
+                markStr = markControl.val().replace(",", ".")
 
-                if(validMark(markControl.val().replace(",", "."))) {
-                    mark = (markControl.val()).replace(",", ".");
+                if(validMark(markStr)) {
+                    mark = parseFloat(parseFloat(markStr).toFixed(3));
+
                     url = "/tasks/addnote/{{ task.key.id() }}/" + stId + "?mark=" + mark;
 
                     $.get(url, function (data, status) {
@@ -224,7 +249,7 @@
                     }
                     searchingStudent = true;
                 } else {
-                    alertify.error('{{ _("There was a problem loading the students") }}';
+                    alertify.error('{{ _("There was a problem loading the students") }}');
                 }
             });
         }
