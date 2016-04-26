@@ -191,9 +191,9 @@
 
         // Update the name attributes
         $clone
-                .find('[name="taskRowName"]').attr('name', 'task[' + taskIndex + '].name').text(taskName).end()
-                .find('[name="taskRowPercent"]').attr('name', 'task[' + taskIndex + '].percent').text(((affectPerc)?taskPercent+" %":"-")).end()
-                .find('[name="taskRowMaxMark"]').attr('name', 'task[' + taskIndex + '].maxmark').text(taskMaxMark).end();
+                .find('[name="taskRowName"]').attr('name', 'name').text(taskName).end()
+                .find('[name="taskRowPercent"]').attr('name', 'percent').text(((affectPerc)?taskPercent+" %":"-")).end()
+                .find('[name="taskRowMaxMark"]').attr('name', 'maxmark').text(taskMaxMark).end();
                 //.find('[name="taskInformative"]').attr('name', 'task[' + taskIndex + '].informative').text(taskInformative).end()
                 //.find('[name="taskExtra"]').attr('name', 'task[' + taskIndex + '].extra').text(taskIndex).end();
 
@@ -235,6 +235,11 @@
         $("input[name='task[" + ind + "].maxmark']").attr("value", taskMaxMark);
         $("input[name='task[" + ind + "].informative']").attr("value", taskInformative);
         $("input[name='task[" + ind + "].extra']").attr("value", taskExtra);
+
+        // Update visible row
+        var row = $("tr[data-task-index=" + ind + "]");
+        row.find("[name='percent']").text(((affectPerc)?taskPercent+" %":"-"));
+        row.find("[name='maxmark']").text(taskMaxMark);
 
         clearCurrentTask();
     }

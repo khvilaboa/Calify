@@ -144,7 +144,7 @@
             $.get(url, function (data, status) {
                 if(status == "success") {
                     if(data != "") {
-                        alert("Data: " + data + "\nStatus: " + status);
+                        //alert("Data: " + data + "\nStatus: " + status);
                         $("#subjectsTable").removeClass("hide");
                         fillData($("#subjectsTableBody"), $("#tableButtons"), data);
                     }
