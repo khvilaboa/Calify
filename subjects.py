@@ -4,7 +4,7 @@
 import webapp2, jinja2, os, db, base, re, time
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
-from webapp2_extras import i18n
+from webapp2_extras import i18n, sessions
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -43,9 +43,17 @@ class SubjectsHandler(base.BaseHandler):
             c.save()
             return
         elif action == "view":
+            sub = db.Subject.get_by_id(long(idSub))
             values["sub"] = sub
             values["teachers"] = sub.getTeachers()
             values["tasks"] = sub.getTasks().order(db.Task.order)
+
+            if self.session.get('correctLines', None) != None:  # File load results
+
+                values["correct"] = self.session.pop('correctLines', None)
+                values["incorrect"] = self.session.pop('incorrectLines', None)
+                values["incorrect_lines"] = self.session.pop('incorrectLinesData', None)
+
             template = JINJA_ENVIRONMENT.get_template('view/subjects/view.html')
 
         elif action == "create":
@@ -106,7 +114,7 @@ class SubjectsHandler(base.BaseHandler):
 
         if action == "create" and idSub == "":  # Create subject
             # Teacher data
-            teacherKey = db.Teacher.addOrUpdate(self.getEmail())
+            teacherKey = db.Teacher.getByEmail(self.getEmail()).key
 
             # Subject data
             name = self.request.get("name")
@@ -168,13 +176,11 @@ class SubjectsHandler(base.BaseHandler):
                 self.response.write(task)
                 self.response.write("<br>remove")
 
-
-
         elif action == "addstudents" and idSub != "":
             opt = self.request.get("optAddStudents")
             if opt == "manual":
                 # Get params data
-                dni = self.request.get("dni")
+                dni = self.request.get("dni").upper()
                 name = self.request.get("name")
 
                 # Get the subject from the datastore
@@ -202,8 +208,15 @@ class SubjectsHandler(base.BaseHandler):
                     # Parse CSV
                     header = lines[0].decode('utf-8').lower().split(separator)
 
-                    nameInd = header.index("nombre")
-                    dniInd = header.index("dni")
+                    try:
+                        nameInd = header.index("nombre")
+                    except Exception:
+                        nameInd = 0
+
+                    try:
+                        dniInd = header.index("dni")
+                    except Exception:
+                        dniInd = 1
 
                     for line in lines[1:]:
                         fields = line.decode('utf-8').split(separator)
@@ -220,6 +233,7 @@ class SubjectsHandler(base.BaseHandler):
                 elif filename.endswith(".xls"):
                     sub = db.Subject.get_by_id(long(idSub))
                     buff = []
+                    results = {"correct": 0, "incorrect": 0, "incorrect_lines": ""}
                     for l in lines:
                         if re.match("\<tr ", l):
                             buff = []
@@ -227,11 +241,30 @@ class SubjectsHandler(base.BaseHandler):
                             buff.append(re.sub("\<.*\>", "", re.sub("\</.*.>", "", l)))
                         elif re.match("\</tr\>", l) and len(buff) > 1:
                             self.response.write(buff[0] + ", " + buff[1] + "<br>")
-                            stKey = db.Student.addOrUpdate(buff[0], buff[1])
-                            if stKey not in sub.students:
-                                sub.addStudent(stKey)
+
+                            validDni = self.formatDni(buff[0])
+
+                            if validDni:
+                                st = db.Student.getByDni(validDni)
+                                if st is not None and st.key in sub.students:
+                                    results["incorrect"] += 1
+                                    results["incorrect_lines"] += ",".join(buff) + " (it already exists)<br>"
+                                else:
+                                    stKey = db.Student.addOrUpdate(buff[0], buff[1])
+                                    if stKey not in sub.students:
+                                        sub.addStudent(stKey)
+                                    results["correct"] += 1
+                            else:
+                                results["incorrect"] += 1
+                                results["incorrect_lines"] += ",".join(buff) + " (invalid dni)<br>"
                             buff = []
 
+                    #self.response.write("/subjects/view/" + idSub + "?" + "&".join(["%s=%s" % (k, results[k]) for k in results]))
+                    self.session['correctLines'] = results["correct"]
+                    self.session['incorrectLines'] = results["incorrect"]
+                    self.session['incorrectLinesData'] = results["incorrect_lines"]
+                    self.redirect("/subjects/view/" + idSub)
+                    return
             elif opt == "subject":
                 pass
         elif action == "addteacher" and idSub != "":
@@ -290,6 +323,42 @@ class SubjectsHandler(base.BaseHandler):
             return
         self.redirect("/subjects/view/" + idSub)
 
+    def formatDni(self, dni):
+
+        dni = dni.upper()
+        letters = "TRWAGMYFPDXBNJZSQVHLCKE"
+
+        if not re.match("[0-9XYZ][0-9]{7}[A-Z]?", "12121212X"):
+            return None
+
+        if len(dni) == 8:
+            return dni + letters[int(dni) % 23]
+
+        if '0' <= dni[0] <= '9' and letters[int(dni[:8]) % 23] != dni[8]:
+            return None
+
+        if 'X' <= dni[0] <= 'Z' and letters[int(str(ord("X") - 88) + dni[1:8])] != dni[8]:
+            return None
+
+        return dni
+
+
+    def dispatch(self):
+        # Get a session store for this request.
+        self.session_store = sessions.get_store(request=self.request)
+
+        try:
+            # Dispatch the request.
+            webapp2.RequestHandler.dispatch(self)
+        finally:
+            # Save all sessions.
+            self.session_store.save_sessions(self.response)
+
+    @webapp2.cached_property
+    def session(self):
+        # Returns a session using the default cookie key.
+        return self.session_store.get_session()
+
 class SearchHandler(base.BaseHandler):
     def get(self):
         if not self.loggedIn():
@@ -322,8 +391,12 @@ class SearchHandler(base.BaseHandler):
 
         self.response.write(resp)
 
+config = {}
+config['webapp2_extras.sessions'] = {
+    'secret_key': '5680fd16956dd8ef2290e4c029e6e841',
+}
 
 app = webapp2.WSGIApplication([
     ('/subjects/search', SearchHandler),
     ('/subjects/?([a-z]*)/?([0-9]*)', SubjectsHandler)
-], debug=True)
+], debug=True, config=config)

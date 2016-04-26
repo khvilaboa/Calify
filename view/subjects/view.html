@@ -218,6 +218,11 @@
     var subId = "{{ sub.key.id() }}";
     var searchingStudent = false;
 
+    // File load results
+    var correct = {{ correct if correct is defined else -1 }};
+    var incorrect = {{ incorrect if incorrect is defined else -1 }};
+    var incorrect_lines = '{{ incorrect_lines | safe if incorrect_lines is defined else '' }}';
+
     $(function () {
         $(".expandable-data").slideUp('fast');
         $("input[name='optAddStudents']").prop('checked', false);
@@ -228,6 +233,10 @@
         $(window).resize(function () {
             updateViewAnimations();
         });
+
+        if(correct != -1) {
+            alertify.alert("<h3>Fichero importado</h3><b>Resultados:</b><br>Correctos: " + correct + "<br>Incorrectos: " + incorrect + "<br>" + ((incorrect > 0)?"<br> M&aacute;s informaci&oacute;n<br><div class='report-panel'>" + incorrect_lines + "</div>":""));
+        }
     });
 
     function updateViewAnimations() {
@@ -374,6 +383,9 @@
 
     function validDni(dni) {
         var letters = "TRWAGMYFPDXBNJZSQVHLCKE";
+        dni = dni.toUpperCase();
+        if(dni.charCodeAt(0) >= 88 && dni.charCodeAt(0) <= 90) dni = (dni.charCodeAt(0)-88) + dni.substring(1);
+        alert(dni);
         return dni.search(/^[0-9]{8}[A-Z]$/i) != -1 && letters[parseInt(dni.substr(0,8)) % 23] == dni.substr(8);
     }
 

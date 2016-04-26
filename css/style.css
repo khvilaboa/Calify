@@ -374,6 +374,12 @@ div.pagination-wrapper {
     height: 20px;
 }
 
+.report-panel {
+    overflow: auto;
+    max-height: 100px;
+    background-color: #eee;
+}
+
 /* STATS */
 canvas {
     margin: 10px 0 10px 0;
