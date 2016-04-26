@@ -26,6 +26,17 @@ indexes:
   - name: __key__
     direction: desc
 
+- kind: Subject
+  properties:
+  - name: teachers
+  - name: creationdate
+
+- kind: Subject
+  properties:
+  - name: teachers
+  - name: creationdate
+    direction: desc
+
 - kind: Task
   properties:
   - name: subject

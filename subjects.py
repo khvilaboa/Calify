@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-import webapp2, jinja2, os, db, base, re, time
+import webapp2, jinja2, os, db, base, re, time, datetime
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from webapp2_extras import i18n, sessions
@@ -368,10 +368,9 @@ class SearchHandler(base.BaseHandler):
         teacher = db.Teacher.getByEmail(self.getEmail())
         query = db.Subject.getSubjectsByTeacher(teacher.key)
         off = self.request.get("o", None)
-        data = {}
 
         # Paginate the query (beginning after a offset if it's specified)
-        data = db.paginateOff(query, db.Student.key, int(off) if off else 0)
+        data = db.paginateOff(query, (-db.Subject.creationdate, db.Subject.key), int(off) if off else 0)
 
         resp = ""
         for subject in data["objects"]:

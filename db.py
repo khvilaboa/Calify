@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import datetime
 from google.appengine.ext import ndb
 
 
@@ -7,6 +8,7 @@ class Subject(ndb.Model):
     name = ndb.StringProperty(indexed=True)
     description = ndb.StringProperty(indexed=False)
     year = ndb.IntegerProperty(indexed=True)
+    creationdate = ndb.DateTimeProperty(indexed=True)
 
     teachers = ndb.KeyProperty(kind="Teacher", repeated=True)
     students = ndb.KeyProperty(kind="Student", repeated=True)
@@ -73,7 +75,7 @@ class Subject(ndb.Model):
     def addOrUpdate(name, desc, year, teachers, students=[], key=None):
 
         if key == None:  # add
-            sub = Subject(name=name, description=desc, year=year, teachers=teachers, students=students)
+            sub = Subject(name=name, description=desc, year=year, teachers=teachers, creationdate=datetime.datetime.now(), students=students)
         else:
             sub = key.get()
             sub.name = name
@@ -204,7 +206,10 @@ ITEMS_PER_PAGE = 8
 
 
 def paginateOff(query, order, offset=0):
-    objects, nextCursor, more = query.order(order).fetch_page(ITEMS_PER_PAGE, offset=offset)
+    if order is ndb.ModelKey or order is None:
+        objects, nextCursor, more = query.order(order).fetch_page(ITEMS_PER_PAGE, offset=offset)
+    else:
+        objects, nextCursor, more = query.order(*order).fetch_page(ITEMS_PER_PAGE, offset=offset)
     prev_offset = max(offset - ITEMS_PER_PAGE, 0) if bool(offset) else -1
     next_offset = offset + ITEMS_PER_PAGE if bool(more) else -1
 

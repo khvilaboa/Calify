@@ -44,7 +44,7 @@
         labels:{{ subjects | safe }},
         datasets: [{
             label: '{{ _("Students") }}',
-            backgroundColor: [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
+            backgroundColor: [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),,randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
             data: {{ studentsBySubject | safe }}
         }]
 
@@ -55,7 +55,7 @@
         labels:{{ subjects | safe }},
         datasets: [{
             label: '{{ _("Mean mark") }}',
-            backgroundColor: [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
+            backgroundColor: [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
             data: {{ avgMarkBySubject | safe }}
         }]
 

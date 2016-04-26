@@ -17,6 +17,20 @@ nav {
 
 .nav > li > a {
     color: #ecf0f1 !important;
+    background-color: #e74c3c;
+}
+
+.nav > li > a:hover {
+    background-color: #c0392b !important;
+}
+
+.nav > li.open > a {
+    color: #ecf0f1;
+    background-color: #c0392b !important;
+}
+
+nav ul.navbar-right {
+    margin-right: 0;
 }
 
 .navbar-header {
