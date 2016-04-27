@@ -71,7 +71,7 @@ class SubjectsHandler(base.BaseHandler):
             sub = db.Subject.get_by_id(long(idSub))
             tasksInfo = sub.getTasks()
             tasksMarks = {task.key: {m.student: m.mark for m in task.getMarks()} for task in sub.getTasks()}
-            students = sub.getStudents()
+            students = sub.getStudents().order(db.Student.dni)
 
             """self.response.write(tasksMarks)
             self.response.write("<br><br>")
@@ -98,7 +98,8 @@ class SubjectsHandler(base.BaseHandler):
                 """self.response.write("Final mark: %s<br>" % weightedAvg)
                 self.response.write("Extra: %s<br>" % extraPoints)
                 self.response.write("Final mark with extra: %s<br><br>" % (weightedAvg+extraPoints))"""
-                fileContent += "%s;%s\n" % (st.dni, weightedAvg+extraPoints)
+                if weightedAvg+extraPoints > 0:
+                    fileContent += "%s;%s\n" % (st.dni, weightedAvg+extraPoints)
             self.response.write(fileContent)
             return
         else:

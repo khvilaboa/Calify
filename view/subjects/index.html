@@ -65,6 +65,7 @@
                     fillData($("#subjectsTableBody"), $("#tableButtons"), data);
                 } else {
                     $("#noSubjects").removeClass("hide");
+                    $("#subjectsTable").addClass("hide");
                 }
             } else {
                 alertify.error('{{ _("There was a problem loading the subjects") }}');
