@@ -80,10 +80,32 @@
     var mark = "";
 
     // Deselect a row
-    function normRow(row) {
-        lastMarkTd = row.children().next().next();
+    function normRow() {
+        selected = $("tbody > tr.rowSelected");
+        if(selected.length == 0) return;
+        //alert(selected.length);
+        stId = selected.attr("data-id");
+        markStr = markControl.val().replace(",", ".")
+
+        if(validMark(markStr)) {
+            mark = parseFloat(parseFloat(markStr).toFixed(3));
+
+            url = "/tasks/addnote/{{ task.key.id() }}/" + stId + "?mark=" + mark;
+
+            $.get(url, function (data, status) {
+                if(status == "success") {
+                    alertify.success('{{ _("Mark added correctly") }}');
+                } else {
+                    alertify.error('{{ _("There was an error submitting the mark") }}');
+                }
+            });
+
+        } else {
+            alertify.error('{{ _("Mark not valid") }}');
+        }
+        lastMarkTd = selected.children().next().next();
         lastMarkTd.html(mark);
-        lastSelected.removeClass("rowSelected");
+        selected.removeClass("rowSelected");
     }
 
     // Determine if a mark is valid (numeric from 0 to the maximum mark)
@@ -185,11 +207,11 @@
         }
     });
 
-    $(document).on("click", "tbody > tr", {}, function () {
-
+    $(document).on("click", "tbody > tr", {}, function (e) {
+        e.stopPropagation();
         lastSelected = $("tbody > tr.rowSelected");
-        if(lastSelected) {
-            normRow(lastSelected);
+        if(lastSelected.length > 0) {
+            normRow();
         }
 
         $(this).addClass("rowSelected");
@@ -209,27 +231,7 @@
 
         markControl.keyup(function(e) {
             if(e.keyCode == 13) { // Enter key
-                selected = $("tbody > tr.rowSelected");
-                stId = selected.attr("data-id");
-                markStr = markControl.val().replace(",", ".")
-
-                if(validMark(markStr)) {
-                    mark = parseFloat(parseFloat(markStr).toFixed(3));
-
-                    url = "/tasks/addnote/{{ task.key.id() }}/" + stId + "?mark=" + mark;
-
-                    $.get(url, function (data, status) {
-                        if(status == "success") {
-                            alertify.success('{{ _("Mark added correctly") }}');
-                        } else {
-                            alertify.error('{{ _("There was an error submitting the mark") }}');
-                        }
-                    });
-
-                } else {
-                    alertify.error('{{ _("Mark not valid") }}');
-                }
-                normRow(selected);
+                normRow();
             }
         });
     });
@@ -262,6 +264,9 @@
         }
     });
 
+    $(document).click(function () {
+        normRow();
+    });
 
 </script>
 
