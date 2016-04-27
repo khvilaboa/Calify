@@ -46,13 +46,15 @@ class StatsHandler(base.BaseHandler):
         marks = [0, 0, 0, 0, 0]
         for s in subjects:
             for m in s.getMarks():
-                if m.mark < 5:
+                t = m.task.get()
+                sm = (m.mark / t.maxmark) * 10
+                if sm < 5:
                     marks[0] += 1
-                elif m.mark < 6:
+                elif sm < 6:
                     marks[1] += 1
-                elif m.mark < 7:
+                elif sm < 7:
                     marks[2] += 1
-                elif m.mark < 9:
+                elif sm < 9:
                     marks[3] += 1
                 else:
                     marks[4] += 1
@@ -64,7 +66,7 @@ class StatsHandler(base.BaseHandler):
         avgMarkBySubject = []
         for sub in subjects:
             marks = sub.getMarks()
-            avgMarkBySubject.append("{0:.2f}".format(float(sum([m.mark for m in sub.getMarks()])) / len(marks) if len(marks) > 0 else 0))
+            avgMarkBySubject.append("{0:.2f}".format(float(sum([(m.mark / m.task.get().maxmark) * 10 for m in sub.getMarks()])) / len(marks) if len(marks) > 0 else 0))
         return avgMarkBySubject
 
 app = webapp2.WSGIApplication([
