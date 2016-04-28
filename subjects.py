@@ -351,7 +351,7 @@ class SubjectsHandler(base.BaseHandler):
         if '0' <= dni[0] <= '9' and letters[int(dni[:8]) % 23] != dni[8]:
             return None
 
-        if 'X' <= dni[0] <= 'Z' and letters[int(str(ord("X") - 88) + dni[1:8])] != dni[8]:
+        if 'X' <= dni[0] <= 'Z' and letters[int(str(ord("X") - 88) + dni[1:8]) % 23] != dni[8]:
             return None
 
         return dni

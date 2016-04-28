@@ -400,6 +400,10 @@ canvas {
 }
 
 /* AUXILIAR */
+.forbidden {
+    cursor: not-allowed;
+}
+
 .form-margin-correct {
     margin-bottom: 10px;
 }

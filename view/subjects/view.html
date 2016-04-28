@@ -193,10 +193,10 @@
                 </thead>
                 <tbody>
                 {% for t in teachers %}
-                <tr onclick="window.document.location = '/profile/{{ t.key.id() }}'"  data-id="{{ t.key.id() }}">
+                <tr data-id="{{ t.key.id() }}"> <!-- onclick="window.document.location = '/profile/{{ t.key.id() }}'" -->
                     <td>{% if t.name %}{{ t.name }}{% else %}-{% endif %}</td>
                     <td>{{ t.email }}</td>
-                    <td><img src="/img/delete.png" class="img-icon icon-delete"/></td>
+                    <td><img src="/img/delete.png" class="img-icon {% if teachers|length == 1 %}{{ 'forbidden' }}{% else %}{{ 'icon-delete' }}{% endif %}"/></td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -314,36 +314,43 @@
 
         tableBody.html(bodyHtml);
         tableButtons.html(buttonsHtml);
-
-
-        // Handler for the delete button
-        $(".icon-delete").click(function (e) {
-            e.stopPropagation();
-
-            var row = $(this).closest("tr");
-            var id = row.attr("data-id");
-            var tableId = $(this).closest("table").attr("id");
-
-            if (tableId == "tableStudents") {
-                url = "/subjects/removestudent/{{sub.key.id()}}?studentId=" + id;
-            } else if (tableId == "tableTeachers") {
-                url = "/subjects/removeteacher/{{sub.key.id()}}?teacherId=" + id;
-            } else if (tableId == "tableTasks") {
-                url = "/subjects/removetask/{{sub.key.id()}}?taskId=" + id;
-            }
-
-            $.post(url, function (data, status) {
-
-                if(status == "success") {
-                    alertify.success('{{ _("Student erased correctly") }}');
-                    row.remove();
-                    initialStudentTableLoad();
-                } else {
-                    alertify.error('{{ _("There was a problem deleting the subject") }}');
-                }
-            });
-        });
     }
+
+    // Handler for the delete button
+    $(document).on("click", ".icon-delete", {}, function () {
+    //$(".icon-delete").click(function () {
+        //e.stopPropagation();
+        //if($("#tableTeachers td img.icon-delete").length<=1) return;
+
+        var row = $(this).closest("tr");
+        var id = row.attr("data-id");
+        var tableId = $(this).closest("table").attr("id");
+
+        if (tableId == "tableStudents") {
+            url = "/subjects/removestudent/{{sub.key.id()}}?studentId=" + id;
+        } else if (tableId == "tableTeachers") {
+            url = "/subjects/removeteacher/{{sub.key.id()}}?teacherId=" + id;
+        } else if (tableId == "tableTasks") {
+            url = "/subjects/removetask/{{sub.key.id()}}?taskId=" + id;
+        }
+
+        $.post(url, function (data, status) {
+
+            if(status == "success") {
+                alertify.success('{{ _("Teacher erased correctly") }}');
+                row.remove();
+                initialStudentTableLoad();
+
+                teachers = $("#tableTeachers td img.icon-delete");
+                if(teachers.length == 1) {
+                    teachers.removeClass("icon-delete");
+                    teachers.addClass("forbidden");
+                }
+            } else {
+                alertify.error('{{ _("There was a problem deleting the subject") }}');
+            }
+        });
+    });
 
     $(document).on("click", ".pag-button", {}, function () {
         var id = $(this).attr("data-id");
