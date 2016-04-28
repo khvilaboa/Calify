@@ -20,7 +20,7 @@
                     <div>{{ _("Maximum mark") }}: {{ task.maxmark }}</div>
                 </div>
                 <div class="col-xs-4">
-                    <div>{{ _("Informative") }}: {% if task.percent %}{{ _("Yes") }}{% else %}{{ _("No") }}{% endif %}</div>
+                    <div>{{ _("Informative") }}: {% if task.informative %}{{ _("Yes") }}{% else %}{{ _("No") }}{% endif %}</div>
                     <div>{{ _("Extra points") }}: {% if task.extra %}{{ _("Yes") }}{% else %}{{ _("No") }}{% endif %}</div>
                 </div>
             </div>
@@ -47,9 +47,9 @@
         <table class="table table-hover hide" id="studentsTable">
             <thead>
             <tr>
-                <th>{{ _("Student name") }}</th>
                 <th>{{ _("Student DNI") }}</th>
-                <th>{{ _("Search") }}</th>
+                <th>{{ _("Student name") }}</th>
+                <th>{{ _("Mark") }}</th>
             </tr>
             </thead>
             <tbody id="studentsTableBody">
@@ -154,7 +154,7 @@
             mark = dataRow[3];
             if(mark.endsWith(".0")) mark = mark.substring(0, mark.length-2);
 
-            bodyHtml += '<tr data-id=\"' + id + '\"><td>' + name + '</td><td>' + dni + '</td><td>' + ((mark=='-1')?'-':mark) + '</td></tr>';
+            bodyHtml += '<tr data-id=\"' + id + '\"><td>' + dni + '</td><td>' + name + '</td><td>' + ((mark=='-1')?'-':mark) + '</td></tr>';
         }
         tableBody.html(bodyHtml);
         tableButtons.html(buttonsHtml);

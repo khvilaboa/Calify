@@ -248,7 +248,11 @@ class SubjectsHandler(base.BaseHandler):
                         elif re.match("\</tr\>", l) and len(buff) > 1:
                             self.response.write(buff[0] + ", " + buff[1] + "<br>")
 
-                            validDni = self.formatDni(buff[0])
+                            try:
+                                validDni = self.formatDni(buff[0])
+                            except:
+                                self.response.write(buff)
+                                return
 
                             if validDni:
                                 st = db.Student.getByDni(validDni)

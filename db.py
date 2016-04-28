@@ -206,10 +206,10 @@ ITEMS_PER_PAGE = 8
 
 
 def paginateOff(query, order, offset=0):
-    if type(order) is ndb.ModelKey or order is None:
-        objects, nextCursor, more = query.order(order).fetch_page(ITEMS_PER_PAGE, offset=offset)
-    else:
+    if type(order) is tuple:
         objects, nextCursor, more = query.order(*order).fetch_page(ITEMS_PER_PAGE, offset=offset)
+    else:
+        objects, nextCursor, more = query.order(order).fetch_page(ITEMS_PER_PAGE, offset=offset)
     prev_offset = max(offset - ITEMS_PER_PAGE, 0) if bool(offset) else -1
     next_offset = offset + ITEMS_PER_PAGE if bool(more) else -1
 

@@ -18,19 +18,24 @@
             <img src="/img/user.png" class="img-rounded img-responsive img-profile prof-img"/>
         </div>
         <div class="col-xs-5">
-            <form action="/profile/modify" method="POST">
-                <div class="prof-info-item"><span>{{ _("Name") }}:</span>
-
-                    {% if own %}
-                    <input type="text" class="form-control" id="name" name="name"
+            <form action="/profile/modify" method="POST" >
+                <div class="prof-info-item">
+                {% if own %}
+                    <label for="email2">{{ _("Name") }}: </label>
+                    <div class="input-group" id="email2">
+                       <input type="text" class="form-control" id="name" name="name"
                            value="{{ teacher.name if teacher.name else '' }}" placeholder="Enter name">
-                    {% else %} {{ teacher.name if teacher.name else "-"}} {% endif %}
+                       <span class="input-group-btn">
+                            <button type="submit" class="btn btn-default"><i class="fa fa-pencil"></i> {{ _("Modify") }}</button>
+                       </span>
+                    </div>
+                {% else %}
+                <span>{{ _("Name") }}:</span> {{ teacher.name if teacher.name else "-"}}
+                {% endif %}
                 </div>
                 <div class="prof-info-item"><span>{{ _("Email") }}:</span> {{ teacher.email }}</div>
                 <div class="prof-info-item"><span>{{ _("Subjects") }}:</span> {{ subjects }}</div>
-                {% if own %}
-                <div class="prof-info-item"><button type="submit" class="btn btn-default">{{ _("Modify") }}</button></div>
-                {% endif %}
+
             </form>
         </div>
     </div>
