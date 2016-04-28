@@ -68,8 +68,13 @@ class SubjectsHandler(base.BaseHandler):
             filename = self.getUserName() + "_" + str(time.time()).replace(".", "") + ".csv"
             self.response.headers['Content-Disposition'] = 'attachment; filename=' + filename
 
+            # Current subject
             sub = db.Subject.get_by_id(long(idSub))
+
+            # Task that contains the current subject
             tasksInfo = sub.getTasks()
+
+            # Marks per each task and student
             tasksMarks = {task.key: {m.student: m.mark for m in task.getMarks()} for task in sub.getTasks()}
             students = sub.getStudents().order(db.Student.dni)
 
@@ -99,7 +104,7 @@ class SubjectsHandler(base.BaseHandler):
                 self.response.write("Extra: %s<br>" % extraPoints)
                 self.response.write("Final mark with extra: %s<br><br>" % (weightedAvg+extraPoints))"""
                 if weightedAvg+extraPoints > 0:
-                    fileContent += "%s;%s\n" % (st.dni, weightedAvg+extraPoints)
+                    fileContent += "%s;%s\n" % (st.dni[:8], weightedAvg+extraPoints)
             self.response.write(fileContent)
             return
         else:
@@ -220,7 +225,7 @@ class SubjectsHandler(base.BaseHandler):
                         dniInd = 1
 
                     for line in lines[1:]:
-                        fields = line.decode('utf-8').split(separator)
+                        fields = line.split(separator)
                         name = fields[nameInd]
                         dni = fields[dniInd]
                         self.response.write(fields[nameInd] + ", " + fields[dniInd] + "<br>")
@@ -276,7 +281,11 @@ class SubjectsHandler(base.BaseHandler):
             sub = db.Subject.get_by_id(long(idSub))
 
             # Add the teacher if they don't exist
-            tKey = db.Teacher.addOrUpdate(email)
+            teacher = db.Teacher.getByEmail(email)
+            if not teacher:
+                tKey = db.Teacher.addOrUpdate(email, "")
+            else:
+                tKey = teacher.key
 
             sub.addTeacher(tKey)
         elif action == "removeteacher" and idSub != "":  # ajax

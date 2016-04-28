@@ -149,7 +149,7 @@
         } else if (taskPercent.length == 0 && !taskInformative && !taskExtra) {
             alertify.error('{{ _("You must specify a percentage for the task") }}');
             return false;
-        } else if(!(/[0-9]+/.test(taskPercent) && !taskInformative && !taskExtra)) {
+        } else if(!(/[0-9]+/.test(taskPercent)) && !taskInformative && !taskExtra) {
             alertify.error('{{ _("The percetage specified is not valid") }}');
             return false;
         } else if(taskMaxMark.length == 0) {

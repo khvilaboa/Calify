@@ -21,7 +21,7 @@ class BaseHandler(webapp2.RequestHandler):
     def getLanguage(self):
         email = self.getEmail()
         teacher = db.Teacher.getByEmail(email)
-        return teacher.language
+        return teacher.language if teacher is not None else "en_US"
 
     def getUserId(self):
         email = self.getEmail()
