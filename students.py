@@ -42,7 +42,7 @@ class SearchHandler(base.BaseHandler):
 
         if lenQuery > 0:
             # Paginate the query (beginning after a offset if it's specified)
-            data = db.paginateOff(query, (db.Student.dni, db.Student.key), int(off) if off else 0)
+            data = db.paginateOff(query, (db.Student.name, db.Student.key), int(off) if off else 0)
 
             # If the user is in a task view retrieve the mark for each of the selected students
             marks = {}

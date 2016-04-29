@@ -291,7 +291,8 @@ class SubjectsHandler(base.BaseHandler):
             else:
                 tKey = teacher.key
 
-            sub.addTeacher(tKey)
+            if tKey not in sub.teachers:
+                sub.addTeacher(tKey)
         elif action == "removeteacher" and idSub != "":  # ajax
             # Get params data
             teacherId = self.request.get("teacherId")
