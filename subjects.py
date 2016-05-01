@@ -424,23 +424,23 @@ class SubjectsHandler(base.BaseHandler):
         ws.show_grid = False
         ws._cell_overwrite_ok = True
 
-        texts = {(0,3): 'Lista de Cualificacions',
-                 (2,1): 'Titulacion: ',
-                 (2,3): name,
-                 (3,1): 'Curso: ',
-                 (4,1): 'Codigo: ',
-                 (5,1): 'Denominacion: ',
-                 (6,1): 'Convocatoria: ',
-                 (7,1): 'Tipo de acta: ',
-                 (8,1): 'Alumnos en: ',
-                 (10,1): 'Orde',
-                 (10,2): 'DNI',
-                 (10,3): 'Apelidos e Nome',
-                 (10,4): 'C.P.C.',
-                 (10,5): 'Cualificacions',
-                 (11,5): 'Conceptual',
-                 (11,6): 'Numerica',
-                 (12,1): 'Lea a folla de Axuda para consultala nova forma de cualificar establecida polo Real Decreto'
+        texts = {(0, 3): u'Lista de Cualificacións',
+                 (2, 1): u'Titulación: ',
+                 (2, 3): name,
+                 (3, 1): u'Curso: ',
+                 (4, 1): u'Código: ',
+                 (5, 1): u'Denominación: ',
+                 (6, 1): u'Convocatoria: ',
+                 (7, 1): u'Tipo de acta: ',
+                 (8, 1): u'Alumnos en: ',
+                 (10, 1): u'Orde',
+                 (10, 2): u'DNI',
+                 (10, 3): u'Apelidos e Nome',
+                 (10, 4): u'C.P.C.',
+                 (10, 5): u'Cualificacións',
+                 (11, 5): u'Conceptual',
+                 (11, 6): u'Numérica',
+                 (12, 1): u'¡¡ Lea a folla de Axuda para consultala nova forma de cualificar establecida polo Real Decreto 1125/2003 !!'
                  }
 
         for i in range(8):
