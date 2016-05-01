@@ -1,10 +1,22 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-import webapp2, jinja2, os, db, base, re, time, datetime
+import webapp2, jinja2, os, db, base, re, time, sys, xlwt, StringIO
+#from xlutils import copy
+#sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'xlutils'))
+
+#sys.path.insert(0, 'wolo.zip')
+#sys.path = sys.path[:5]
+
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from webapp2_extras import i18n, sessions
+
+
+#from xlutils.copy import copy
+#from xlutils.filter import process
+
+
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -64,12 +76,13 @@ class SubjectsHandler(base.BaseHandler):
             values["tasks"] = values["subject"].getTasks().order(db.Task.order)
             template = JINJA_ENVIRONMENT.get_template('view/subjects/create.html')
         elif action == "export" and idSub != "":
-            self.response.headers['Content-Type'] = 'text/csv'
-            filename = self.getUserName() + "_" + str(time.time()).replace(".", "") + ".csv"
-            self.response.headers['Content-Disposition'] = 'attachment; filename=' + filename
 
             # Current subject
             sub = db.Subject.get_by_id(long(idSub))
+
+            type = self.request.get("ext", None)
+            if type != "csv" and type != "xls":
+                self.redirect("/subjects/view/%s" % sub.key.id())
 
             # Task that contains the current subject
             tasksInfo = sub.getTasks()
@@ -78,34 +91,82 @@ class SubjectsHandler(base.BaseHandler):
             tasksMarks = {task.key: {m.student: m.mark for m in task.getMarks()} for task in sub.getTasks()}
             students = sub.getStudents().order(db.Student.dni)
 
-            """self.response.write(tasksMarks)
-            self.response.write("<br><br>")
-            self.response.write(self.getUserName() + "_" + str(time.time()).replace(".","") + ".csv")
-            self.response.write("<br><br>")"""
+            try:
+                count = students.count()
+            except Exception:
+                count = 0
 
-            fileContent = ""
-            for st in students:
-                #self.response.write(st.name + "<br>")
-                weightedAvg = 0
-                extraPoints = 0
-                for task in tasksInfo:
-                    rawMark = tasksMarks[task.key].get(st.key, None)
-                    if not rawMark or task.informative:
-                        continue
-                    elif task.extra:
-                        extraPoints += rawMark
-                        continue
-                    mark = (rawMark / task.maxmark) * 10 * (task.percent/100.0)
-                    weightedAvg += mark
-                    """self.response.write(task.name + " (" + str(task.percent) + "%, " + str(task.maxmark) + "): ")
-                    self.response.write("%s, %s, %s" % (rawMark, rawMark / task.maxmark * 10, mark))
-                    self.response.write("<br>")"""
-                """self.response.write("Final mark: %s<br>" % weightedAvg)
-                self.response.write("Extra: %s<br>" % extraPoints)
-                self.response.write("Final mark with extra: %s<br><br>" % (weightedAvg+extraPoints))"""
-                if weightedAvg+extraPoints > 0:
-                    fileContent += "%s;%s\n" % (st.dni[:8], weightedAvg+extraPoints)
-            self.response.write(fileContent)
+            if type == "csv":
+                self.response.headers['Content-Type'] = 'text/csv'
+                filename = self.getUserName() + "_" + str(time.time()).replace(".", "") + ".csv"
+                self.response.headers['Content-Disposition'] = 'attachment; filename=' + filename
+
+                fileContent = ""
+                for st in students:
+                    #self.response.write(st.name + "<br>")
+                    weightedAvg = 0
+                    extraPoints = 0
+                    for task in tasksInfo:
+                        rawMark = tasksMarks[task.key].get(st.key, None)
+                        if not rawMark or task.informative:
+                            continue
+                        elif task.extra:
+                            extraPoints += rawMark
+                            continue
+                        mark = (rawMark / task.maxmark) * 10 * (task.percent/100.0)
+                        weightedAvg += mark
+
+                    if weightedAvg+extraPoints > 0:
+                        fileContent += "%s;%s\n" % (st.dni[:8], weightedAvg+extraPoints)
+                self.response.write(fileContent)
+                return
+
+            elif type == "xls":
+                self.response.headers['Content-Type'] = 'application/vnd.ms-excel'
+                filename = self.getUserName() + "_" + str(time.time()).replace(".", "") + ".xls"
+                self.response.headers['Content-Disposition'] = 'attachment; filename=' + filename
+                #self.response.write(sys.path)
+
+                xls = self.getBaseXls(sub.name, count)
+                ws = xls.get_sheet(0)
+                row = 13
+
+                for st in students:
+                    weightedAvg = 0
+                    extraPoints = 0
+                    pres = False
+                    for task in tasksInfo:
+                        rawMark = tasksMarks[task.key].get(st.key, None)
+                        if not rawMark or task.informative:
+                            continue
+                        elif task.extra:
+                            extraPoints += rawMark
+                            continue
+                        mark = (rawMark / task.maxmark) * 10 * (task.percent/100.0)
+                        weightedAvg += mark
+                        pres = True
+
+                    self.writeXlsData(ws, row, 1, row - 12)
+                    self.writeXlsData(ws, row, 2, st.dni)
+                    self.writeXlsData(ws, row, 3, st.name)
+                    self.writeXlsData(ws, row, 4, 0)
+
+                    if pres:
+                        self.writeXlsData(ws, row, 5, '')
+                        self.writeXlsData(ws, row, 6, weightedAvg+extraPoints)
+                    else:
+                        self.writeXlsData(ws, row, 5, 'NP')
+                        self.writeXlsData(ws, row, 6, '')
+
+                    row += 1
+                    #fileContent += "%s;%s\n" % (st.dni[:8], weightedAvg+extraPoints)
+
+                out = StringIO.StringIO()
+                xls.save(out)
+                self.response.write(out.getvalue())
+                return
+
+            self.redirect("/")
             return
         else:
             self.redirect("/")
@@ -357,6 +418,71 @@ class SubjectsHandler(base.BaseHandler):
 
         return dni
 
+    def getBaseXls(self, name, count):
+        wb = xlwt.Workbook()
+        ws = wb.add_sheet('Acta')
+        ws.show_grid = False
+        ws._cell_overwrite_ok = True
+
+        texts = {(0,3): 'Lista de Cualificacions',
+                 (2,1): 'Titulacion: ',
+                 (2,3): name,
+                 (3,1): 'Curso: ',
+                 (4,1): 'Codigo: ',
+                 (5,1): 'Denominacion: ',
+                 (6,1): 'Convocatoria: ',
+                 (7,1): 'Tipo de acta: ',
+                 (8,1): 'Alumnos en: ',
+                 (10,1): 'Orde',
+                 (10,2): 'DNI',
+                 (10,3): 'Apelidos e Nome',
+                 (10,4): 'C.P.C.',
+                 (10,5): 'Cualificacions',
+                 (11,5): 'Conceptual',
+                 (11,6): 'Numerica',
+                 (12,1): 'Lea a folla de Axuda para consultala nova forma de cualificar establecida polo Real Decreto'
+                 }
+
+        for i in range(8):
+            widths = (3, 14, 12, 30, 9, 10, 9, 3)
+            ws.col(i).width = 256 * widths[i]
+
+        strDarkGray = 'font: height 160, name Arial, colour white, bold on; pattern: pattern solid, fore_colour gray40;'
+        styleDarkGray = xlwt.easyxf(strDarkGray)
+        styleDarkGrayR = xlwt.easyxf(strDarkGray + " align: horz right")
+        styleDarkGrayC = xlwt.easyxf(strDarkGray + " align: horz center")
+        styleDarkGrayY = xlwt.easyxf(strDarkGray.replace('colour white', 'colour yellow'))
+        strLightGray = 'pattern: pattern solid, fore_colour gray25; font: colour black;' # borders: bottom thin, top thin, left thin, right thin
+        styleLightGray = xlwt.easyxf(strLightGray)
+
+        lastRow = 13 + count + 2
+        for row in (0, 10, 11, 12, lastRow):
+            for col in range(8):
+                text = texts.get((row, col), '')
+                if row == 12:
+                    style = styleDarkGrayY
+                elif row == 0 or row < 13:
+                    style = styleDarkGray
+                else:
+                    style = styleLightGray if lastRow % 2 == 1 else styleDarkGray
+                ws.write(row, col, text, style=style)
+
+        for row in range(2, 8):
+            for col in range(1, 7):
+                style = styleDarkGrayR if col < 3 else styleLightGray
+                text = texts.get((row, col), '')
+                ws.write(row, col, text, style=style)
+
+        return wb
+
+    def writeXlsData(self, ws, row, col, val):
+        strDarkGray = 'pattern: pattern solid, fore_colour gray40; align: horz center; font: height 160, name Arial, colour black'
+        styleDarkGrayC = xlwt.easyxf(strDarkGray + (', bold: on' if row == 4 else ''))
+        strLightGray = 'font: height 160, name Arial, colour black; pattern: pattern solid, fore_colour gray25; align: horz center'
+        styleLightGrayC = xlwt.easyxf(strLightGray)
+
+        style = (styleDarkGrayC, styleLightGrayC)[row % 2]
+        ws.write(row, col, val, style=style)
 
     def dispatch(self):
         # Get a session store for this request.
@@ -373,6 +499,8 @@ class SubjectsHandler(base.BaseHandler):
     def session(self):
         # Returns a session using the default cookie key.
         return self.session_store.get_session()
+
+
 
 class SearchHandler(base.BaseHandler):
     def get(self):
