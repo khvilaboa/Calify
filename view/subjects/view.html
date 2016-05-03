@@ -56,9 +56,9 @@
             {% for task in tasks %}
             <tr data-id="{{ task.key.id() }}" class="with-pointer"
                 onclick="window.document.location = '/tasks/calify/{{ task.key.id() }}'">
-                <td>{{ task.name }}</td>
+                <td>{{ task.name }}</td> 
                 <td>{{ task.percent }} %</td>
-                <td><img src="/img/delete.png" class="img-icon icon-delete"/></td>
+                <td><img src="/img/edit.png" class="img-icon icon-edit" onclick="window.document.location = '/subjects/modify/{{ sub.key.id() }}'" /></td>
             </tr>
             {% endfor %}
             </tbody>
@@ -223,6 +223,8 @@
     var incorrect = {{ incorrect if incorrect is defined else -1 }};
     var incorrect_lines = '{{ incorrect_lines | safe if incorrect_lines is defined else '' }}';
 
+
+
     $(function () {
         $(".expandable-data").slideUp('fast');
         $("input[name='optAddStudents']").prop('checked', false);
@@ -314,7 +316,12 @@
 
         tableBody.html(bodyHtml);
         tableButtons.html(buttonsHtml);
+
+        $(".img-icon").click(function(e) {
+            if($(this).hasClass("icon-edit")) e.stopPropagation();
+        });
     }
+
 
     // Handler for the delete button
     $(document).on("click", ".icon-delete", {}, function () {

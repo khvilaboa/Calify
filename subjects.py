@@ -69,11 +69,13 @@ class SubjectsHandler(base.BaseHandler):
             template = JINJA_ENVIRONMENT.get_template('view/subjects/view.html')
 
         elif action == "create":
+            values["action"] = "create"
             template = JINJA_ENVIRONMENT.get_template('view/subjects/create.html')
 
         elif action == "modify" and idSub != "":
             values["subject"] = db.Subject.get_by_id(long(idSub))
             values["tasks"] = values["subject"].getTasks().order(db.Task.order)
+            values["action"] = "modify"
             template = JINJA_ENVIRONMENT.get_template('view/subjects/create.html')
         elif action == "export" and idSub != "":
 

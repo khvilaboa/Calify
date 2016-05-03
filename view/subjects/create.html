@@ -100,7 +100,7 @@
 
     <div class="form-group row no-margin">
         <div class="col-xs-12">
-            <button type="button" class="btn btn-default" onclick="if(validate()) document.forms['subjectCreation'].submit();">{{ _("Create") }}</button>
+            <button type="button" class="btn btn-default" onclick="if(validate()) document.forms['subjectCreation'].submit();">{% if action == 'create' %} {{ _("Create") }}{% else %}{{ _("Modify") }} {% endif %}</button>
         </div>
     </div>
 
@@ -229,6 +229,12 @@
     function editTask(taskName, taskPercent, taskMaxMark, taskInformative, taskExtra) {
         var ind = /task\[([0-9]*)\]\.name/.exec($("input[name $= '.name'][value = '" + $("#taskName").val() + "']").attr("name"))[1];
         var affectPerc = taskInformative.toString().toLowerCase() == "false" && taskExtra.toString().toLowerCase() == "false";
+        var affectPercBefore = $("input[name='task[" + ind + "].informative']").attr("value").toString().toLowerCase() == "false" &&
+                               $("input[name='task[" + ind + "].extra']").attr("value").toLowerCase() == "false";
+
+        if(affectPercBefore) percSum -= parseInt($("input[name='task[" + ind + "].percent']").attr("value"));
+        if(affectPerc) percSum += parseInt(taskPercent);
+        checkWarning();
 
         // Update data
         $("input[name='task[" + ind + "].percent']").attr("value", ((affectPerc)?taskPercent:-1));
