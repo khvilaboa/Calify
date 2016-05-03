@@ -106,18 +106,22 @@ class SubjectsHandler(base.BaseHandler):
                     #self.response.write(st.name + "<br>")
                     weightedAvg = 0
                     extraPoints = 0
+                    pres = False
                     for task in tasksInfo:
                         rawMark = tasksMarks[task.key].get(st.key, None)
                         if not rawMark or task.informative:
                             continue
                         elif task.extra:
                             extraPoints += rawMark
+                            pres = True
                             continue
                         mark = (rawMark / task.maxmark) * 10 * (task.percent/100.0)
                         weightedAvg += mark
+                        pres = True
 
-                    if weightedAvg+extraPoints > 0:
-                        fileContent += "%s;%s\n" % (st.dni[:8], weightedAvg+extraPoints)
+                    if pres:
+                        mark = min(weightedAvg + extraPoints, 10)
+                        fileContent += "%s;%s\n" % (st.dni[:8], mark)
                 self.response.write(fileContent)
                 return
 
@@ -141,6 +145,7 @@ class SubjectsHandler(base.BaseHandler):
                             continue
                         elif task.extra:
                             extraPoints += rawMark
+                            pres = True
                             continue
                         mark = (rawMark / task.maxmark) * 10 * (task.percent/100.0)
                         weightedAvg += mark
@@ -152,8 +157,9 @@ class SubjectsHandler(base.BaseHandler):
                     self.writeXlsData(ws, row, 4, 0)
 
                     if pres:
+                        mark = min(weightedAvg + extraPoints, 10)
                         self.writeXlsData(ws, row, 5, '')
-                        self.writeXlsData(ws, row, 6, weightedAvg+extraPoints)
+                        self.writeXlsData(ws, row, 6, mark)
                     else:
                         self.writeXlsData(ws, row, 5, 'NP')
                         self.writeXlsData(ws, row, 6, '')
@@ -263,7 +269,7 @@ class SubjectsHandler(base.BaseHandler):
             elif opt == "file":
                 # Get params data
                 filename = self.request.get("filename")
-                separator = self.request.get("separator")
+
                 lines = self.request.POST["filename"].value.split("\r\n")
 
                 filename = self.request.POST["filename"].filename
@@ -271,32 +277,61 @@ class SubjectsHandler(base.BaseHandler):
                 if filename.endswith(".csv"):
                     # Get the subject from the datastore
                     sub = db.Subject.get_by_id(long(idSub))
+                    results = {"correct": 0, "incorrect": 0, "incorrect_lines": ""}
 
                     # Parse CSV
-                    header = lines[0].decode('utf-8').lower().split(separator)
+                    separator = None
+                    for sep in (";", ":", "^"):
+                        if lines[0].find(sep):
+                            separator = sep
+                            break
 
-                    try:
-                        nameInd = header.index("nombre")
-                    except Exception:
-                        nameInd = 0
+                    if len(lines) > 0:
+                        firstLine = lines[0].split(separator)
+                        dniInd = 0
+                        nameInd = 1
 
-                    try:
-                        dniInd = header.index("dni")
-                    except Exception:
-                        dniInd = 1
+                        try:
+                            validDni = self.formatDni(firstLine[dniInd])  # Could be header
 
-                    for line in lines[1:]:
-                        fields = line.split(separator)
-                        name = fields[nameInd]
-                        dni = fields[dniInd]
-                        self.response.write(fields[nameInd] + ", " + fields[dniInd] + "<br>")
+                            if not validDni:
+                                lines = lines[1:]
+                        except:
+                            lines = lines[1:]
 
-                        # Get student from the datastore (create it if not exist)
-                        stKey = db.Student.addOrUpdate(dni, name)
+                        for line in lines:
+                            fields = line.split(separator)
 
-                        # Add the student to the subject
-                        if stKey not in sub.students:
-                            sub.addStudent(stKey)
+                            dni = fields[dniInd]
+                            name = fields[nameInd]
+
+                            validDni = None
+                            try:
+                                validDni = self.formatDni(fields[dniInd])
+                            except:
+                                results["incorrect"] += 1
+                                results["incorrect_lines"] += "%s, %s (parse error)<br>" % (dni, name)
+
+                            if validDni:
+                                st = db.Student.getByDni(validDni)
+                                if st is not None and st.key in sub.students:
+                                    results["incorrect"] += 1
+                                    results["incorrect_lines"] += "%s, %s (it already exists)<br>" % (dni, name)
+                                else:
+                                    stKey = db.Student.addOrUpdate(dni, name)
+                                    if stKey not in sub.students:
+                                        sub.addStudent(stKey)
+                                    results["correct"] += 1
+                            else:
+                                results["incorrect"] += 1
+                                results["incorrect_lines"] += "%s, %s (invalid dni)<br>" % (dni, name)
+
+                            self.response.write(fields[nameInd] + ", " + fields[dniInd] + "<br>")
+
+                    self.session['correctLines'] = results["correct"]
+                    self.session['incorrectLines'] = results["incorrect"]
+                    self.session['incorrectLinesData'] = results["incorrect_lines"]
+                    self.redirect("/subjects/view/" + idSub)
                 elif filename.endswith(".xls"):
                     sub = db.Subject.get_by_id(long(idSub))
                     buff = []
@@ -312,8 +347,8 @@ class SubjectsHandler(base.BaseHandler):
                             try:
                                 validDni = self.formatDni(buff[0])
                             except:
-                                self.response.write(buff)
-                                return
+                                results["incorrect"] += 1
+                                results["incorrect_lines"] += ",".join(buff) + " (parse error)<br>"
 
                             if validDni:
                                 st = db.Student.getByDni(validDni)
@@ -413,7 +448,7 @@ class SubjectsHandler(base.BaseHandler):
         if '0' <= dni[0] <= '9' and letters[int(dni[:8]) % 23] != dni[8]:
             return None
 
-        if 'X' <= dni[0] <= 'Z' and letters[int(str(ord("X") - 88) + dni[1:8]) % 23] != dni[8]:
+        if 'X' <= dni[0] <= 'Z' and letters[int(str(ord(dni[0]) - 88) + dni[1:8]) % 23] != dni[8]:
             return None
 
         return dni

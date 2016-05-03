@@ -12,6 +12,7 @@ class Subject(ndb.Model):
 
     teachers = ndb.KeyProperty(kind="Teacher", repeated=True)
     students = ndb.KeyProperty(kind="Student", repeated=True)
+    promoted = ndb.KeyProperty(kind="Student", repeated=True)
 
     def getTasks(self):
         return Task.query(Task.subject == self.key)
@@ -57,6 +58,8 @@ class Subject(ndb.Model):
         if task:
             taskKey.delete()
 
+
+
     @staticmethod
     def getSubjectsByTeacher(key):
         return Subject.query(Subject.teachers == key)
@@ -101,8 +104,7 @@ class Task(ndb.Model):
         return sub.students
 
     def getMarks(self):
-        sub = self.subject.get()
-        return Mark.getMarks(self)
+        return Mark.query(Mark.task == self.key).fetch()
 
     @staticmethod
     def addOrUpdate(subKey, name, percent, order, maxMark, informative, extra, taskKey=None):
@@ -196,10 +198,6 @@ class Mark(ndb.Model):
         else:
             m.mark = mark
         return m.put()
-
-    @staticmethod
-    def getMarks(task):
-        return Mark.query(Mark.task == task.key).fetch()
 
 
 ITEMS_PER_PAGE = 8
