@@ -39,6 +39,13 @@ class Subject(ndb.Model):
     def searchStudents(self, s):
         return Student.query(ndb.OR(Student.dni == s, Student.name == s))
 
+    def searchStudents2(self, search):
+        students = []
+        for st in self.getStudents().fetch():
+            if search in st.name or search in st.dni:
+                students.append(st)
+        return students
+
     def getTeachers(self):
         return [tKey.get() for tKey in self.teachers]
 
@@ -204,11 +211,15 @@ ITEMS_PER_PAGE = 8
 
 
 def paginateOff(query, order, offset=0):
-    if type(order) is tuple:
-        objects, nextCursor, more = query.order(*order).fetch_page(ITEMS_PER_PAGE, offset=offset)
-    else:
-        objects, nextCursor, more = query.order(order).fetch_page(ITEMS_PER_PAGE, offset=offset)
+    qOrdered = query.order(*order) if type(order) is tuple else query.order(order)
+    objects, nextCursor, more = qOrdered.fetch_page(ITEMS_PER_PAGE, offset=offset)
     prev_offset = max(offset - ITEMS_PER_PAGE, 0) if bool(offset) else -1
     next_offset = offset + ITEMS_PER_PAGE if bool(more) else -1
 
+    return {'objects': objects, 'prevOffset': prev_offset, 'nextOffset': next_offset, 'curOffset': offset}
+
+def paginateArray(array, offset=0):
+    objects = array[offset:offset+ITEMS_PER_PAGE]
+    prev_offset = max(offset - ITEMS_PER_PAGE, 0) if bool(offset) else -1
+    next_offset = offset + ITEMS_PER_PAGE if len(array) >= offset + ITEMS_PER_PAGE else -1
     return {'objects': objects, 'prevOffset': prev_offset, 'nextOffset': next_offset, 'curOffset': offset}
