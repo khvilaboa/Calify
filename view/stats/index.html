@@ -14,21 +14,61 @@
 
 <div class="card-title"> {{ _("Statistics") }} </div>
 <div class="card row">
+
+    {% if subjectsData | length > 0%}
+    <div class="form-group">
+        <select class="form-control" id="subjectsSelect">
+            <option>{{ _("All the subjects") }}</option>
+            {% for sub in subjectsData %}
+            <option data-id="{{ sub.key.id() }}" value="{{ sub.name }}">{{ sub.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+    {% if showSubjectsStats or showTasksStats %}
     <div class="col-xs-12 col-md-6">
         <canvas id="canvasBarsNumStudents"></canvas>
     </div>
-    <hr class="visible-xs">
+    {% endif %}
+
+    {% if showMarksByRanges %}
     <div class="col-xs-12 col-md-6">
         <canvas id="canvasPie"></canvas>
     </div>
+    {% endif %}
+
+    {% if showSubjectsStats or showTasksStats %}
     <div class="col-xs-12 col-md-6">
         <canvas id="canvasBarsMeanMarks"></canvas>
     </div>
+    {% endif %}
+
+    {% if not showSubjectsStats and not showTasksStats %}
+    <div> {{ _("There isn't information enough to generate statistics") }}.</div>
+    {% endif %}
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
+
+    var subId = '{{ subjectId }}';
+
+    $(function () {
+        if(subId != '') {
+            //$("subjectsSelect").val($("option[data-id='" + subId + "']").val());
+            $("option[data-id='" + subId + "']").attr("selected", "true");
+        }
+    });
+
+    $(document).on("change", "#subjectsSelect", {}, function () {
+        //alert($(this).val());
+        var id = $("option[value='" + $(this).val() + "']").attr("data-id");
+        var idStr = (id!=undefined)?id:'';
+
+        window.location.href = "/stats/" + idStr;
+    });
+
     var randomScalingFactor = function () {
         return Math.round(Math.random() * 100);
     };
@@ -39,27 +79,31 @@
         return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',.7)';
     };
 
+    {% if showSubjectsStats or showTasksStats %}
     var barChartDataNumStudents = {
 
-        labels:{{ subjects | safe }},
+        labels: {% if showSubjectsStats %}{{ subjects | safe }}{% else %}{{ tasks | safe }}{% endif %},
         datasets: [{
-            label: '{{ _("Students") }}',
+            label: '{% if showSubjectsStats %}{{ _("Students") }}{% else %}{{ _("Evaluations") }}{% endif %}',
             backgroundColor: [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),,randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
-            data: {{ studentsBySubject | safe }}
+            data: {% if showSubjectsStats %}{{ studentsBySubject | safe }}{% else %}{{ studentsByTask | safe }}{% endif %}
         }]
 
     };
+    {% endif %}
 
+    {% if showSubjectsStats or showTasksStats %}
     var barChartDataMeanMarks = {
 
-        labels:{{ subjects | safe }},
+        labels: {% if showSubjectsStats %}{{ subjects | safe }}{% else %}{{ tasks | safe }}{% endif %},
         datasets: [{
             label: '{{ _("Mean mark") }}',
             backgroundColor: [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
-            data: {{ avgMarkBySubject | safe }}
+            data: {% if showSubjectsStats %}{{ avgMarkBySubject | safe }}{% else %}{{ avgMarkByTask | safe }}{% endif %}
         }]
 
     };
+    {% endif %}
 
     {% if showMarksByRanges %}
     var configPie = {
@@ -98,8 +142,9 @@
     barChart = "";
 
     window.onload = function () {
+        {% if showSubjectsStats or showTasksStats %}
         var ctxBarsNumStudents = document.getElementById("canvasBarsNumStudents").getContext("2d");
-        var ctxBarsMeanMarks = document.getElementById("canvasBarsMeanMarks").getContext("2d");
+
 
         barChartNumStudents = new Chart(ctxBarsNumStudents, {
             type: 'bar',
@@ -111,11 +156,12 @@
                 },
                 title: {
                     display: true,
-                    text: '{{ _("Students by subject") }}'
+                    text: '{% if showSubjectsStats %}{{ _("Students by subject") }}{% else %}{{ _("Evaluations by task") }}{% endif %}'
                 }
             }
         });
 
+        var ctxBarsMeanMarks = document.getElementById("canvasBarsMeanMarks").getContext("2d");
         barChartMeanMark = new Chart(ctxBarsMeanMarks, {
             type: 'bar',
             data: barChartDataMeanMarks,
@@ -126,10 +172,11 @@
                 },
                 title: {
                     display: true,
-                    text: '{{ _("Mean mark by subject") }}'
+                    text: '{% if showSubjectsStats %}{{ _("Mean mark by subject") }}{% else %}{{ _("Mean mark by task") }}{% endif %}'
                 }
             }
         });
+        {% endif %}
 
         //var myPieChart = new Chart(ctxPie).Pie(data,options);
         {% if showMarksByRanges %}
