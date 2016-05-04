@@ -394,6 +394,10 @@ div.pagination-wrapper {
     background-color: #eee;
 }
 
+.form-search {
+    margin-bottom: 15px;
+}
+
 /* STATS */
 canvas {
     margin: 10px 0 10px 0;

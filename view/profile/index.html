@@ -21,14 +21,14 @@
             <form action="/profile/modify" method="POST" >
                 <div class="prof-info-item">
                 {% if own %}
-                    <label for="email2">{{ _("Name") }}: </label>
-                    <div class="input-group" id="email2">
-                       <input type="text" class="form-control" id="name" name="name"
-                           value="{{ teacher.name if teacher.name else '' }}" placeholder="Enter name">
-                       <span class="input-group-btn">
-                            <button type="submit" class="btn btn-default"><i class="fa fa-pencil"></i> {{ _("Modify") }}</button>
-                       </span>
-                    </div>
+                <label for="nameGroup">{{ _("Name") }}: </label>
+                <div class="input-group" id="nameGroup">
+                   <input type="text" class="form-control" id="name" name="name"
+                       value="{{ teacher.name if teacher.name else '' }}" placeholder="Enter name">
+                   <span class="input-group-btn">
+                        <button type="submit" class="btn btn-default"><i class="fa fa-pencil"></i> {{ _("Modify") }}</button>
+                   </span>
+                </div>
                 {% else %}
                 <span>{{ _("Name") }}:</span> {{ teacher.name if teacher.name else "-"}}
                 {% endif %}

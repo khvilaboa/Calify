@@ -15,6 +15,11 @@ indexes:
   - name: __key__
     direction: desc
 
+- kind: Student
+  properties:
+  - name: dni
+  - name: name
+
 - kind: Subject
   properties:
   - name: __key__

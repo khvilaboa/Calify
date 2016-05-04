@@ -16,7 +16,7 @@
 
             <div class="row">
                 <div class="col-xs-4">
-                    <div>{{ _("Percentage") }}: {{ task.percent }}%</div>
+                    <div>{{ _("Percentage") }}: {% if task.percent == -1 %}-{% else %}{{ task.percent }} %{% endif %}</div>
                     <div>{{ _("Maximum mark") }}: {{ task.maxmark }}</div>
                 </div>
                 <div class="col-xs-4">
