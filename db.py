@@ -7,7 +7,9 @@ from google.appengine.ext import ndb
 class Subject(ndb.Model):
     name = ndb.StringProperty(indexed=True)
     description = ndb.StringProperty(indexed=False)
-    year = ndb.IntegerProperty(indexed=True)
+    startdate = ndb.DateProperty(indexed=False)
+    enddate = ndb.DateProperty(indexed=False)
+    completed = ndb.BooleanProperty(indexed=False)
     creationdate = ndb.DateTimeProperty(indexed=True)
 
     teachers = ndb.KeyProperty(kind="Teacher", repeated=True)
@@ -82,14 +84,16 @@ class Subject(ndb.Model):
         return False
 
     @staticmethod
-    def addOrUpdate(name, desc, year, teachers, students=[], key=None):
+    def addOrUpdate(name, desc, startDate, endDate,  teachers, students=[], key=None):
 
         if key == None:  # add
-            sub = Subject(name=name, description=desc, year=year, teachers=teachers, creationdate=datetime.datetime.now(), students=students)
+            sub = Subject(name=name, description=desc, startdate=startDate,enddate=endDate ,teachers=teachers, creationdate=datetime.datetime.now(), completed=False, students=students)
         else:
             sub = key.get()
             sub.name = name
             sub.description = desc
+            sub.startdate = startDate
+            sub.enddate = endDate
             sub.teachers = teachers
             sub.students = students
 

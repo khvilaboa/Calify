@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-import webapp2, jinja2, os, db, base, re, time, sys, xlwt, StringIO
+import webapp2, jinja2, os, db, base, re, time, sys, xlwt, StringIO, datetime
 #from xlutils import copy
 #sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'xlutils'))
 
@@ -194,8 +194,13 @@ class SubjectsHandler(base.BaseHandler):
             # Subject data
             name = self.request.get("name")
             desc = self.request.get("description")
+            start = self.request.get("startDate")
+            end = self.request.get("endDate")
 
-            subKey = db.Subject.addOrUpdate(name, desc, 2012, [teacherKey])
+            startDate = datetime.date(*tuple(map(int, start.split("/"))[::-1]))
+            endDate = datetime.date(*tuple(map(int, end.split("/"))[::-1]))
+
+            subKey = db.Subject.addOrUpdate(name, desc, startDate, endDate, [teacherKey])
 
             # Go throught all the tasks of the subject
             for task in filter(lambda x: re.match('task[[0-9]*].name', x), list(self.request.POST)):

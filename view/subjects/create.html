@@ -9,28 +9,42 @@
 
     <div class="card">
 
-            <div class="form-group row card-row">
-                <label class="control-label col-sm-2" for="name">{{ _("Name") }}:</label>
+        <div class="form-group row card-row">
+            <label class="control-label col-sm-2" for="name">{{ _("Name") }}:</label>
 
-                <div class="col-sm-10 ">
-                    <input type="text" class="form-control" id="name" name="name" value="{{ subject.name if subject else '' }}">
-                </div>
-
-                <!--<label class="control-label col-xs-2" for="pwd">Password:</label>
-
-                <div class="col-xs-4">
-                    <input type="password" class="form-control" id="pwd" placeholder="Enter password">
-                </div>-->
+            <div class="col-sm-10 ">
+                <input type="text" class="form-control" id="name" name="name" value="{{ subject.name if subject else '' }}">
             </div>
 
+            <!--<label class="control-label col-xs-2" for="pwd">Password:</label>
 
-            <div class="form-group row card-row">
-                <label for="description" class="col-xs-12">{{ _("Description") }}:</label>
+            <div class="col-xs-4">
+                <input type="password" class="form-control" id="pwd" placeholder="Enter password">
+            </div>-->
+        </div>
 
-                <div class="col-xs-12">
-                    <textarea class="form-control col-xs-12" rows="5" id="description" name="description">{{ subject.description if subject else '' }}</textarea>
-                </div>
+        <div class="form-group row card-row">
+            <label for="startDate" class="col-sm-2 control-label form-margin-correct">{{ _("Start date") }}: </label>
+
+            <div class="col-sm-4 form-margin-correct no-margin-sides">
+                <input type="text" class="form-control" name="startDate" id="startDate"/>
             </div>
+
+            <label for="endDate" class="col-sm-2 control-label form-margin-correct">{{ _("End date") }}: </label>
+
+            <div class="col-sm-4 form-margin-correct">
+                <input type="text" class="form-control" name="endDate" min="0" max="100"
+                       id="endDate"/>
+            </div>
+        </div>
+
+        <div class="form-group row card-row">
+            <label for="description" class="col-xs-12">{{ _("Description") }}:</label>
+
+            <div class="col-xs-12">
+                <textarea class="form-control col-xs-12" rows="5" id="description" name="description">{{ subject.description if subject else '' }}</textarea>
+            </div>
+        </div>
 
     </div>
     <!--<div class="form-group">
@@ -439,6 +453,19 @@
         $("#taskExtra").prop('checked', false);
         updatePercentFieldStatus();
     }
+
+    $.datepicker.setDefaults($.datepicker.regional['es']);
+
+    $('#startDate, #endDate').datetimepicker({
+        yearOffset: 0,
+        //lang: 'es',
+        timepicker: false,
+        format: 'd/m/Y',
+        formatDate: 'Y/m/d',
+        //minDate: '-1970/01/02', // yesterday is minimum date
+        //maxDate: '+1970/01/02' // and tommorow is maximum date calendar
+    });
+
 </script>
 
 {% endblock %}
