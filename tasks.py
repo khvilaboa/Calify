@@ -26,6 +26,10 @@ class TasksHandler(base.BaseHandler):
             task = db.Task.get_by_id(long(idTask))
             sub = task.subject.get()
 
+            if sub.completed:
+                self.redirect("/subjects/view/%s" % sub.key.id())
+                return
+
             # Recover marks of the task
             marks = {}
             for mark in task.getMarks():

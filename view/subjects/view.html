@@ -18,7 +18,7 @@
     <div class="col-xs-2"></div>
     <div class="col-xs-10">
         <div class="card-info-title">
-            <h4>{{ sub.name }} - {{ sub.completed }} <span class="pull-right"><a href="/subjects/modify/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-pencil"></i></a><a href="/subjects/{{ 'un' if sub.completed else '' }}complete/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-check-circle{{ '-o' if not sub.completed else '' }}"></i></a><a href="/stats/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-bar-chart"></i></a><a href="/subjects/export/{{ sub.key.id()}}?ext=csv" class="sides-margin"><i class="fa fa-download"></i></a><a href="/subjects/export/{{ sub.key.id() }}?ext=xls"  class="sides-margin"><i class="fa fa-file-excel-o"></i></a></span></h4> </div>
+            <h4>{{ sub.name }} <span class="pull-right">{% if not sub.completed %}<a href="/subjects/modify/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-pencil"></i></a>{% endif %}<a href="/subjects/{{ 'un' if sub.completed else '' }}complete/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-check-circle{{ '-o' if not sub.completed else '' }}"></i></a><a href="/stats/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-bar-chart"></i></a><a href="/subjects/export/{{ sub.key.id()}}?ext=csv" class="sides-margin"><i class="fa fa-download"></i></a><a href="/subjects/export/{{ sub.key.id() }}?ext=xls"  class="sides-margin"><i class="fa fa-file-excel-o"></i></a></span></h4> </div>
         <!--<div><b>Description: </b>{{ sub.description }}</div>-->
     </div>
 
@@ -49,16 +49,26 @@
             <tr>
                 <th>{{ _("Name") }}</th>
                 <th>{{ _("Percent") }}</th>
+                {% if sub.completed %}
+                <th>{{ _("Informative") }}</th>
+                <th>{{ _("Extra") }}</th>
+                {% else %}
                 <th>{{ _("Actions") }}</th>
+                {% endif %}
             </tr>
             </thead>
             <tbody>
             {% for task in tasks %}
-            <tr data-id="{{ task.key.id() }}" class="with-pointer"
-                onclick="window.document.location = '/tasks/calify/{{ task.key.id() }}'">
+            <tr data-id="{{ task.key.id() }}" {% if not sub.completed %}class="with-pointer"
+                onclick="window.document.location = '/tasks/calify/{{ task.key.id() }}'"{% endif %}>
                 <td>{{ task.name }}</td>
                 <td>{% if task.percent == -1 %}-{% else %}{{ task.percent }} %{% endif %}</td>
+                {% if sub.completed %}
+                <td>{{ _("Yes") if task.informative else _("No") }}</td>
+                <td>{{ _("Yes") if task.extra else _("No") }}</td>
+                {% else %}
                 <td><img src="/img/edit.png" class="img-icon icon-edit" onclick="window.document.location = '/subjects/modify/{{ sub.key.id() }}'" /></td>
+                {% endif %}
             </tr>
             {% endfor %}
             </tbody>
