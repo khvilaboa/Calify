@@ -154,7 +154,7 @@ class SubjectsHandler(base.BaseHandler):
                     self.writeXlsData(ws, row, 4, 0)
 
                     if mark is not None:
-                        self.writeXlsData(ws, row, 5, '')
+                        self.writeXlsData(ws, row, 5, 'MH' if st.hasHonorsInSubject(sub.key) else '')
                         self.writeXlsData(ws, row, 6, mark)
                     else:
                         self.writeXlsData(ws, row, 5, 'NP')

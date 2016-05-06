@@ -29,7 +29,7 @@ class SearchHandler(base.BaseHandler):
 
         # If a search string is passed, filter the subject students, else get all of them
         if search:
-            matchStudents = sub.searchStudents2(search)
+            matchStudents = sub.searchStudents(search)
             lenQuery = len(matchStudents)
             if lenQuery == 0: return
 

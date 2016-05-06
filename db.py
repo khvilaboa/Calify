@@ -38,10 +38,10 @@ class Subject(ndb.Model):
             mark.key.delete()
         return self.put()
 
-    def searchStudents(self, s):
-        return Student.query(ndb.OR(Student.dni == s, Student.name == s))
+    """def searchStudents(self, s):
+        return Student.query(ndb.OR(Student.dni == s, Student.name == s))"""
 
-    def searchStudents2(self, search):
+    def searchStudents(self, search):
         students = []
         for st in self.getStudents().fetch():
             if search in st.name or search in st.dni:
@@ -84,6 +84,13 @@ class Subject(ndb.Model):
         return self.put()
 
     def getStudentFinalMark(self, stKey):
+
+        def getPromotedMark(mark):
+            for impMark in [5,7,9]:
+                if 0.25 >= impMark - mark > 0:
+                    return impMark
+            return mark
+
         tasks = self.getTasks()
         student = stKey.get()
         weightedAvg = 0
@@ -102,7 +109,12 @@ class Subject(ndb.Model):
             pres = True
 
         if pres:
-            return min(weightedAvg + extraPoints, 10)
+            mark = min(weightedAvg + extraPoints, 10)
+            if stKey in self.promoted:
+                mark = getPromotedMark(mark)
+            if mark == int(mark):
+                mark = int(mark)
+            return mark
 
         return None
 
@@ -203,6 +215,12 @@ class Student(ndb.Model):
     # email = ndb.StringProperty(indexed=False)
     dni = ndb.StringProperty(indexed=True)
     name = ndb.StringProperty(indexed=True)
+
+    def hasHonorsInSubject(self, subKey):
+        sub = subKey.get()
+        if sub and self.key in sub.promoted:
+            return sub.getStudentFinalMark(self.key) >= 9
+        return False
 
     @staticmethod
     def exists(dni):

@@ -89,7 +89,7 @@
         markStr = markControl.val().replace(",", ".")
 
         if(validMark(markStr)) {
-            mark = parseFloat(parseFloat(markStr).toFixed(3));
+            mark = parseFloat(parseFloat(markStr).toFixed(2));
 
             url = "/tasks/addnote/{{ task.key.id() }}/" + stId + "?mark=" + mark;
 
