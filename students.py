@@ -63,7 +63,7 @@ class SearchHandler(base.BaseHandler):
         # Add the rows info
         for student in data["objects"]:
             resp += "%s^^%s^^%s" % (student.key.id(), student.name, student.dni)  # Data to be formatted in the JS code
-            resp += "^^%s" % marks.get(student.key.id(), "-1") if taskId else ""  # Add marks if the destination is a task view
+            resp += "^^%s" % (marks.get(student.key.id(), "-1") if taskId else (sub.getStudentFinalMark(student.key) if sub.getStudentFinalMark(student.key) is not None else "-"))  # Add marks if the destination is a task view
             resp += "\n"
 
         if len(data["objects"]):

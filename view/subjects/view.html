@@ -18,7 +18,7 @@
     <div class="col-xs-2"></div>
     <div class="col-xs-10">
         <div class="card-info-title">
-            <h4>{{ sub.name }} <span class="pull-right"><a href="/subjects/modify/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-pencil"></i></a><a href="/subjects/complete/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-check-circle-o"></i></a><a href="/stats/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-bar-chart"></i></a><a href="/subjects/export/{{ sub.key.id()}}?ext=csv" class="sides-margin"><i class="fa fa-download"></i></a><a href="/subjects/export/{{ sub.key.id() }}?ext=xls"  class="sides-margin"><i class="fa fa-file-excel-o"></i></a></span></h4> </div>
+            <h4>{{ sub.name }} - {{ sub.completed }} <span class="pull-right"><a href="/subjects/modify/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-pencil"></i></a><a href="/subjects/{{ 'un' if sub.completed else '' }}complete/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-check-circle{{ '-o' if not sub.completed else '' }}"></i></a><a href="/stats/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-bar-chart"></i></a><a href="/subjects/export/{{ sub.key.id()}}?ext=csv" class="sides-margin"><i class="fa fa-download"></i></a><a href="/subjects/export/{{ sub.key.id() }}?ext=xls"  class="sides-margin"><i class="fa fa-file-excel-o"></i></a></span></h4> </div>
         <!--<div><b>Description: </b>{{ sub.description }}</div>-->
     </div>
 
@@ -154,6 +154,7 @@
             <tr>
                 <th>{{ _("DNI") }}</th>
                 <th>{{ _("Name") }}</th>
+                {% if sub.completed %}<th>{{ _("Final mark") }}</th>{% endif %}
                 <th>{{ _("Actions") }}</th>
             </tr>
             </thead>
@@ -289,6 +290,41 @@
         });
     }
 
+    function markNearOfImpPoint(m) {
+        impPoints = [5, 7, 9];
+        mark = parseFloat(m);
+
+        for(i in impPoints) {
+            if(impPoints[i]-mark <= 0.25 && impPoints[i]-mark > 0) {
+                return true;
+            }
+        }
+
+        return mark >= 9;
+    }
+
+    function getPromotedMark(m) {
+        impPoints = [5, 7, 9];
+        mark = parseFloat(m);
+
+        for(i in impPoints) {
+            if(impPoints[i]-mark <= 0.25 && impPoints[i]-mark > 0) {
+                return impPoints[i].toString();
+            }
+        }
+
+        if(mark >= 9) {
+            return mark.toString() + " (MH)";
+        }
+
+        return "-";
+    }
+
+    function isPromoted(stKey) {
+        var promoted = {{ promoted | safe }};
+        return promoted.includes(stKey);
+    }
+
     function fillData(tableBody, tableButtons, data) {
         dataSp = data.split("\n\n");
 
@@ -319,8 +355,13 @@
             id = dataRow[0];
             name = dataRow[1];
             dni = dataRow[2];
-
-            bodyHtml += '<tr data-id=\"' + id + '\"><td>' + dni + '</td><td>' + name + '</td><td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>';
+            oriMark = dataRow[3].replace(/([0-9]*)\.0+/, "$1");
+            mark = oriMark;
+            if(isPromoted(id)) {
+                mark += " :)";
+                mark = getPromotedMark(parseFloat(mark));
+            }
+            bodyHtml += '<tr data-id=\"' + id + '\" data-mark="' + oriMark + '"><td>' + dni + '</td><td>' + name + '</td>{% if sub.completed %}<td>' + mark + '</td>{% endif %}<td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" />{% if sub.completed %}' + ((isPromoted(id))?"<img src=\"/img/down_mark.png\" data-action=\"down\" class=\"img-icon icon-changemark\" />":"") + ((!isPromoted(id) && markNearOfImpPoint(mark))?"<img src=\"/img/up_mark.png\" data-action=\"up\" class=\"img-icon icon-changemark\" />":"") + '{% endif %}</td></tr>';
         }
 
         tableBody.html(bodyHtml);
@@ -364,6 +405,33 @@
                 }
             } else {
                 alertify.error('{{ _("There was a problem deleting the subject") }}');
+            }
+        });
+    });
+
+    $(document).on("click", ".icon-changemark", {}, function () {
+
+        var row = $(this).closest("tr");
+        var stId = row.attr("data-id");
+        var action = $(this).attr("data-action");
+        var img = $(this);
+
+        var url = "/subjects/" + ((action == "up")?"add":"remove") + "promoted/{{ sub.key.id() }}?st=" + stId;
+
+        $.post(url, function (data, status) {
+            if(status == "success") {
+                img.attr("src", "/img/" + ((action=="up")?"down":"up") + "_mark.png");
+                img.attr("data-action", ((action=="up")?"down":"up"));
+
+                td = row.children().next().next().first();
+                if(action == "up") {
+                    td.text(getPromotedMark(parseFloat(td.text())));
+                } else {
+                    td.text(row.attr("data-mark"));
+                }
+
+            } else {
+                alertify.error('{{ _("There was adding the promotion") }}');
             }
         });
     });

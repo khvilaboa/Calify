@@ -59,6 +59,7 @@ class SubjectsHandler(base.BaseHandler):
             values["sub"] = sub
             values["teachers"] = sub.getTeachers()
             values["tasks"] = sub.getTasks().order(db.Task.order)
+            values["promoted"] = "[" + ",".join(['"' + str(stKey.id()) + '"' for stKey in sub.promoted]) + "]"
 
             if self.session.get('correctLines', None) != None:  # File load results
 
@@ -71,7 +72,27 @@ class SubjectsHandler(base.BaseHandler):
         elif action == "create":
             values["action"] = "create"
             template = JINJA_ENVIRONMENT.get_template('view/subjects/create.html')
+        elif action == "complete" and idSub != "":
+            sub = db.Subject.get_by_id(long(idSub))
 
+            if sub:
+                sub.setCompleted(True)
+                self.redirect("/subjects/view/" + idSub)
+                return
+            else:
+                self.redirect("/")
+                return
+        elif action == "uncomplete" and idSub != "":
+            sub = db.Subject.get_by_id(long(idSub))
+
+            if sub:
+                sub.setCompleted(False)
+                sub.removeAllPromoteds()
+                self.redirect("/subjects/view/" + idSub)
+                return
+            else:
+                self.redirect("/")
+                return
         elif action == "modify" and idSub != "":
             values["subject"] = db.Subject.get_by_id(long(idSub))
             values["tasks"] = values["subject"].getTasks().order(db.Task.order)
@@ -105,24 +126,8 @@ class SubjectsHandler(base.BaseHandler):
 
                 fileContent = ""
                 for st in students:
-                    #self.response.write(st.name + "<br>")
-                    weightedAvg = 0
-                    extraPoints = 0
-                    pres = False
-                    for task in tasksInfo:
-                        rawMark = tasksMarks[task.key].get(st.key, None)
-                        if not rawMark or task.informative:
-                            continue
-                        elif task.extra:
-                            extraPoints += rawMark
-                            pres = True
-                            continue
-                        mark = (rawMark / task.maxmark) * 10 * (task.percent/100.0)
-                        weightedAvg += mark
-                        pres = True
-
-                    if pres:
-                        mark = min(weightedAvg + extraPoints, 10)
+                    mark = sub.getStudentFinalMark(st.key)
+                    if mark is not None:
                         fileContent += "%s;%s\n" % (st.dni[:8], mark)
                 self.response.write(fileContent)
                 return
@@ -137,29 +142,18 @@ class SubjectsHandler(base.BaseHandler):
                 ws = xls.get_sheet(0)
                 row = 13
 
+                fileContent = ""
                 for st in students:
-                    weightedAvg = 0
-                    extraPoints = 0
-                    pres = False
-                    for task in tasksInfo:
-                        rawMark = tasksMarks[task.key].get(st.key, None)
-                        if not rawMark or task.informative:
-                            continue
-                        elif task.extra:
-                            extraPoints += rawMark
-                            pres = True
-                            continue
-                        mark = (rawMark / task.maxmark) * 10 * (task.percent/100.0)
-                        weightedAvg += mark
-                        pres = True
+                    mark = sub.getStudentFinalMark(st.key)
+                    if mark is not None:
+                        fileContent += "%s;%s\n" % (st.dni[:8], mark)
 
                     self.writeXlsData(ws, row, 1, row - 12)
                     self.writeXlsData(ws, row, 2, st.dni)
                     self.writeXlsData(ws, row, 3, st.name)
                     self.writeXlsData(ws, row, 4, 0)
 
-                    if pres:
-                        mark = min(weightedAvg + extraPoints, 10)
+                    if mark is not None:
                         self.writeXlsData(ws, row, 5, '')
                         self.writeXlsData(ws, row, 6, mark)
                     else:
@@ -167,11 +161,10 @@ class SubjectsHandler(base.BaseHandler):
                         self.writeXlsData(ws, row, 6, '')
 
                     row += 1
-                    #fileContent += "%s;%s\n" % (st.dni[:8], weightedAvg+extraPoints)
-
                 out = StringIO.StringIO()
                 xls.save(out)
                 self.response.write(out.getvalue())
+
                 return
 
             self.redirect("/")
@@ -435,6 +428,29 @@ class SubjectsHandler(base.BaseHandler):
                 self.response.write("1")
             else:
                 self.response.write("0")
+        elif action == "addpromoted" and idSub != "":
+            # Get subject
+            sub = db.Subject.get_by_id(long(idSub))
+
+            # Get student
+            studentId = self.request.get("st")
+            student = db.Student.get_by_id(long(studentId))
+
+            if student.key not in sub.promoted:
+                sub.addPromoted(student.key)
+            return
+        elif action == "removepromoted" and idSub != "":
+            # Get subject
+            sub = db.Subject.get_by_id(long(idSub))
+
+            # Get student
+            studentId = self.request.get("st")
+            student = db.Student.get_by_id(long(studentId))
+
+            if student.key in sub.promoted:
+                sub.removePromoted(student.key)
+
+            return
         elif action == "remove" and idSub != "":
             db.Subject.removeById(long(idSub))
             self.redirect("/")
@@ -492,7 +508,6 @@ class SubjectsHandler(base.BaseHandler):
         strDarkGray = 'font: height 160, name Arial, colour white, bold on; pattern: pattern solid, fore_colour gray40;'
         styleDarkGray = xlwt.easyxf(strDarkGray)
         styleDarkGrayR = xlwt.easyxf(strDarkGray + " align: horz right")
-        styleDarkGrayC = xlwt.easyxf(strDarkGray + " align: horz center")
         styleDarkGrayY = xlwt.easyxf(strDarkGray.replace('colour white', 'colour yellow'))
         strLightGray = 'pattern: pattern solid, fore_colour gray25; font: colour black;' # borders: bottom thin, top thin, left thin, right thin
         styleLightGray = xlwt.easyxf(strLightGray)

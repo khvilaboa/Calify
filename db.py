@@ -67,7 +67,44 @@ class Subject(ndb.Model):
         if task:
             taskKey.delete()
 
+    def setCompleted(self, comp):
+        self.completed = comp
+        return self.put()
 
+    def removeAllPromoteds(self):
+        self.promoted = []
+        return self.put()
+
+    def addPromoted(self, stKey):
+        self.promoted.append(stKey)
+        return self.put()
+
+    def removePromoted(self, stKey):
+        self.promoted.remove(stKey)
+        return self.put()
+
+    def getStudentFinalMark(self, stKey):
+        tasks = self.getTasks()
+        student = stKey.get()
+        weightedAvg = 0
+        extraPoints = 0
+        pres = False
+        for task in tasks:
+            rawMark = Mark.getByStudentAndTask(student.key, task.key)
+            if not rawMark or task.informative:
+                continue
+            elif task.extra:
+                extraPoints += rawMark.mark
+                pres = True
+                continue
+            mark = (rawMark.mark / task.maxmark) * 10 * (task.percent/100.0)
+            weightedAvg += mark
+            pres = True
+
+        if pres:
+            return min(weightedAvg + extraPoints, 10)
+
+        return None
 
     @staticmethod
     def getSubjectsByTeacher(key):
