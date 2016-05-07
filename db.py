@@ -133,18 +133,16 @@ class Subject(ndb.Model):
         return False
 
     @staticmethod
-    def addOrUpdate(name, desc, startDate, endDate,  teachers, students=[], key=None):
+    def addOrUpdate(name, desc, startDate, endDate,  teachers, key=None):
 
         if key == None:  # add
-            sub = Subject(name=name, description=desc, startdate=startDate,enddate=endDate ,teachers=teachers, creationdate=datetime.datetime.now(), completed=False, students=students)
+            sub = Subject(name=name, description=desc, startdate=startDate,enddate=endDate ,teachers=teachers, creationdate=datetime.datetime.now(), completed=False, students=[])
         else:
             sub = key.get()
             sub.name = name
             sub.description = desc
             sub.startdate = startDate
             sub.enddate = endDate
-            sub.teachers = teachers
-            sub.students = students
 
         return sub.put()
 

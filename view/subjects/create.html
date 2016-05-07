@@ -27,14 +27,14 @@
             <label for="startDate" class="col-sm-2 control-label form-margin-correct">{{ _("Start date") }}: </label>
 
             <div class="col-sm-4 form-margin-correct no-margin-sides">
-                <input type="text" class="form-control" name="startDate" id="startDate"/>
+                <input type="text" class="form-control" name="startDate" id="startDate" value="{{ subject.startdate.strftime('%d/%m/%Y') if subject else '' }}"/>
             </div>
 
             <label for="endDate" class="col-sm-2 control-label form-margin-correct">{{ _("End date") }}: </label>
 
             <div class="col-sm-4 form-margin-correct">
                 <input type="text" class="form-control" name="endDate" min="0" max="100"
-                       id="endDate"/>
+                       id="endDate" value="{{ subject.enddate.strftime('%d/%m/%Y') if subject else '' }}"/>
             </div>
         </div>
 
@@ -114,7 +114,9 @@
 
     <div class="form-group row no-margin">
         <div class="col-xs-12">
-            <button type="button" class="btn btn-default" onclick="if(validate()) document.forms['subjectCreation'].submit();">{% if action == 'create' %} {{ _("Create") }}{% else %}{{ _("Modify") }} {% endif %}</button>
+            <button type="button" class="btn btn-default btn-button" onclick="window.location='/subjects/{{ 'view/%s' % subject.key.id() if subject else '' }}'">{{ _("Cancel") }}</button>
+            <button type="button" class="btn btn-default btn-button" onclick="if(validate()) document.forms['subjectCreation'].submit();">{% if action == 'create' %} {{ _("Create") }}{% else %}{{ _("Modify") }} {% endif %}</button>
+
         </div>
     </div>
 

@@ -207,6 +207,17 @@ class SubjectsHandler(base.BaseHandler):
             for t in sub.getTasks().fetch():
                 tasks[t.name] = t.key
 
+            # Subject data
+            name = self.request.get("name")
+            desc = self.request.get("description")
+            start = self.request.get("startDate")
+            end = self.request.get("endDate")
+
+            startDate = datetime.date(*tuple(map(int, start.split("/"))[::-1]))
+            endDate = datetime.date(*tuple(map(int, end.split("/"))[::-1]))
+
+            db.Subject.addOrUpdate(name, desc, startDate, endDate, None, sub.key)
+
             self.response.write(tasks)
             self.response.write("<br>")
 
