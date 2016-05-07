@@ -270,7 +270,7 @@ table th:hover {
 }
 
 .card-info {
-    height: 120px;
+    height: 110px;
 }
 
 .card-info-reduced {
@@ -281,6 +281,10 @@ table th:hover {
 .card-info-title {
     border-bottom: 1px solid #CCC;
     margin-bottom: 10px;
+}
+
+.card-info-data {
+    font-size: 13px;
 }
 
 /* DROPDOWN */

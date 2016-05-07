@@ -2,21 +2,10 @@
 #!/usr/bin/env python
 
 import webapp2, jinja2, os, db, base, re, time, sys, xlwt, StringIO, datetime
-#from xlutils import copy
-#sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'xlutils'))
-
-#sys.path.insert(0, 'wolo.zip')
-#sys.path = sys.path[:5]
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from webapp2_extras import i18n, sessions
-
-
-#from xlutils.copy import copy
-#from xlutils.filter import process
-
-
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
