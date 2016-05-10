@@ -43,8 +43,11 @@ class Subject(ndb.Model):
 
     def searchStudents(self, searchString):
         students = []
+        search = searchString.lower()
         for st in self.getStudents().fetch():
-            if searchString in st.name or searchString in st.dni:
+            name = st.name.lower()
+            dni = st.dni.lower()
+            if search in name or search in dni:
                 students.append(st)
         return students
 
