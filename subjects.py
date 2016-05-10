@@ -2,9 +2,6 @@
 #!/usr/bin/env python
 
 import webapp2, jinja2, os, db, base, re, time, sys, xlwt, StringIO, datetime
-
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4
 from webapp2_extras import i18n, sessions
 
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -34,15 +31,7 @@ class SubjectsHandler(base.BaseHandler):
 
         if not action:  # index
             template = JINJA_ENVIRONMENT.get_template('view/subjects/index.html')
-        elif action == "pdf":
-            self.response.headers['Content-Type'] = 'application/pdf'
-            self.response.headers['Content-Disposition'] = 'attachment; filename=my.pdf'
-            c = canvas.Canvas(self.response.out, pagesize=A4)
 
-            c.drawString(100, 100, "Hello world")
-            c.showPage()
-            c.save()
-            return
         elif action == "view":
             sub = db.Subject.get_by_id(long(idSub))
             values["sub"] = sub
@@ -216,7 +205,7 @@ class SubjectsHandler(base.BaseHandler):
             startDate = datetime.date(*tuple(map(int, start.split("/"))[::-1]))
             endDate = datetime.date(*tuple(map(int, end.split("/"))[::-1]))
 
-            db.Subject.addOrUpdate(name, desc, startDate, endDate, None, sub.key)
+            sub.update(name, desc, startDate, endDate)
 
             self.response.write(tasks)
             self.response.write("<br>")
@@ -399,9 +388,7 @@ class SubjectsHandler(base.BaseHandler):
 
             if teacher is not None and sub is not None:
                 sub.removeTeacher(teacher.key)
-                self.response.write("1")
-            else:
-                self.response.write("0")
+            return
         elif action == "removestudent" and idSub != "":  # ajax
             # Get params data
             studentId = self.request.get("studentId")
@@ -412,9 +399,7 @@ class SubjectsHandler(base.BaseHandler):
 
             if student is not None and sub is not None:
                 sub.removeStudent(student.key)
-                self.response.write("1")
-            else:
-                self.response.write("0")
+            return
         elif action == "removetask" and idSub != "":  # ajax
             # Get params data
             taskId = self.request.get("taskId")
@@ -425,9 +410,7 @@ class SubjectsHandler(base.BaseHandler):
 
             if task is not None and sub is not None:
                 sub.removeTask(task.key)
-                self.response.write("1")
-            else:
-                self.response.write("0")
+            return
         elif action == "addpromoted" and idSub != "":
             # Get subject
             sub = db.Subject.get_by_id(long(idSub))
@@ -449,11 +432,12 @@ class SubjectsHandler(base.BaseHandler):
 
             if student.key in sub.promoted:
                 sub.removePromoted(student.key)
-
             return
         elif action == "remove" and idSub != "":
-            db.Subject.removeById(long(idSub))
-            self.redirect("/")
+            # Get subject
+            sub = db.Subject.get_by_id(long(idSub))
+            if sub:
+                sub.remove()
             return
         self.redirect("/subjects/view/" + idSub)
 

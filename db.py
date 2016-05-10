@@ -41,10 +41,10 @@ class Subject(ndb.Model):
     """def searchStudents(self, s):
         return Student.query(ndb.OR(Student.dni == s, Student.name == s))"""
 
-    def searchStudents(self, search):
+    def searchStudents(self, searchString):
         students = []
         for st in self.getStudents().fetch():
-            if search in st.name or search in st.dni:
+            if searchString in st.name or searchString in st.dni:
                 students.append(st)
         return students
 
@@ -123,16 +123,6 @@ class Subject(ndb.Model):
         return Subject.query(Subject.teachers == key)
 
     @staticmethod
-    def removeById(id):
-        sub = Subject.get_by_id(long(id))
-        if sub:
-            for task in sub.getTasks():
-                task.key.delete()
-            sub.key.delete()
-            return True
-        return False
-
-    @staticmethod
     def addOrUpdate(name, desc, startDate, endDate,  teachers, key=None):
 
         if key == None:  # add
@@ -146,6 +136,20 @@ class Subject(ndb.Model):
 
         return sub.put()
 
+    def update(self, name, desc, startDate, endDate):
+        self.name = name
+        self.description = desc
+        self.startdate = startDate
+        self.enddate = endDate
+
+        return self.put()
+
+    def remove(self):
+
+        for task in self.getTasks():
+            task.key.delete()
+
+        return self.key.delete()
 
 class Task(ndb.Model):
     name = ndb.StringProperty(indexed=True)
@@ -163,6 +167,10 @@ class Task(ndb.Model):
 
     def getMarks(self):
         return Mark.query(Mark.task == self.key).fetch()
+
+    def remove(self):
+        self.key.remove()
+
 
     @staticmethod
     def addOrUpdate(subKey, name, percent, order, maxMark, informative, extra, taskKey=None):
