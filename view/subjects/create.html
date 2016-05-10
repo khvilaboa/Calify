@@ -69,7 +69,7 @@
                        id="taskPercent"/>
             </div>
 
-            <label class="col-sm-2 control-label form-margin-correct">{{ _("Max mark") }}</label>
+            <label class="col-sm-2 control-label form-margin-correct">{{ _("Evaluated over") }}</label>
 
             <div class="col-sm-4 form-margin-correct">
                 <input type="text" class="form-control" name="taskMaxMark" placeholder="Mark" id="taskMaxMark"/>
@@ -141,11 +141,22 @@
 
     function validate() {
         var subName = $("#name");
+        var startDate = $("#startDate");
+        var endDate = $("#endDate");
 
         if(subName.val().length == 0) {
             alertify.error('{{ _("You must specify a subject name") }}');
             return false;
-        } else if(percSum < 100) {
+        }
+        if(startDate.val().length == 0) {
+            alertify.error('{{ _("You must specify a start date") }}');
+            return false;
+        }
+        if(endDate.val().length == 0) {
+            alertify.error('{{ _("You must specify a end date") }}');
+            return false;
+        }
+        if(percSum < 100) {
             alertify.error("{{ _("The percent sum can\'t be lower than 100%") | safe }}");
             return false;
         }
@@ -450,7 +461,7 @@
     function clearCurrentTask() {
         $("#taskName").val("");
         $("#taskPercent").val("");
-        $("#taskMaxMark").val("");
+        $("#taskMaxMark").val("10");
         $("#taskInformative").prop('checked', false);
         $("#taskExtra").prop('checked', false);
         updatePercentFieldStatus();

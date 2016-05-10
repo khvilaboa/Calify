@@ -11,7 +11,133 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 JINJA_ENVIRONMENT.install_gettext_translations(i18n)
 
+
 class SubjectsHandler(base.BaseHandler):
+
+    class Parser:
+        @staticmethod
+        def exportCsvStudentsFile(sub):
+            students = sub.getStudents().order(db.Student.dni)
+            fileContent = ""
+
+            for st in students:
+                mark = sub.getStudentFinalMark(st.key)
+                if mark is not None:
+                    fileContent += "%s;%s\n" % (st.dni[:8], mark)
+
+            return fileContent
+
+        @staticmethod
+        def exportXlsStudentsFile(sub):
+            def getBaseXls(name, count):
+                wb = xlwt.Workbook()
+                ws = wb.add_sheet('Acta')
+                ws.show_grid = False
+                ws._cell_overwrite_ok = True
+
+                texts = {(0, 3): u'Lista de Cualificacións',
+                         (2, 1): u'Titulación: ',
+                         (2, 3): name,
+                         (3, 1): u'Curso: ',
+                         (4, 1): u'Código: ',
+                         (5, 1): u'Denominación: ',
+                         (6, 1): u'Convocatoria: ',
+                         (7, 1): u'Tipo de acta: ',
+                         (8, 1): u'Alumnos en: ',
+                         (10, 1): u'Orde',
+                         (10, 2): u'DNI',
+                         (10, 3): u'Apelidos e Nome',
+                         (10, 4): u'C.P.C.',
+                         (10, 5): u'Cualificacións',
+                         (11, 5): u'Conceptual',
+                         (11, 6): u'Numérica',
+                         (12, 1): u'¡¡ Lea a folla de Axuda para consultala nova forma de cualificar establecida polo Real Decreto 1125/2003 !!'
+                         }
+
+                for i in range(8):
+                    widths = (3, 14, 12, 30, 9, 10, 9, 3)
+                    ws.col(i).width = 256 * widths[i]
+
+                strDarkGray = 'font: height 160, name Arial, colour white, bold on; pattern: pattern solid, fore_colour gray40;'
+                styleDarkGray = xlwt.easyxf(strDarkGray)
+                styleDarkGrayR = xlwt.easyxf(strDarkGray + " align: horz right")
+                styleDarkGrayY = xlwt.easyxf(strDarkGray.replace('colour white', 'colour yellow'))
+                strLightGray = 'pattern: pattern solid, fore_colour gray25; font: colour black;' # borders: bottom thin, top thin, left thin, right thin
+                styleLightGray = xlwt.easyxf(strLightGray)
+
+                lastRow = 13 + count + 2
+                for row in (0, 10, 11, 12, lastRow):
+                    for col in range(8):
+                        text = texts.get((row, col), '')
+                        if row == 12:
+                            style = styleDarkGrayY
+                        elif row == 0 or row < 13:
+                            style = styleDarkGray
+                        else:
+                            style = styleLightGray if lastRow % 2 == 1 else styleDarkGray
+                        ws.write(row, col, text, style=style)
+
+                for row in range(2, 8):
+                    for col in range(1, 7):
+                        style = styleDarkGrayR if col < 3 else styleLightGray
+                        text = texts.get((row, col), '')
+                        ws.write(row, col, text, style=style)
+
+                return wb
+
+            def writeXlsData(ws, row, col, val):
+                strDarkGray = 'pattern: pattern solid, fore_colour gray40; align: horz center; font: height 160, name Arial, colour black'
+                styleDarkGrayC = xlwt.easyxf(strDarkGray + (', bold: on' if row == 4 else ''))
+                strLightGray = 'font: height 160, name Arial, colour black; pattern: pattern solid, fore_colour gray25; align: horz center'
+                styleLightGrayC = xlwt.easyxf(strLightGray)
+
+                style = (styleDarkGrayC, styleLightGrayC)[row % 2]
+                ws.write(row, col, val, style=style)
+
+            students = sub.getStudents().order(db.Student.dni)
+
+            try:
+                count = students.count()
+            except Exception:
+                count = 0
+
+            xls = getBaseXls(sub.name, count)
+            ws = xls.get_sheet(0)
+            row = 13
+            fileContent = ""
+
+            for st in students:
+                mark = sub.getStudentFinalMark(st.key)
+                if mark is not None:
+                    fileContent += "%s;%s\n" % (st.dni[:8], mark)
+
+                writeXlsData(ws, row, 1, row - 12)
+                writeXlsData(ws, row, 2, st.dni)
+                writeXlsData(ws, row, 3, st.name)
+                writeXlsData(ws, row, 4, 0)
+
+                if mark is not None:
+                    writeXlsData(ws, row, 5, 'MH' if st.hasHonorsInSubject(sub.key) else '')
+                    writeXlsData(ws, row, 6, mark)
+                else:
+                    writeXlsData(ws, row, 5, 'NP')
+                    writeXlsData(ws, row, 6, '')
+
+                row += 1
+
+            out = StringIO.StringIO()
+            xls.save(out)
+            return out.getvalue()
+
+        @staticmethod
+        def importCsvStudentsFile():
+            pass
+
+        @staticmethod
+        def importXlsStudentsFile():
+            pass
+
+
     def get(self, action, idSub):
         if not self.loggedIn():
             self.redirect("/")
@@ -102,46 +228,18 @@ class SubjectsHandler(base.BaseHandler):
                 filename = self.getUserName() + "_" + str(time.time()).replace(".", "") + ".csv"
                 self.response.headers['Content-Disposition'] = 'attachment; filename=' + filename
 
-                fileContent = ""
-                for st in students:
-                    mark = sub.getStudentFinalMark(st.key)
-                    if mark is not None:
-                        fileContent += "%s;%s\n" % (st.dni[:8], mark)
+                fileContent = self.Parser.exportCsvStudentsFile(sub)
                 self.response.write(fileContent)
-                return
 
+                return
             elif type == "xls":
                 self.response.headers['Content-Type'] = 'application/vnd.ms-excel'
                 filename = self.getUserName() + "_" + str(time.time()).replace(".", "") + ".xls"
                 self.response.headers['Content-Disposition'] = 'attachment; filename=' + filename
                 #self.response.write(sys.path)
 
-                xls = self.getBaseXls(sub.name, count)
-                ws = xls.get_sheet(0)
-                row = 13
-
-                fileContent = ""
-                for st in students:
-                    mark = sub.getStudentFinalMark(st.key)
-                    if mark is not None:
-                        fileContent += "%s;%s\n" % (st.dni[:8], mark)
-
-                    self.writeXlsData(ws, row, 1, row - 12)
-                    self.writeXlsData(ws, row, 2, st.dni)
-                    self.writeXlsData(ws, row, 3, st.name)
-                    self.writeXlsData(ws, row, 4, 0)
-
-                    if mark is not None:
-                        self.writeXlsData(ws, row, 5, 'MH' if st.hasHonorsInSubject(sub.key) else '')
-                        self.writeXlsData(ws, row, 6, mark)
-                    else:
-                        self.writeXlsData(ws, row, 5, 'NP')
-                        self.writeXlsData(ws, row, 6, '')
-
-                    row += 1
-                out = StringIO.StringIO()
-                xls.save(out)
-                self.response.write(out.getvalue())
+                fileContent = self.Parser.exportXlsStudentsFile(sub)
+                self.response.write(fileContent)
 
                 return
 
@@ -459,71 +557,6 @@ class SubjectsHandler(base.BaseHandler):
             return None
 
         return dni
-
-    def getBaseXls(self, name, count):
-        wb = xlwt.Workbook()
-        ws = wb.add_sheet('Acta')
-        ws.show_grid = False
-        ws._cell_overwrite_ok = True
-
-        texts = {(0, 3): u'Lista de Cualificacións',
-                 (2, 1): u'Titulación: ',
-                 (2, 3): name,
-                 (3, 1): u'Curso: ',
-                 (4, 1): u'Código: ',
-                 (5, 1): u'Denominación: ',
-                 (6, 1): u'Convocatoria: ',
-                 (7, 1): u'Tipo de acta: ',
-                 (8, 1): u'Alumnos en: ',
-                 (10, 1): u'Orde',
-                 (10, 2): u'DNI',
-                 (10, 3): u'Apelidos e Nome',
-                 (10, 4): u'C.P.C.',
-                 (10, 5): u'Cualificacións',
-                 (11, 5): u'Conceptual',
-                 (11, 6): u'Numérica',
-                 (12, 1): u'¡¡ Lea a folla de Axuda para consultala nova forma de cualificar establecida polo Real Decreto 1125/2003 !!'
-                 }
-
-        for i in range(8):
-            widths = (3, 14, 12, 30, 9, 10, 9, 3)
-            ws.col(i).width = 256 * widths[i]
-
-        strDarkGray = 'font: height 160, name Arial, colour white, bold on; pattern: pattern solid, fore_colour gray40;'
-        styleDarkGray = xlwt.easyxf(strDarkGray)
-        styleDarkGrayR = xlwt.easyxf(strDarkGray + " align: horz right")
-        styleDarkGrayY = xlwt.easyxf(strDarkGray.replace('colour white', 'colour yellow'))
-        strLightGray = 'pattern: pattern solid, fore_colour gray25; font: colour black;' # borders: bottom thin, top thin, left thin, right thin
-        styleLightGray = xlwt.easyxf(strLightGray)
-
-        lastRow = 13 + count + 2
-        for row in (0, 10, 11, 12, lastRow):
-            for col in range(8):
-                text = texts.get((row, col), '')
-                if row == 12:
-                    style = styleDarkGrayY
-                elif row == 0 or row < 13:
-                    style = styleDarkGray
-                else:
-                    style = styleLightGray if lastRow % 2 == 1 else styleDarkGray
-                ws.write(row, col, text, style=style)
-
-        for row in range(2, 8):
-            for col in range(1, 7):
-                style = styleDarkGrayR if col < 3 else styleLightGray
-                text = texts.get((row, col), '')
-                ws.write(row, col, text, style=style)
-
-        return wb
-
-    def writeXlsData(self, ws, row, col, val):
-        strDarkGray = 'pattern: pattern solid, fore_colour gray40; align: horz center; font: height 160, name Arial, colour black'
-        styleDarkGrayC = xlwt.easyxf(strDarkGray + (', bold: on' if row == 4 else ''))
-        strLightGray = 'font: height 160, name Arial, colour black; pattern: pattern solid, fore_colour gray25; align: horz center'
-        styleLightGrayC = xlwt.easyxf(strLightGray)
-
-        style = (styleDarkGrayC, styleLightGrayC)[row % 2]
-        ws.write(row, col, val, style=style)
 
     def dispatch(self):
         # Get a session store for this request.
