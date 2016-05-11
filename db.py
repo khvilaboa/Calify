@@ -124,7 +124,7 @@ class Subject(ndb.Model):
     def addOrUpdate(name, desc, startDate, endDate,  teachers, key=None):
 
         if key == None:  # add
-            sub = Subject(name=name, description=desc, startdate=startDate,enddate=endDate ,teachers=teachers, creationdate=datetime.datetime.now(), completed=False, students=[])
+            sub = Subject(name=name, description=desc, startdate=startDate,enddate=endDate ,teachers=teachers, creationdate=datetime.datetime.now(), students=[])
         else:
             sub = key.get()
             sub.name = name
@@ -153,7 +153,8 @@ class Task(ndb.Model):
     name = ndb.StringProperty(indexed=True)
     percent = ndb.IntegerProperty(indexed=True)
     order = ndb.IntegerProperty(indexed=True)
-    maxmark = ndb.IntegerProperty(indexed=True)
+    minmark = ndb.IntegerProperty(indexed=False)
+    maxmark = ndb.IntegerProperty(indexed=False)
     informative = ndb.BooleanProperty(indexed=False)
     extra = ndb.BooleanProperty(indexed=False)
 
@@ -171,17 +172,18 @@ class Task(ndb.Model):
 
 
     @staticmethod
-    def addOrUpdate(subKey, name, percent, order, maxMark, informative, extra, taskKey=None):
+    def addOrUpdate(subKey, name, percent, order, maxMark, minMark, informative, extra, taskKey=None):
 
         if taskKey is None:  # add
             task = Task(subject=subKey, name=name, order=order, percent=int(percent), maxmark=maxMark,
-                        informative=informative, extra=extra)
+                        minmark=minMark, informative=informative, extra=extra)
         else:
             task = taskKey.get()
             task.name = name
             task.percent = int(percent)
             task.order = order
-
+            task.maxmark = maxMark
+            task.minmark = minMark
         return task.put()
 
 

@@ -72,7 +72,7 @@
         <div id="studentsTableButtons" class="pagination-wrapper"></div>
     </div>
 
-
+    {% if subject.students | length %}
     <div class="card-title">{{ _("Import marks") }}</div>
     <div class="card">
         <form action="/subjects/importmarks/{{ subject.key.id() }}?taskId={{ task.key.id() }}" method="POST" enctype="multipart/form-data">
@@ -91,6 +91,7 @@
 
         </form>
     </div>
+    {% endif %}
 {% endblock %}
 
 

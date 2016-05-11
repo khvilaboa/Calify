@@ -257,10 +257,11 @@ class SubjectsHandler(base.BaseHandler):
                 taskName = self.request.get(task)
                 taskPercent = self.request.get("task[%s].percent" % id)
                 taskMaxMark = self.request.get("task[%s].maxmark" % id)
+                taskMinMark = self.request.get("task[%s].minmark" % id)
                 taskInformative = self.request.get("task[%s].informative" % id)
                 taskExtra = self.request.get("task[%s].extra" % id)
 
-                db.Task.addOrUpdate(subKey, taskName, int(taskPercent), int(id), int(taskMaxMark), taskInformative == "true", taskExtra == "true")
+                db.Task.addOrUpdate(subKey, taskName, int(taskPercent), int(id), int(taskMaxMark), int(taskMinMark), taskInformative == "true", taskExtra == "true")
 
             idSub = str(subKey.id())
 
@@ -294,6 +295,7 @@ class SubjectsHandler(base.BaseHandler):
                 taskName = self.request.get(task)
                 taskPercent = self.request.get("task[%s].percent" % id)
                 taskMaxMark = self.request.get("task[%s].maxmark" % id)
+                taskMinMark = self.request.get("task[%s].minmark" % id)
                 taskInformative = self.request.get("task[%s].informative" % id)
                 taskExtra = self.request.get("task[%s].extra" % id)
 
@@ -304,10 +306,10 @@ class SubjectsHandler(base.BaseHandler):
                     self.response.write("was: ")
                     self.response.write(taskKey)
                     self.response.write("<br>")
-                    db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id), int(taskMaxMark), taskInformative == "true", taskExtra == "true", taskKey)
+                    db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id), int(taskMaxMark), int(taskMinMark), taskInformative == "true", taskExtra == "true", taskKey)
                     del tasks[taskName]
                 else:
-                    db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id), int(taskMaxMark), taskInformative == "true", taskExtra == "true")
+                    db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id), int(taskMaxMark), int(taskMinMark), taskInformative == "true", taskExtra == "true")
                     self.response.write("create<br>")
 
             for task in tasks:
