@@ -11,6 +11,8 @@ class SearchHandler(base.BaseHandler):
             self.redirect("/")
             return
 
+
+
         # Get request parameters
         subId = self.request.get("sub", None)
         taskId = self.request.get("t", None)
@@ -64,6 +66,8 @@ class SearchHandler(base.BaseHandler):
         for student in data["objects"]:
             resp += "%s^^%s^^%s" % (student.key.id(), student.name, student.dni)  # Data to be formatted in the JS code
             resp += "^^%s" % (marks.get(student.key.id(), "-1") if taskId else (sub.getStudentFinalMark(student.key) if sub.getStudentFinalMark(student.key) is not None else "-"))  # Add marks if the destination is a task view
+            if not taskId:
+                resp += "^^%s" % ("1" if student.hasPassedMandatoryTasks(sub.key) else "0")
             resp += "\n"
 
         if len(data["objects"]):

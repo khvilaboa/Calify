@@ -81,7 +81,21 @@ class Subject(ndb.Model):
         self.promoteds.remove(stKey)
         return self.put()
 
-    def getStudentFinalMark(self, stKey):
+    def update(self, name, desc, startDate, endDate):
+        self.name = name
+        self.description = desc
+        self.startdate = startDate
+        self.enddate = endDate
+
+        return self.put()
+
+    def remove(self):
+        for task in self.getTasks():
+            task.key.delete()
+
+        return self.key.delete()
+
+    def getStudentFinalMark(self, stKey, export=False):
 
         def getPromotedMark(mark):
             for impMark in [5,7,9]:
@@ -91,8 +105,8 @@ class Subject(ndb.Model):
 
         tasks = self.getTasks()
         student = stKey.get()
-        weightedAvg = 0
-        extraPoints = 0
+        weightedAvg = 0  # Sum of the percentage marks
+        extraPoints = 0  # Points to add after calc the mean
         pres = False
         for task in tasks:
             rawMark = Mark.getByStudentAndTask(student.key, task.key)
@@ -102,9 +116,17 @@ class Subject(ndb.Model):
                 extraPoints += rawMark.mark
                 pres = True
                 continue
-            mark = (rawMark.mark / task.maxmark) * 10 * (task.percent/100.0)
-            weightedAvg += mark
+
             pres = True
+            mark = (rawMark.mark / task.maxmark) * 10 * (task.percent/100.0)
+
+            if export and mark < task.minmark:
+                extraPoints = 0
+                weightedAvg = 4
+                break
+
+            weightedAvg += mark
+
 
         if pres:
             mark = min(weightedAvg + extraPoints, 10)
@@ -112,6 +134,8 @@ class Subject(ndb.Model):
                 mark = getPromotedMark(mark)
             if mark == int(mark):
                 mark = int(mark)
+            if export:
+                mark = mark if not 4 < mark < 5 else 4
             return mark
 
         return None
@@ -134,20 +158,6 @@ class Subject(ndb.Model):
 
         return sub.put()
 
-    def update(self, name, desc, startDate, endDate):
-        self.name = name
-        self.description = desc
-        self.startdate = startDate
-        self.enddate = endDate
-
-        return self.put()
-
-    def remove(self):
-
-        for task in self.getTasks():
-            task.key.delete()
-
-        return self.key.delete()
 
 class Task(ndb.Model):
     name = ndb.StringProperty(indexed=True)
@@ -224,9 +234,20 @@ class Student(ndb.Model):
 
     def hasHonorsInSubject(self, subKey):
         sub = subKey.get()
-        if sub and self.key in sub.promoted:
+        if sub and self.key in sub.promoteds:
             return sub.getStudentFinalMark(self.key) >= 9
         return False
+
+    def hasPassedMandatoryTasks(self, subKey):
+        sub = subKey.get()
+        tasks = sub.getTasks()
+        if sub is not None:
+            for task in tasks:
+                mark = Mark.getByStudentAndTask(self.key, task.key)
+                if mark is not None:
+                    if mark.mark < task.minmark:
+                        return False
+        return True
 
     @staticmethod
     def exists(dni):

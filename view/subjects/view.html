@@ -364,12 +364,13 @@
             name = dataRow[1];
             dni = dataRow[2];
             oriMark = dataRow[3].replace(/([0-9]*)\.0+/, "$1");
+            mandatoryTasks = dataRow[4] == "1";
             mark = oriMark;
             if(isPromoted(id)) {
                 mark += " :)";
                 mark = getPromotedMark(parseFloat(mark));
             }
-            bodyHtml += '<tr data-id=\"' + id + '\" data-mark="' + oriMark + '"><td>' + dni + '</td><td>' + name + '</td><td>' + mark + '</td><td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" />' + ((isPromoted(id))?"<img src=\"/img/down_mark.png\" data-action=\"down\" class=\"img-icon icon-changemark\" />":"") + ((!isPromoted(id) && markNearOfImpPoint(mark))?"<img src=\"/img/up_mark.png\" data-action=\"up\" class=\"img-icon icon-changemark\" />":"") + '</td></tr>';
+            bodyHtml += '<tr data-id=\"' + id + '\" data-mark="' + oriMark + '"><td>' + dni + '</td><td>' + name + '</td><td>' + mark + '</td><td><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" />' + ((isPromoted(id))?"<img src=\"/img/down_mark.png\" data-action=\"down\" class=\"img-icon icon-changemark\" />":"") + ((!isPromoted(id) && markNearOfImpPoint(mark) && mandatoryTasks)?"<img src=\"/img/up_mark.png\" data-action=\"up\" class=\"img-icon icon-changemark\" />":"") + '</td></tr>';
         }
 
         tableBody.html(bodyHtml);
