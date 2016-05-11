@@ -3,7 +3,7 @@
 
 
 import webapp2, jinja2, os, db, base
-from webapp2_extras import i18n
+from webapp2_extras import i18n, sessions
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -45,6 +45,11 @@ class TasksHandler(base.BaseHandler):
             values["subject"] = sub
             values["students"] = students# sub.getStudents()
 
+            if self.session.get('correctLines', None) != None:  # File load results
+                values["correct"] = self.session.pop('correctLines', None)
+                values["incorrect"] = self.session.pop('incorrectLines', None)
+                values["incorrect_lines"] = self.session.pop('incorrectLinesData', None)
+
             template = JINJA_ENVIRONMENT.get_template('view/tasks/calify.html')
         elif action == "addnote": # Called by ajax requests
             task = db.Task.get_by_id(long(idTask))
@@ -59,8 +64,27 @@ class TasksHandler(base.BaseHandler):
 
         self.response.write(template.render(values))
 
+    def dispatch(self):
+        # Get a session store for this request.
+        self.session_store = sessions.get_store(request=self.request)
 
+        try:
+            # Dispatch the request.
+            webapp2.RequestHandler.dispatch(self)
+        finally:
+            # Save all sessions.
+            self.session_store.save_sessions(self.response)
+
+    @webapp2.cached_property
+    def session(self):
+        # Returns a session using the default cookie key.
+        return self.session_store.get_session()
+
+config = {}
+config['webapp2_extras.sessions'] = {
+    'secret_key': '5680fd16956dd8ef2290e4c029e6e841',
+}
 
 app = webapp2.WSGIApplication([
     ('/tasks/?([a-z]*)/?([0-9]*)/?([0-9]*)', TasksHandler)
-], debug=True)
+], debug=True, config=config)

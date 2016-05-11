@@ -12,7 +12,7 @@ nav {
     background-color: #e74c3c;
     border-width: 0;
     margin-bottom: 0;
-    z-index: 2;
+    z-index: 999;
 }
 
 .nav > li > a {
@@ -270,7 +270,12 @@ table th:hover {
 }
 
 .card-info {
-    height: 110px;
+    height: 115px;
+    transition: height .6s;
+}
+
+.card-info-exp {
+    height: 165px;
 }
 
 .card-info-reduced {
@@ -451,6 +456,13 @@ canvas {
 
 .no-padding {
     padding: 0 !important;
+}
+
+.separator {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .rotated {
