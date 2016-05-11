@@ -126,7 +126,7 @@
         if(validMark(markStr)) {
             mark = parseFloat(parseFloat(markStr).toFixed(2));
 
-            url = "/tasks/addnote/{{ task.key.id() }}/" + stId + "?mark=" + mark;
+            url = "/tasks/addmark/{{ task.key.id() }}/" + stId + "?mark=" + mark;
 
             $.get(url, function (data, status) {
                 if(status == "success") {

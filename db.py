@@ -9,12 +9,11 @@ class Subject(ndb.Model):
     description = ndb.StringProperty(indexed=False)
     startdate = ndb.DateProperty(indexed=False)
     enddate = ndb.DateProperty(indexed=False)
-    completed = ndb.BooleanProperty(indexed=False)
     creationdate = ndb.DateTimeProperty(indexed=True)
 
     teachers = ndb.KeyProperty(kind="Teacher", repeated=True)
     students = ndb.KeyProperty(kind="Student", repeated=True)
-    promoted = ndb.KeyProperty(kind="Student", repeated=True)
+    promoteds = ndb.KeyProperty(kind="Student", repeated=True)
 
     def getTasks(self):
         return Task.query(Task.subject == self.key)
@@ -70,20 +69,16 @@ class Subject(ndb.Model):
         if task:
             taskKey.delete()
 
-    def setCompleted(self, comp):
-        self.completed = comp
-        return self.put()
-
     def removeAllPromoteds(self):
-        self.promoted = []
+        self.promoteds = []
         return self.put()
 
     def addPromoted(self, stKey):
-        self.promoted.append(stKey)
+        self.promoteds.append(stKey)
         return self.put()
 
     def removePromoted(self, stKey):
-        self.promoted.remove(stKey)
+        self.promoteds.remove(stKey)
         return self.put()
 
     def getStudentFinalMark(self, stKey):
@@ -113,7 +108,7 @@ class Subject(ndb.Model):
 
         if pres:
             mark = min(weightedAvg + extraPoints, 10)
-            if stKey in self.promoted:
+            if stKey in self.promoteds:
                 mark = getPromotedMark(mark)
             if mark == int(mark):
                 mark = int(mark)

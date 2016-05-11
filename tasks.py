@@ -26,10 +26,6 @@ class TasksHandler(base.BaseHandler):
             task = db.Task.get_by_id(long(idTask))
             sub = task.subject.get()
 
-            if sub.completed:
-                self.redirect("/subjects/view/%s" % sub.key.id())
-                return
-
             # Recover marks of the task
             marks = {}
             for mark in task.getMarks():
@@ -51,12 +47,15 @@ class TasksHandler(base.BaseHandler):
                 values["incorrect_lines"] = self.session.pop('incorrectLinesData', None)
 
             template = JINJA_ENVIRONMENT.get_template('view/tasks/calify.html')
-        elif action == "addnote": # Called by ajax requests
+        elif action == "addmark":  # Called by ajax requests
             task = db.Task.get_by_id(long(idTask))
+            sub = task.subject.get()
             student = db.Student.get_by_id(long(idSt))
             mark = float(self.request.get("mark"))
 
             db.Mark.addOrUpdate(student.key, task.key, mark)  # TODO: check if mark it's updated correctly
+            if student.key in sub.promoteds:
+                sub.removePromoted(student.key)
             return
         else:
             self.redirect("/")

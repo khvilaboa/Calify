@@ -163,7 +163,7 @@ class SubjectsHandler(base.BaseHandler):
             values["sub"] = sub
             values["teachers"] = sub.getTeachers()
             values["tasks"] = sub.getTasks().order(db.Task.order)
-            values["promoted"] = "[" + ",".join(['"' + str(stKey.id()) + '"' for stKey in sub.promoted]) + "]"
+            values["promoted"] = "[" + ",".join(['"' + str(stKey.id()) + '"' for stKey in sub.promoteds]) + "]"
 
             if self.session.get('correctLines', None) != None:  # File load results
 
@@ -176,27 +176,7 @@ class SubjectsHandler(base.BaseHandler):
         elif action == "create":
             values["action"] = "create"
             template = JINJA_ENVIRONMENT.get_template('view/subjects/create.html')
-        elif action == "complete" and idSub != "":
-            sub = db.Subject.get_by_id(long(idSub))
 
-            if sub:
-                sub.setCompleted(True)
-                self.redirect("/subjects/view/" + idSub)
-                return
-            else:
-                self.redirect("/")
-                return
-        elif action == "uncomplete" and idSub != "":
-            sub = db.Subject.get_by_id(long(idSub))
-
-            if sub:
-                sub.setCompleted(False)
-                sub.removeAllPromoteds()
-                self.redirect("/subjects/view/" + idSub)
-                return
-            else:
-                self.redirect("/")
-                return
         elif action == "modify" and idSub != "":
             values["subject"] = db.Subject.get_by_id(long(idSub))
             values["tasks"] = values["subject"].getTasks().order(db.Task.order)
@@ -517,7 +497,7 @@ class SubjectsHandler(base.BaseHandler):
             studentId = self.request.get("st")
             student = db.Student.get_by_id(long(studentId))
 
-            if student.key not in sub.promoted:
+            if student.key not in sub.promoteds:
                 sub.addPromoted(student.key)
             return
         elif action == "removepromoted" and idSub != "":
@@ -528,8 +508,85 @@ class SubjectsHandler(base.BaseHandler):
             studentId = self.request.get("st")
             student = db.Student.get_by_id(long(studentId))
 
-            if student.key in sub.promoted:
+            if student.key in sub.promoteds:
                 sub.removePromoted(student.key)
+            return
+        elif action == "importmarks" and idSub != "":
+
+            # Get subject
+            sub = db.Subject.get_by_id(long(idSub))
+
+            # Get task
+            taskId = self.request.get("taskId")
+            task = db.Task.get_by_id(long(taskId))
+
+            text = self.request.POST["filename"].value
+            lines = text.split("\r\n") if "\r\n" in text else text.split("\n")
+            lines = map(lambda x: re.sub("\s+", " ", x).strip(), lines)
+
+            results = {"correct": 0, "incorrect": 0, "incorrect_lines": ""}
+
+            # Parse CSV
+            separator = None
+            for sep in (";", ":", ","):
+                if lines[0].find(sep):
+                    separator = sep
+                    break
+
+            if len(lines) > 0:
+                firstLine = lines[0].split(separator)
+                dniInd = 0
+                markInd = 1
+
+                try:
+                    validDni = self.formatDni(firstLine[dniInd])  # Could be header
+
+                    if not validDni:
+                        lines = lines[1:]
+                except:
+                    lines = lines[1:]
+
+                for line in lines:
+                    fields = line.split(separator)
+
+                    dni = fields[dniInd]
+                    mark = float(fields[markInd])  # check
+
+                    validDni = None
+
+                    try:
+                        self.response.write(">%s<<br>" % fields[dniInd])
+                        validDni = self.formatDni(fields[dniInd])
+                        self.response.write("correct<br>")
+                    except:
+                        self.response.write("nope<br>")
+                        results["incorrect"] += 1
+                        results["incorrect_lines"] += "%s, %s (parse error)<br>" % (dni, mark)
+
+                    if validDni:
+                        st = db.Student.getByDni(validDni)
+                        if st is not None and db.Mark.getByStudentAndTask(st.key, task.key) is not None:  # Update mark
+                            results["correct"] += 1
+                            #self.response.write("(U) %s -> %s<br>" % (dni, mark))
+                            db.Mark.addOrUpdate(st.key, task.key, mark)
+                        elif st is None or st is not None and st.key not in sub.students:
+                            results["incorrect"] += 1
+                            results["incorrect_lines"] += "%s, %s (student not belong to the subject)<br>" % (dni, mark)
+                        elif mark == -1:
+                            results["correct"] += 1
+                        else:  # Create mark
+                            results["correct"] += 1
+                            #self.response.write("(C) %s -> %s<br>" % (dni, mark))
+                            db.Mark.addOrUpdate(st.key, task.key, mark)
+                    else:
+                        results["incorrect"] += 1
+                        results["incorrect_lines"] += "%s, %s (invalid dni)<br>" % (dni, mark)
+
+            self.session['correctLines'] = results["correct"]
+            self.session['incorrectLines'] = results["incorrect"]
+            self.session['incorrectLinesData'] = results["incorrect_lines"]
+
+            self.redirect("/tasks/calify/%s" % taskId)
             return
         elif action == "remove" and idSub != "":
             # Get subject
@@ -540,23 +597,27 @@ class SubjectsHandler(base.BaseHandler):
         self.redirect("/subjects/view/" + idSub)
 
     def formatDni(self, dni):
-
         dni = dni.upper()
         letters = "TRWAGMYFPDXBNJZSQVHLCKE"
 
-        if not re.match("[0-9XYZ][0-9]{7}[A-Z]?", "12121212X"):
+        if not re.match("[0-9XYZ][0-9]{7}[A-Z]?", dni):
             return None
 
-        if len(dni) == 8:
-            return dni + letters[int(dni) % 23]
+        if 'X' <= dni[0] <= 'Z':
+            eqDni = str(ord(dni[0]) - 88) + dni[1:]
 
-        if '0' <= dni[0] <= '9' and letters[int(dni[:8]) % 23] != dni[8]:
-            return None
+            if len(eqDni) == 8:
+                return dni + letters[int(eqDni) % 23]
+            elif letters[int(eqDni[:8]) % 23] == dni[8]:
+                return dni
 
-        if 'X' <= dni[0] <= 'Z' and letters[int(str(ord(dni[0]) - 88) + dni[1:8]) % 23] != dni[8]:
-            return None
+        elif '0' <= dni[0] <= '9':
+            if len(dni) == 8:
+                return dni + letters[int(dni) % 23]
+            elif letters[int(dni[:8]) % 23] == dni[8]:
+                return dni
 
-        return dni
+        return None
 
     def dispatch(self):
         # Get a session store for this request.
