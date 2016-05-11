@@ -251,6 +251,9 @@ class Mark(ndb.Model):
     student = ndb.KeyProperty(kind='Student')
     task = ndb.KeyProperty(kind='Task')
 
+    def remove(self):
+        self.key.delete()
+
     @staticmethod
     def exists(student, task):
         return len(Mark.query(ndb.AND(Mark.student == student.key, Mark.task == task.key)).fetch()) > 0

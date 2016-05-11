@@ -124,28 +124,28 @@
         markStr = markControl.val().replace(",", ".")
 
         if(validMark(markStr)) {
-            mark = parseFloat(parseFloat(markStr).toFixed(2));
+            mark = (markStr)?parseFloat(parseFloat(markStr).toFixed(2)):"";
 
             url = "/tasks/addmark/{{ task.key.id() }}/" + stId + "?mark=" + mark;
 
             $.get(url, function (data, status) {
-                if(status == "success") {
-                    alertify.success('{{ _("Mark added correctly") }}');
-                } else {
-                    alertify.error('{{ _("There was an error submitting the mark") }}');
+                if(status != "success" && markStr != "-") {
+                    alertify.success('{{ _("There was an error submitting the mark") }}');
                 }
             });
 
         } else {
-            alertify.error('{{ _("Mark not valid") }}');
+            if(markStr!="-") alertify.error('{{ _("Mark not valid") }}');
         }
         lastMarkTd = selected.children().next().next();
-        lastMarkTd.html(mark);
+        lastMarkTd.html(mark==""?"-":mark);
         selected.removeClass("rowSelected");
     }
 
     // Determine if a mark is valid (numeric from 0 to the maximum mark)
     function validMark(mark) {
+        if(mark=="") return true;
+
         var maxMark = {{ task.maxmark }};
 
         try {
