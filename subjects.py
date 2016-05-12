@@ -14,9 +14,7 @@ JINJA_ENVIRONMENT.install_gettext_translations(i18n)
 
 class SubjectsHandler(base.BaseHandler):
 
-    class Parser():
-
-        SEPARATORS = (";", ":", "^")
+    class Parser:
 
         @staticmethod
         def exportCsvStudentsFile(sub):
@@ -212,10 +210,41 @@ class SubjectsHandler(base.BaseHandler):
 
             return results
 
-        @staticmethod
-        def importXlsStudentsFile():
-            pass
+        @classmethod
+        def importXlsStudentsFile(cls, fileContent, sub):
+            lines = fileContent.split("\r\n")
+            buff = []
 
+            results = {"correct": 0, "incorrect": 0, "incorrect_lines": ""}
+            for l in lines:
+                if re.match("\<tr ", l):
+                    buff = []
+                elif re.match("\<font", l):
+                    buff.append(re.sub("\<.*\>", "", re.sub("\</.*.>", "", l)))
+                elif re.match("\</tr\>", l) and len(buff) > 1:
+
+                    try:
+                        validDni = cls.formatDni(buff[0])
+                    except:
+                        results["incorrect"] += 1
+                        results["incorrect_lines"] += ",".join(buff) + " (parse error)<br>"
+
+                    if validDni:
+                        st = db.Student.getByDni(validDni)
+                        if st is not None and st.key in sub.students:
+                            results["incorrect"] += 1
+                            results["incorrect_lines"] += ",".join(buff) + " (it already exists)<br>"
+                        else:
+                            stKey = db.Student.addOrUpdate(buff[0], buff[1])
+                            if stKey not in sub.students:
+                                sub.addStudent(stKey)
+                            results["correct"] += 1
+                    else:
+                        results["incorrect"] += 1
+                        results["incorrect_lines"] += ",".join(buff) + " (invalid dni)<br>"
+                    buff = []
+
+            return results
 
     def get(self, action, idSub):
         if not self.loggedIn():
@@ -244,8 +273,7 @@ class SubjectsHandler(base.BaseHandler):
             values["tasks"] = sub.getTasks().order(db.Task.order)
             values["promoted"] = "[" + ",".join(['"' + str(stKey.id()) + '"' for stKey in sub.promoteds]) + "]"
 
-            if self.session.get('correctLines', None) != None:  # File load results
-
+            if self.session.get('correctLines', None) is not None:  # File load results
                 values["correct"] = self.session.pop('correctLines', None)
                 values["incorrect"] = self.session.pop('incorrectLines', None)
                 values["incorrect_lines"] = self.session.pop('incorrectLinesData', None)
@@ -431,37 +459,8 @@ class SubjectsHandler(base.BaseHandler):
                     self.redirect("/subjects/view/" + idSub)
                 elif filename.endswith(".xls"):
                     sub = db.Subject.get_by_id(long(idSub))
-                    buff = []
-                    results = {"correct": 0, "incorrect": 0, "incorrect_lines": ""}
-                    for l in lines:
-                        if re.match("\<tr ", l):
-                            buff = []
-                        elif re.match("\<font", l):
-                            buff.append(re.sub("\<.*\>", "", re.sub("\</.*.>", "", l)))
-                        elif re.match("\</tr\>", l) and len(buff) > 1:
-                            self.response.write(buff[0] + ", " + buff[1] + "<br>")
 
-                            try:
-                                validDni = self.formatDni(buff[0])
-                            except:
-                                results["incorrect"] += 1
-                                results["incorrect_lines"] += ",".join(buff) + " (parse error)<br>"
-
-                            if validDni:
-                                st = db.Student.getByDni(validDni)
-                                if st is not None and st.key in sub.students:
-                                    results["incorrect"] += 1
-                                    results["incorrect_lines"] += ",".join(buff) + " (it already exists)<br>"
-                                else:
-                                    stKey = db.Student.addOrUpdate(buff[0], buff[1])
-                                    if stKey not in sub.students:
-                                        sub.addStudent(stKey)
-                                    results["correct"] += 1
-                            else:
-                                results["incorrect"] += 1
-                                results["incorrect_lines"] += ",".join(buff) + " (invalid dni)<br>"
-                            buff = []
-
+                    results = self.Parser.importXlsStudentsFile(fileContent, sub)
                     #self.response.write("/subjects/view/" + idSub + "?" + "&".join(["%s=%s" % (k, results[k]) for k in results]))
                     self.session['correctLines'] = results["correct"]
                     self.session['incorrectLines'] = results["incorrect"]
