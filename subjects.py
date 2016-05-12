@@ -14,7 +14,10 @@ JINJA_ENVIRONMENT.install_gettext_translations(i18n)
 
 class SubjectsHandler(base.BaseHandler):
 
-    class Parser:
+    class Parser():
+
+        SEPARATORS = (";", ":", "^")
+
         @staticmethod
         def exportCsvStudentsFile(sub):
             students = sub.getStudents().order(db.Student.dni)
@@ -130,8 +133,84 @@ class SubjectsHandler(base.BaseHandler):
             return out.getvalue()
 
         @staticmethod
-        def importCsvStudentsFile():
-            pass
+        def formatDni(dni):
+            dni = dni.upper()
+            letters = "TRWAGMYFPDXBNJZSQVHLCKE"
+
+            if not re.match("[0-9XYZ][0-9]{7}[A-Z]?", dni):
+                return None
+
+            if 'X' <= dni[0] <= 'Z':
+                eqDni = str(ord(dni[0]) - 88) + dni[1:]
+
+                if len(eqDni) == 8:
+                    return dni + letters[int(eqDni) % 23]
+                elif letters[int(eqDni[:8]) % 23] == dni[8]:
+                    return dni
+
+            elif '0' <= dni[0] <= '9':
+                if len(dni) == 8:
+                    return dni + letters[int(dni) % 23]
+                elif letters[int(dni[:8]) % 23] == dni[8]:
+                    return dni
+
+            return None
+
+        @classmethod
+        def importCsvStudentsFile(cls, fileContent, sub):
+            lines = fileContent.split("\r\n")
+            separators = (";", ":", "^")
+
+            results = {"correct": 0, "incorrect": 0, "incorrect_lines": ""}
+
+            # Parse CSV
+            separator = None
+            for sep in separators:
+                if lines[0].find(sep):
+                    separator = sep
+                    break
+
+            if len(lines) > 0:
+                firstLine = lines[0].split(separator)
+                dniInd = 0
+                nameInd = 1
+
+                try:
+                    validDni = cls.formatDni(firstLine[dniInd])  # Could be header
+
+                    if not validDni:
+                        lines = lines[1:]
+                except:
+                    lines = lines[1:]
+
+                for line in lines:
+                    fields = line.split(separator)
+
+                    dni = fields[dniInd]
+                    name = fields[nameInd]
+
+                    validDni = None
+                    try:
+                        validDni = cls.formatDni(fields[dniInd])
+                    except:
+                        results["incorrect"] += 1
+                        results["incorrect_lines"] += "%s, %s (parse error)<br>" % (dni, name)
+
+                    if validDni:
+                        st = db.Student.getByDni(validDni)
+                        if st is not None and st.key in sub.students:
+                            results["incorrect"] += 1
+                            results["incorrect_lines"] += "%s, %s (it already exists)<br>" % (dni, name)
+                        else:
+                            stKey = db.Student.addOrUpdate(dni, name)
+                            if stKey not in sub.students:
+                                sub.addStudent(stKey)
+                            results["correct"] += 1
+                    else:
+                        results["incorrect"] += 1
+                        results["incorrect_lines"] += "%s, %s (invalid dni)<br>" % (dni, name)
+
+            return results
 
         @staticmethod
         def importXlsStudentsFile():
@@ -303,9 +382,6 @@ class SubjectsHandler(base.BaseHandler):
 
                 if taskName in tasks:
                     taskKey = tasks[taskName]
-                    self.response.write("was: ")
-                    self.response.write(taskKey)
-                    self.response.write("<br>")
                     db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id), int(taskMaxMark), int(taskMinMark), taskInformative == "true", taskExtra == "true", taskKey)
                     del tasks[taskName]
                 else:
@@ -338,7 +414,7 @@ class SubjectsHandler(base.BaseHandler):
             elif opt == "file":
                 # Get params data
                 filename = self.request.get("filename")
-
+                fileContent = self.request.POST["filename"].value
                 lines = self.request.POST["filename"].value.split("\r\n")
 
                 filename = self.request.POST["filename"].filename
@@ -346,56 +422,8 @@ class SubjectsHandler(base.BaseHandler):
                 if filename.endswith(".csv"):
                     # Get the subject from the datastore
                     sub = db.Subject.get_by_id(long(idSub))
-                    results = {"correct": 0, "incorrect": 0, "incorrect_lines": ""}
 
-                    # Parse CSV
-                    separator = None
-                    for sep in (";", ":", "^"):
-                        if lines[0].find(sep):
-                            separator = sep
-                            break
-
-                    if len(lines) > 0:
-                        firstLine = lines[0].split(separator)
-                        dniInd = 0
-                        nameInd = 1
-
-                        try:
-                            validDni = self.formatDni(firstLine[dniInd])  # Could be header
-
-                            if not validDni:
-                                lines = lines[1:]
-                        except:
-                            lines = lines[1:]
-
-                        for line in lines:
-                            fields = line.split(separator)
-
-                            dni = fields[dniInd]
-                            name = fields[nameInd]
-
-                            validDni = None
-                            try:
-                                validDni = self.formatDni(fields[dniInd])
-                            except:
-                                results["incorrect"] += 1
-                                results["incorrect_lines"] += "%s, %s (parse error)<br>" % (dni, name)
-
-                            if validDni:
-                                st = db.Student.getByDni(validDni)
-                                if st is not None and st.key in sub.students:
-                                    results["incorrect"] += 1
-                                    results["incorrect_lines"] += "%s, %s (it already exists)<br>" % (dni, name)
-                                else:
-                                    stKey = db.Student.addOrUpdate(dni, name)
-                                    if stKey not in sub.students:
-                                        sub.addStudent(stKey)
-                                    results["correct"] += 1
-                            else:
-                                results["incorrect"] += 1
-                                results["incorrect_lines"] += "%s, %s (invalid dni)<br>" % (dni, name)
-
-                            self.response.write(fields[nameInd] + ", " + fields[dniInd] + "<br>")
+                    results = self.Parser.importCsvStudentsFile(fileContent, sub)
 
                     self.session['correctLines'] = results["correct"]
                     self.session['incorrectLines'] = results["incorrect"]
