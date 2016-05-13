@@ -246,6 +246,72 @@ class SubjectsHandler(base.BaseHandler):
 
             return results
 
+
+        @classmethod
+        def importCsvMarksFile(cls, fileContent, task, sub):
+            lines = fileContent.split("\r\n") if "\r\n" in fileContent else fileContent.split("\n")
+            lines = map(lambda x: re.sub("\s+", " ", x).strip(), lines)
+
+            results = {"correct": 0, "incorrect": 0, "incorrect_lines": ""}
+
+            # Parse CSV
+            separator = None
+            for sep in (";", ":", ","):
+                if lines[0].find(sep):
+                    separator = sep
+                    break
+
+            if len(lines) > 0:
+                firstLine = lines[0].split(separator)
+                dniInd = 0
+                markInd = 1
+
+                try:
+                    validDni = cls.formatDni(firstLine[dniInd])  # Could be header
+
+                    if not validDni:
+                        lines = lines[1:]
+                except:
+                    lines = lines[1:]
+
+                for line in lines:
+                    fields = line.split(separator)
+
+                    dni = fields[dniInd]
+                    mark = float(fields[markInd])  # check
+
+                    validDni = None
+
+                    try:
+                        #self.response.write(">%s<<br>" % fields[dniInd])
+                        validDni = cls.formatDni(fields[dniInd])
+                        #self.response.write("correct<br>")
+                    except:
+                        #self.response.write("nope<br>")
+                        results["incorrect"] += 1
+                        results["incorrect_lines"] += "%s, %s (parse error)<br>" % (dni, mark)
+
+                    if validDni:
+                        st = db.Student.getByDni(validDni)
+                        if st is not None and db.Mark.getByStudentAndTask(st.key, task.key) is not None:  # Update mark
+                            results["correct"] += 1
+                            #self.response.write("(U) %s -> %s<br>" % (dni, mark))
+                            db.Mark.addOrUpdate(st.key, task.key, mark)
+                        elif st is None or st is not None and st.key not in sub.students:
+                            results["incorrect"] += 1
+                            results["incorrect_lines"] += "%s, %s (student not belong to the subject)<br>" % (dni, mark)
+                        elif mark == -1:
+                            results["correct"] += 1
+                        else:  # Create mark
+                            results["correct"] += 1
+                            #self.response.write("(C) %s -> %s<br>" % (dni, mark))
+                            db.Mark.addOrUpdate(st.key, task.key, mark)
+                    else:
+                        results["incorrect"] += 1
+                        results["incorrect_lines"] += "%s, %s (invalid dni)<br>" % (dni, mark)
+
+            return results
+
     def get(self, action, idSub):
         if not self.loggedIn():
             self.redirect("/")
@@ -505,6 +571,13 @@ class SubjectsHandler(base.BaseHandler):
             sub = db.Subject.get_by_id(long(idSub))
 
             if student is not None and sub is not None:
+                # Remove all the marks related with the tasks of the subject
+                tasks = sub.getTasks()
+                for task in tasks:
+                    mark = db.Mark.getByStudentAndTask(student.key, task.key)
+                    mark.remove()
+
+                # Remove the student
                 sub.removeStudent(student.key)
             return
         elif action == "removetask" and idSub != "":  # ajax
@@ -549,67 +622,9 @@ class SubjectsHandler(base.BaseHandler):
             taskId = self.request.get("taskId")
             task = db.Task.get_by_id(long(taskId))
 
-            text = self.request.POST["filename"].value
-            lines = text.split("\r\n") if "\r\n" in text else text.split("\n")
-            lines = map(lambda x: re.sub("\s+", " ", x).strip(), lines)
+            fileContent = self.request.POST["filename"].value
 
-            results = {"correct": 0, "incorrect": 0, "incorrect_lines": ""}
-
-            # Parse CSV
-            separator = None
-            for sep in (";", ":", ","):
-                if lines[0].find(sep):
-                    separator = sep
-                    break
-
-            if len(lines) > 0:
-                firstLine = lines[0].split(separator)
-                dniInd = 0
-                markInd = 1
-
-                try:
-                    validDni = self.formatDni(firstLine[dniInd])  # Could be header
-
-                    if not validDni:
-                        lines = lines[1:]
-                except:
-                    lines = lines[1:]
-
-                for line in lines:
-                    fields = line.split(separator)
-
-                    dni = fields[dniInd]
-                    mark = float(fields[markInd])  # check
-
-                    validDni = None
-
-                    try:
-                        self.response.write(">%s<<br>" % fields[dniInd])
-                        validDni = self.formatDni(fields[dniInd])
-                        self.response.write("correct<br>")
-                    except:
-                        self.response.write("nope<br>")
-                        results["incorrect"] += 1
-                        results["incorrect_lines"] += "%s, %s (parse error)<br>" % (dni, mark)
-
-                    if validDni:
-                        st = db.Student.getByDni(validDni)
-                        if st is not None and db.Mark.getByStudentAndTask(st.key, task.key) is not None:  # Update mark
-                            results["correct"] += 1
-                            #self.response.write("(U) %s -> %s<br>" % (dni, mark))
-                            db.Mark.addOrUpdate(st.key, task.key, mark)
-                        elif st is None or st is not None and st.key not in sub.students:
-                            results["incorrect"] += 1
-                            results["incorrect_lines"] += "%s, %s (student not belong to the subject)<br>" % (dni, mark)
-                        elif mark == -1:
-                            results["correct"] += 1
-                        else:  # Create mark
-                            results["correct"] += 1
-                            #self.response.write("(C) %s -> %s<br>" % (dni, mark))
-                            db.Mark.addOrUpdate(st.key, task.key, mark)
-                    else:
-                        results["incorrect"] += 1
-                        results["incorrect_lines"] += "%s, %s (invalid dni)<br>" % (dni, mark)
+            results = self.Parser.importCsvMarksFile(fileContent, task, sub)
 
             self.session['correctLines'] = results["correct"]
             self.session['incorrectLines'] = results["incorrect"]
