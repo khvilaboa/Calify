@@ -1,17 +1,18 @@
-# Translations template for PROJECT.
+# Galician (Spain) translations for PROJECT.
 # Copyright (C) 2016 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2016-05-16 23:34+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2016-05-16 23:39+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: gl_ES\n"
+"Language-Team: gl_ES <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,7 +20,7 @@ msgstr ""
 
 #: view/profile/index.html:14
 msgid "Profile"
-msgstr ""
+msgstr "Perfil"
 
 #: view/profile/index.html:24 view/profile/index.html:33
 #: view/subjects/create.html:13 view/subjects/create.html:60
@@ -27,72 +28,72 @@ msgstr ""
 #: view/subjects/view.html:59 view/subjects/view.html:113
 #: view/subjects/view.html:168 view/subjects/view.html:207
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: view/profile/index.html:29 view/subjects/create.html:127
 msgid "Modify"
-msgstr ""
+msgstr "Modificar"
 
 #: view/profile/index.html:36 view/subjects/view.html:208
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #: view/profile/index.html:37 view/subjects/index.html:16
 msgid "Subjects"
-msgstr ""
+msgstr "Materias"
 
 #: view/stats/index.html:15
 msgid "Statistics"
-msgstr ""
+msgstr "Estatísticas"
 
 #: view/stats/index.html:21
 msgid "All the subjects"
-msgstr ""
+msgstr "Todas as materias"
 
 #: view/stats/index.html:47
 msgid "There isn't information enough to generate statistics"
-msgstr ""
+msgstr "Non hai suficiente información para xerar estatísticas."
 
 #: view/stats/index.html:87 view/subjects/index.html:25
 #: view/subjects/view.html:44
 msgid "Students"
-msgstr ""
+msgstr "Alumnos"
 
 #: view/stats/index.html:87
 msgid "Evaluations"
-msgstr ""
+msgstr "Calificacións"
 
 #: view/stats/index.html:100
 msgid "Mean mark"
-msgstr ""
+msgstr "Nota media"
 
 #: view/stats/index.html:123
 msgid "Insufficient"
-msgstr ""
+msgstr "Insuficiente"
 
 #: view/stats/index.html:124
 msgid "Enough"
-msgstr ""
+msgstr "Suficiente"
 
 #: view/stats/index.html:125
 msgid "Right"
-msgstr ""
+msgstr "Ben"
 
 #: view/stats/index.html:126
 msgid "Remarkable"
-msgstr ""
+msgstr "Notable"
 
 #: view/stats/index.html:127
 msgid "Outstanding"
-msgstr ""
+msgstr "Sobresaliente"
 
 #: view/stats/index.html:134
 msgid "Marks ranges"
-msgstr ""
+msgstr "Rangos de notas"
 
 #: view/stats/index.html:159
 msgid "Students by subject"
-msgstr ""
+msgstr "Alumnos po"
 
 #: view/stats/index.html:159
 msgid "Evaluations by task"

@@ -192,7 +192,7 @@
             alertify.error('{{ _("The percetage specified is not valid") }}');
             return false;
         } else if(taskMaxMark.length == 0) {
-            alertify.error('{{ _("You must specify a maximum mark to evaluate the task") }}');
+            alertify.error('{{ _("You must specify a mark on which the task will be evaluated") }}');
             return false;
         } else if(taskHasMinMark && taskMinMark.length == 0) {
             alertify.error('{{ _("You must specify a minimum mark to pass the task (or disable the option)") }}');
