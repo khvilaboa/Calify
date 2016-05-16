@@ -1,0 +1,109 @@
+@import url(http://fonts.googleapis.com/css?family=Montserrat:400,700);
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    line-height: 1.42857143;
+    background-color: #eee;
+    color: #eee;
+    position: relative; 
+}
+
+.title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 200;
+    font-size: 50px;
+}
+
+.mainRow {
+    margin-top: 50px;
+    color: #eee;
+}
+
+.infoPanel {
+    margin-top: 70px;
+    margin-bottom: 40px;
+}
+
+#section1 {color: #fff; background-color: #3f4260;}
+#section2 {padding-top:50px;padding-bottom:20px; color: #fff; background-color: #eee; color: #333;}
+
+.login-icon {
+    width: 200px;
+    margin: 10px;
+}
+
+.laptop-img {
+    width: 400px;
+    margin: 75px auto 75px auto;
+}
+
+.animated {
+    animation-duration: 0.8s;
+    animation-fill-mode: both;
+}
+
+.fadeFromLeft {
+    animation-name: fadeInLeft;
+    -webkit-animation-name: fadeInLeft;
+}
+
+.fadeFromRight {
+    animation-name: fadeInRight;
+    -webkit-animation-name: fadeInRight;
+}
+
+@keyframes fadeInLeft {
+   0% {
+      opacity: 0;
+      transform: translateX(-20px);
+   }
+   100% {
+      opacity: 1;
+      transform: translateX(0);
+   }
+}   
+
+@-webkit-keyframes fadeInLeft {
+    0% {
+       opacity: 0;
+       -webkit-transform: translateX(-20px);
+    }
+    100% {
+       opacity: 1;
+       -webkit-transform: translateX(0);
+    }
+ }
+
+ @keyframes fadeInRight {
+   0% {
+      opacity: 0;
+      transform: translateX(20px);
+   }
+   100% {
+      opacity: 1;
+      transform: translateX(0);
+   }
+}   
+
+@-webkit-keyframes fadeInRight {
+    0% {
+       opacity: 0;
+       -webkit-transform: translateX(20px);
+    }
+    100% {
+       opacity: 1;
+       -webkit-transform: translateX(0);
+    }
+ }
+
+ /* FEATURES */
+.features-section {
+    align-content: center;
+}
+
+.feature-img {
+    width: 150px;
+    height: 150px;
+    margin: auto;
+}

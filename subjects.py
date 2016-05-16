@@ -278,7 +278,11 @@ class SubjectsHandler(base.BaseHandler):
                     fields = line.split(separator)
 
                     dni = fields[dniInd]
-                    mark = float(fields[markInd])  # check
+
+                    try:
+                        mark = float(fields[markInd])
+                    except:
+                        continue
 
                     validDni = None
 
@@ -422,7 +426,7 @@ class SubjectsHandler(base.BaseHandler):
             startDate = datetime.date(*tuple(map(int, start.split("/"))[::-1]))
             endDate = datetime.date(*tuple(map(int, end.split("/"))[::-1]))
 
-            subKey = db.Subject.addOrUpdate(name, desc, startDate, endDate, [teacherKey])
+            subKey = db.Subject.add(name, desc, startDate, endDate, [teacherKey])
 
             # Go throught all the tasks of the subject
             for task in filter(lambda x: re.match('task[[0-9]*].name', x), list(self.request.POST)):

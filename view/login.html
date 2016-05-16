@@ -10,7 +10,7 @@
 	<!-- Bootstrap 3.3.5 -->
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<!-- Page style -->
-	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/login.css">
 	<!-- Font Awesome -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 	<!-- Ionicons -->
@@ -18,11 +18,49 @@
 </head>
 
 <body>
-	<div class="wrapper">
 
-		<a type="button" class="btn btn-default" href="{{ loginUrl }}">Login</a>
+	
 
-	</div> <!-- ./wrapper -->
+	<div id="section1" class="container-fluid">
+		<div class="pull-right ">
+			<a href="{{ loginUrl }}"><img src="/img/google_login.png"  class="login-icon"/></a>
+		</div>
+		<div class="row mainRow">
+			<div class="col-xs-12 col-md-6">
+				<img src="/img/laptop.png" class="laptop-img img-responsive animated fadeFromLeft">	
+			</div>
+
+			<div class="col-xs-12 col-md-6">
+				<div class="infoPanel animated fadeFromRight">
+					<h1 class="title">Calify</h1>
+					<h3>A simple and confortable way to manage your subjects and courses.</h3>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="section2" class="container-fluid features-section text-center">
+		<div class="col-xs-12 col-sm-6 col-md-3">
+			<img src="/img/files.png" alt="Files" class="feature-img">
+		    <h3>Import / Export</h3>
+		    <p>Calify allows you to work with files, importing and exporting in several formats.</p>
+		</div>
+
+		<div class="col-xs-12 col-sm-6 col-md-3">
+			<img src="/img/chart.png" alt="Graphics" class="feature-img">
+		    <h3>Dynamic graphics</h3>
+		    <p>The platforms generate charts so that you can view your information summarily.</p>
+		</div>
+		<div class="col-xs-12 col-sm-6 col-md-3">
+			<img src="/img/world.png" alt="" class="feature-img">
+		    <h3>Multilanguage</h3>
+		    <p>It provides the application contents in several languages.</p>
+		</div>
+		<div class="col-xs-12 col-sm-6 col-md-3">
+			<img src="/img/phone.png" alt="Responsive" class="feature-img">
+		    <h3>Fully Responsive</h3>
+		    <p>Adaptable design that changes depending on the dimensions of the device used.</p>
+		</div>
+	</div>
 
 	<!-- jQuery 2.1.4 -->
 	<script src="plugins/jQuery/jQuery-2.1.4.min.js"></script>

@@ -69,9 +69,9 @@ class Subject(ndb.Model):
         if task:
             taskKey.delete()
 
-    def removeAllPromoteds(self):
+    """def removeAllPromoteds(self):
         self.promoteds = []
-        return self.put()
+        return self.put()"""
 
     def addPromoted(self, stKey):
         self.promoteds.append(stKey)
@@ -145,7 +145,7 @@ class Subject(ndb.Model):
         return Subject.query(Subject.teachers == key)
 
     @staticmethod
-    def addOrUpdate(name, desc, startDate, endDate,  teachers, key=None):
+    def add(name, desc, startDate, endDate,  teachers, key=None):
 
         if key == None:  # add
             sub = Subject(name=name, description=desc, startdate=startDate,enddate=endDate ,teachers=teachers, creationdate=datetime.datetime.now(), students=[])

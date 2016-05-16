@@ -54,16 +54,19 @@ class TasksHandler(base.BaseHandler):
 
             mark = self.request.get("mark").strip()
 
-            if mark == "":
-                mark = db.Mark.getByStudentAndTask(student.key, task.key)
+            try:
+                if mark == "":
+                    mark = db.Mark.getByStudentAndTask(student.key, task.key)
 
-                if mark:
-                    mark.remove()
-            else:
-                mark = float(self.request.get("mark"))
-                db.Mark.addOrUpdate(student.key, task.key, mark)  # TODO: check if mark it's updated correctly
-            if student.key in sub.promoteds:
-                sub.removePromoted(student.key)
+                    if mark:
+                        mark.remove()
+                else:
+                    mark = float(self.request.get("mark"))
+                    db.Mark.addOrUpdate(student.key, task.key, mark)  # TODO: check if mark it's updated correctly
+                if student.key in sub.promoteds:
+                    sub.removePromoted(student.key)
+            except:
+                pass  # Mark isn't float
             return
         else:
             self.redirect("/")
