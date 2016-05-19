@@ -83,9 +83,13 @@ msgstr "Bien"
 msgid "Remarkable"
 msgstr "Notable"
 
+#: ---
+msgid "Log out"
+msgstr "Cerrar sesión"
+
 #: view/stats/index.html:127
 msgid "Outstanding"
-msgstr "Excelente"
+msgstr "Sobresaliente"
 
 #: view/stats/index.html:134
 msgid "Marks ranges"

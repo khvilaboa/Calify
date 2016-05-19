@@ -25,6 +25,14 @@ body {
     margin-bottom: 40px;
 }
 
+.brand-icon {
+    margin-top: -15px;
+    margin-right: 3px;
+    width: 50px;
+    height: 50px;
+    display: inline !important;
+}
+
 #section1 {color: #fff; background-color: #3f4260;}
 #section2 {padding-top:50px;padding-bottom:20px; color: #fff; background-color: #eee; color: #333;}
 

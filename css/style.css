@@ -51,6 +51,7 @@ nav ul.navbar-right {
 .navbar-brand {
     margin-left: 10%;
     color: #ecf0f1 !important;
+    padding-left: 5px !important;
 }
 
 .fixed-nav {
@@ -301,6 +302,13 @@ table th:hover {
     cursor: pointer;
 }
 
+.brand-icon {
+    margin-top: -5px;
+    margin-right: 1px;
+    width: 18px;
+    height: 18px;
+    display: inline !important;
+}
 
 /* EXPANDABLE */
 .expandable-data {
@@ -409,6 +417,11 @@ div.pagination-wrapper {
 
 .btn-button {
     margin-bottom: 10px;
+}
+
+label {
+    padding-top: 4px;
+    padding-left: 4px;
 }
 
 /* STATS */
