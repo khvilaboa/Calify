@@ -48,6 +48,16 @@ nav ul.navbar-right {
     background-color: #e74c3c;
 }
 
+.navbar-toggle {
+    border-color: #eee !important;
+    background-color: #e74c3c !important;
+}
+
+.navbar-toggle:active {
+    border-color: #c0392b !important;
+    background-color: #e74c3c !important;
+}
+
 .navbar-brand {
     margin-left: 10%;
     color: #ecf0f1 !important;
