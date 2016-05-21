@@ -416,3 +416,15 @@ msgstr "Nota non válida"
 #: ---
 msgid "Log out"
 msgstr "Cerrar sesión"
+
+#: ---
+msgid "Spanish"
+msgstr "Español"
+
+#: ---
+msgid "English"
+msgstr "Inglés"
+
+#: ---
+msgid "Galician"
+msgstr "Galego"

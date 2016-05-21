@@ -419,6 +419,18 @@ msgstr "Hubo un error enviando la nota"
 msgid "Mark not valid"
 msgstr "La nota no es válida"
 
+#: ---
+msgid "Spanish"
+msgstr "Español"
+
+#: ---
+msgid "English"
+msgstr "Inglés"
+
+#: ---
+msgid "Galician"
+msgstr "Gallego"
+
 #~ msgid "Max mark"
 #~ msgstr "Nota máxima"
 

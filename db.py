@@ -192,8 +192,15 @@ class Task(ndb.Model):
             task.name = name
             task.percent = int(percent)
             task.order = order
+
+            if task.maxmark != maxMark:
+                for mark in task.getMarks():
+                    mark.setMark(round((mark.mark/task.maxmark) * maxMark, 2))
+
             task.maxmark = maxMark
             task.minmark = minMark
+
+
         return task.put()
 
 
@@ -276,6 +283,10 @@ class Mark(ndb.Model):
 
     def remove(self):
         self.key.delete()
+
+    def setMark(self, mark):
+        self.mark = mark
+        return self.put()
 
     @staticmethod
     def exists(student, task):
