@@ -16,11 +16,12 @@
             </div>
 
             <div class="row">
-                <div class="col-xs-4">
+                <div class="col-xs-6 col-md-4">
                     <div>{{ _("Percentage") }}: {{ task.percent }}%</div>
                     <div>{{ _("Evaluated over") }}: {{ task.maxmark }}</div>
+                    {%if task.minmark > 0 %}<div>{{ _("Minimum mark") }}: {{ task.minmark }}</div>{% endif %}
                 </div>
-                <div class="col-xs-4">
+                <div class="col-xs-6 col-md-4">
                     <div>{{ _("Informative") }}: {% if task.informative %}{{ _("Yes") }}{% else %}{{ _("No") }}{% endif %}</div>
                     <div>{{ _("Extra points") }}: {% if task.extra %}{{ _("Yes") }}{% else %}{{ _("No") }}{% endif %}</div>
                 </div>

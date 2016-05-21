@@ -253,7 +253,7 @@ table th:hover {
     border-radius: 5px;
     margin: 0 0 5px 0;
     height: 45px;
-    padding: 0;
+    padding: 10px;
     display: block;
 }
 
@@ -262,9 +262,17 @@ table th:hover {
 }
 
 .card-fixed-img {
-    width: 40px;
-    height: 40px;
+    width: 25px;
+    height: 25px;
 }
+
+@media (min-width: 768px) {
+    .card-fixed-img {
+        width: 40px;
+        height: 40px;
+    }
+}
+
 
 .card-fixed-text {
     font-family: 'Arial';
@@ -281,7 +289,6 @@ table th:hover {
 }
 
 .card-info {
-    height: 115px;
     transition: height .6s;
 }
 
@@ -291,7 +298,6 @@ table th:hover {
 
 .card-info-reduced {
     margin-bottom: 5px !important;
-    height: 120px;
 }
 
 .card-info-title {

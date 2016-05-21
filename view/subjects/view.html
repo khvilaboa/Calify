@@ -21,11 +21,11 @@
         <!--<div><b>Description: </b>{{ sub.description }}</div>-->
 
         <div class="row card-info-data">
-            <div class="col-xs-4">
+            <div class="col-xs-6 col-md-4">
                 <div><b>{{ _("Start date") }}:</b> {{ sub.startdate.strftime('%d/%m/%Y') }}</div>
                 <div><b>{{ _("End date") }}:</b> {{ sub.enddate.strftime('%d/%m/%Y') }}</div>
             </div>
-            <div class="col-xs-4">
+            <div class="col-xs-6 col-md-4">
                 <div><b>{{ _("Num. students") }}:</b> {{ sub.students | length }}</div>
                 <div><b>{{ _("Num. teachers") }}:</b> {{ sub.teachers | length }}</div>
             </div>
@@ -240,8 +240,6 @@
     var correct = {{ correct if correct is defined else -1 }};
     var incorrect = {{ incorrect if incorrect is defined else -1 }};
     var incorrect_lines = '{{ incorrect_lines | safe if incorrect_lines is defined else '' }}';
-
-
 
     $(function () {
         $(".expandable-data").slideUp('fast');
