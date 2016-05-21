@@ -4,6 +4,7 @@
 
 import webapp2, jinja2, os, db, base
 from webapp2_extras import i18n
+from google.appengine.api import images
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -29,7 +30,6 @@ class ProfileHandler(base.BaseHandler):
                 return self.redirect(referrer)
             return self.redirect("/")
 
-
         if not teachId or not teacher:
             self.redirect("/")
         else:
@@ -37,6 +37,7 @@ class ProfileHandler(base.BaseHandler):
             own = teachId == str(self.getUserId())
             values["own"] = own
             values["teacher"] = teacher
+            values["username"] = self.getUserName()
             values["subjects"] = ", ".join([s.name for s in db.Subject.getSubjectsByTeacher(teacher.key)])
 
             template = JINJA_ENVIRONMENT.get_template('/view/profile/index.html')
@@ -53,9 +54,33 @@ class ProfileHandler(base.BaseHandler):
             db.Teacher.addOrUpdate(self.getEmail(), self.request.get("name", None))
 
             self.redirect("/profile/%s" % self.getUserId())
+
+        avatar = self.request.get("img", None)
+        if avatar is not None:
+            #avatar = images.resize(avatar, 32, 32)
+            teacher = db.Teacher.getByEmail(self.getEmail())
+            teacher.setAvatar(avatar)
+            self.response.write("ok")
             return
+        self.response.write("nope")
+        return
+
+class ProfileImageHandler(base.BaseHandler):
+    def get(self):
+        imgId = self.request.get('id')
+
+        if imgId != "":
+            teacher = db.Teacher.get_by_id(long(imgId))
+
+            if teacher is not None and teacher.avatar:
+                self.response.headers['Content-Type'] = 'image/png'
+                self.response.out.write(teacher.avatar)
+                return
+
+        self.redirect("/img/user.png")
 
 app = webapp2.WSGIApplication([
     ('/profile/?([0-9]*)', ProfileHandler),
-    ('/profile/modify', ProfileHandler)
+    ('/profile/modify', ProfileHandler),
+    ('/profile/img', ProfileImageHandler)
 ], debug=True)

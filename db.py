@@ -200,7 +200,6 @@ class Task(ndb.Model):
             task.maxmark = maxMark
             task.minmark = minMark
 
-
         return task.put()
 
 
@@ -208,9 +207,14 @@ class Teacher(ndb.Model):
     email = ndb.StringProperty(indexed=True)
     name = ndb.StringProperty(indexed=True)
     language = ndb.StringProperty(indexed=False)
+    avatar = ndb.BlobProperty()
 
     def setLanguage(self, lang):
         self.language = lang
+        return self.put()
+
+    def setAvatar(self, avatar):
+        self.avatar = avatar
         return self.put()
 
     @staticmethod

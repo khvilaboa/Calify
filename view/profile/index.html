@@ -1,6 +1,6 @@
 {% extends '/view/base.html' %}
 
-{% block title %}{{ teacher.email }}{% endblock %}
+{% block title %}{{ username }}{% endblock %}
 
 {% block brandtext %}
 
@@ -15,10 +15,10 @@
 <div class="card row">
     <div class="prof-info">
         <div class="col-xs-3 col-xs-offset-2">
-            <img src="/img/user.png" class="img-rounded img-responsive img-profile prof-img"/>
+            <img src="/profile/img?id={{ teacher.key.id() }}" class="img-rounded img-responsive img-profile prof-img with-pointer" id="profileImg" />
         </div>
         <div class="col-xs-5">
-            <form action="/profile/modify" method="POST" >
+            <form action="/profile/modify" method="POST" id="profileForm" enctype="multipart/form-data">
                 <div class="prof-info-item">
                 {% if own %}
                 <label for="nameGroup">{{ _("Name") }}: </label>
@@ -35,7 +35,7 @@
                 </div>
                 <div class="prof-info-item"><span>{{ _("Email") }}:</span> {{ teacher.email }}</div>
                 <div class="prof-info-item"><span>{{ _("Subjects") }}:</span> {{ subjects }}</div>
-
+                <div><input type="file" name="img" class="hide" onchange="$('#profileForm').submit();" id="imageFileInput"/></div>
             </form>
         </div>
     </div>
@@ -44,5 +44,10 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+    $('#profileImg').click(function() {
+        $('#imageFileInput').trigger('click');
+    });
+</script>
 
 {% endblock %}
