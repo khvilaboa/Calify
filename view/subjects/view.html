@@ -17,7 +17,7 @@
 
 <div class="card card-info row" id="card-info">
     <div class="col-xs-12">
-        <div class="card-info-title"><h4>{{ sub.name }} <span class="pull-right"><a href="/subjects/modify/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-pencil"></i></a><a href="/stats/{{ sub.key.id() }}"  class="sides-margin"><i class="fa fa-bar-chart"></i></a><a href="/subjects/export/{{ sub.key.id()}}?ext=csv" class="sides-margin"><i class="fa fa-download"></i></a><a href="/subjects/export/{{ sub.key.id() }}?ext=xls"  class="sides-margin"><i class="fa fa-file-excel-o"></i></a></span></h4> </div>
+        <div class="card-info-title"><h4>{{ sub.name }} <span class="pull-right"><a href="/subjects/modify/{{ sub.key.id() }}" class="sides-margin" data-toggle="tooltip" title="{{ _('Edit') }}"><i class="fa fa-pencil"></i></a><a href="/stats/{{ sub.key.id() }}"  class="sides-margin" data-toggle="tooltip" title="{{ _('Statistics') }}"><i class="fa fa-bar-chart"></i></a><a href="/subjects/export/{{ sub.key.id()}}?ext=csv" class="sides-margin" data-toggle="tooltip" title="{{ _('Export CSV') }}"><i class="fa fa-download"></i></a><a href="/subjects/export/{{ sub.key.id() }}?ext=xls" class="sides-margin" data-toggle="tooltip" title="{{ _('Export XLS') }}"><i class="fa fa-file-excel-o"></i></a></span></h4> </div>
         <!--<div><b>Description: </b>{{ sub.description }}</div>-->
 
         <div class="row card-info-data">
@@ -242,6 +242,7 @@
     var incorrect_lines = '{{ incorrect_lines | safe if incorrect_lines is defined else '' }}';
 
     $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
         $(".expandable-data").slideUp('fast');
         $("input[name='optAddStudents']").prop('checked', false);
 
@@ -255,6 +256,11 @@
         if(correct != -1) {
             alertify.alert("<h3>Fichero importado</h3><b>Resultados:</b><br>Correctos: " + correct + "<br>Incorrectos: " + incorrect + "<br>" + ((incorrect > 0)?"<br> M&aacute;s informaci&oacute;n<br><div class='report-panel'>" + incorrect_lines + "</div>":""));
         }
+
+    });
+
+    $(document).ready(function(){
+
     });
 
     function updateViewAnimations() {
@@ -497,7 +503,6 @@
         var letters = "TRWAGMYFPDXBNJZSQVHLCKE";
         dni = dni.toUpperCase();
         if(dni.charCodeAt(0) >= 88 && dni.charCodeAt(0) <= 90) dni = (dni.charCodeAt(0)-88) + dni.substring(1);
-        alert(dni);
         return dni.search(/^[0-9]{8}[A-Z]$/i) != -1 && letters[parseInt(dni.substr(0,8)) % 23] == dni.substr(8);
     }
 
