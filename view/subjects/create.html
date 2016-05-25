@@ -166,6 +166,12 @@
             alertify.error('{{ _("You must specify a end date") }}');
             return false;
         }
+
+        if((new Date(startDate.val())).getTime() > (new Date(endDate.val())).getTime()) {
+            alertify.error('{{ _("The start date has to be less than or equal to the end date") }}');
+            return false;
+        }
+
         if(percSum < 100) {
             alertify.error("{{ _("The percent sum can\'t be lower than 100%") | safe }}");
             return false;
