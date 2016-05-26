@@ -36,7 +36,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#"><img src="/img/cletters.png" class="brand-icon"/>alify</a>
+        <a class="navbar-brand" href="/subjects"><img src="/img/cletters.png" class="brand-icon"/>alify</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -80,8 +80,8 @@
 <div class="sidebar fixed-sidebar" id="sidebar">
     <a class="sb-user-info" href="#">
         <div class="sb-user">
-            <img class="img-circle sb-user-img" src="/img/user.png">
-            <span class="sb-user-info">{{ username }}</span>
+            <img class="img-circle sb-user-img" src="/profile/img?id={{ userid }}">
+            <span class="sb-user-info" onclick="document.location='/profile/{{userid}}'">{{ username }}</span>
         </div>
     </a>
 

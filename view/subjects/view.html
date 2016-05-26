@@ -211,7 +211,7 @@
                 </thead>
                 <tbody>
                 {% for t in teachers %}
-                <tr data-id="{{ t.key.id() }}"> <!-- onclick="window.document.location = '/profile/{{ t.key.id() }}'" -->
+                <tr data-id="{{ t.key.id() }}" onclick="window.document.location = '/profile/{{ t.key.id() }}'"> <!-- onclick="window.document.location = '/profile/{{ t.key.id() }}'" -->
                     <td>{% if t.name %}{{ t.name }}{% else %}-{% endif %}</td>
                     <td>{{ t.email }}</td>
                     <td><img src="/img/delete.png" class="img-icon {% if teachers|length == 1 %}{{ 'forbidden' }}{% else %}{{ 'icon-delete' }}{% endif %}"/></td>
