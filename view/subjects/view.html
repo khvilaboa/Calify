@@ -126,9 +126,6 @@
 
                 </div>
 
-                <div class="expandable-data">
-                    <!-- TODO -->
-                </div>
 
                 <div class="text-right">
                     <button type="button" onclick="if(validateManualStudent()) document.forms['addStudentsForm'].submit();" class="btn btn-default">{{ _("Add") }}</button>
@@ -495,6 +492,13 @@
                 alertify.error('{{ _("DNI not valid") }}');
                 return false;
             }
+        } else {
+            var fileSelected = $('#filename').get(0).files.length != 0;
+
+            if(!fileSelected) {
+                alertify.error('{{_("You must select a file to import the students")}}');
+                return false;
+            }
         }
         return true;
     }
@@ -593,6 +597,8 @@
         }
 
     });
+
+
 
 
 </script>

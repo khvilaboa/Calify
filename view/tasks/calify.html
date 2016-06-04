@@ -76,7 +76,7 @@
     {% if subject.students | length %}
     <div class="card-title">{{ _("Import marks") }}</div>
     <div class="card">
-        <form action="/subjects/importmarks/{{ subject.key.id() }}?taskId={{ task.key.id() }}" method="POST" enctype="multipart/form-data">
+        <form action="/subjects/importmarks/{{ subject.key.id() }}?taskId={{ task.key.id() }}" method="POST" enctype="multipart/form-data" id="importMarksForm">
             <div class="form-group row card-row">
                 <label class="control-label col-sm-2" for="filename">{{ _("Marks file") }}:</label>
 
@@ -85,7 +85,7 @@
                 </div>
 
                 <div class="col-sm-2 pull-right">
-                <input type="submit" class="btn btn-default " value="{{ _("Import") }}"/>
+                <input type="submit" class="btn btn-default " value="{{ _("Import") }}" />
             </div>
             </div>
 
@@ -318,6 +318,14 @@
         normRow();
     });
 
+    $('#importMarksForm').on('submit', function(e){
+        var fileSelected = $('#filename').get(0).files.length != 0;
+
+        if(!fileSelected) {
+            e.preventDefault();
+            alertify.error('{{_("You must select a file to import the marks")}}');
+        }
+    });
 </script>
 
 {% endblock %}
