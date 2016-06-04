@@ -11,8 +11,6 @@ class SearchHandler(base.BaseHandler):
             self.redirect("/")
             return
 
-
-
         # Get request parameters
         subId = self.request.get("sub", None)
         taskId = self.request.get("t", None)

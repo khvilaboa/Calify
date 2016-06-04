@@ -227,13 +227,13 @@ class SubjectsHandler(base.BaseHandler):
                         validDni = cls.formatDni(buff[0])
                     except:
                         results["incorrect"] += 1
-                        results["incorrect_lines"] += ",".join(buff) + " (parse error)<br>"
+                        results["incorrect_lines"] += ", ".join(buff[:2]) + " (parse error)<br>"
 
                     if validDni:
                         st = db.Student.getByDni(validDni)
                         if st is not None and st.key in sub.students:
                             results["incorrect"] += 1
-                            results["incorrect_lines"] += ",".join(buff) + " (it already exists)<br>"
+                            results["incorrect_lines"] += ", ".join(buff[:2]) + " (it already exists)<br>"
                         else:
                             stKey = db.Student.addOrUpdate(buff[0], buff[1])
                             if stKey not in sub.students:
@@ -241,7 +241,7 @@ class SubjectsHandler(base.BaseHandler):
                             results["correct"] += 1
                     else:
                         results["incorrect"] += 1
-                        results["incorrect_lines"] += ",".join(buff) + " (invalid dni)<br>"
+                        results["incorrect_lines"] += ", ".join(buff[:2]) + " (invalid dni)<br>"
                     buff = []
 
             return results
