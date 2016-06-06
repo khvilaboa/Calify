@@ -156,15 +156,15 @@ class SubjectsHandler(base.BaseHandler):
 
         @classmethod
         def importCsvStudentsFile(cls, fileContent, sub):
-            lines = fileContent.split("\r\n")
-            separators = (";", ":", "^")
+            lines = fileContent.split("\r\n") if "\r\n" in fileContent else fileContent.split("\n")
+            separators = (";", "\t", "^", ":", ",")
 
             results = {"correct": 0, "incorrect": 0, "incorrect_lines": ""}
 
             # Parse CSV
-            separator = None
+            separator = ";"
             for sep in separators:
-                if lines[0].find(sep):
+                if lines[0].find(sep) != -1:
                     separator = sep
                     break
 
@@ -184,8 +184,11 @@ class SubjectsHandler(base.BaseHandler):
                 for line in lines:
                     fields = line.split(separator)
 
-                    dni = fields[dniInd]
-                    name = fields[nameInd]
+                    try:
+                        dni = fields[dniInd]
+                        name = fields[nameInd]
+                    except:
+                        continue
 
                     validDni = None
                     try:
@@ -200,7 +203,7 @@ class SubjectsHandler(base.BaseHandler):
                             results["incorrect"] += 1
                             results["incorrect_lines"] += "%s, %s (it already exists)<br>" % (dni, name)
                         else:
-                            stKey = db.Student.addOrUpdate(dni, name)
+                            stKey = db.Student.addOrUpdate(dni, name.decode("latin-1"))
                             if stKey not in sub.students:
                                 sub.addStudent(stKey)
                             results["correct"] += 1
@@ -250,14 +253,15 @@ class SubjectsHandler(base.BaseHandler):
         @classmethod
         def importCsvMarksFile(cls, fileContent, task, sub):
             lines = fileContent.split("\r\n") if "\r\n" in fileContent else fileContent.split("\n")
-            lines = map(lambda x: re.sub("\s+", " ", x).strip(), lines)
+            #lines = map(lambda x: re.sub(" +", " ", x).strip(), lines)
+            separators = (";", "\t", "^", ":", ",")
 
             results = {"correct": 0, "incorrect": 0, "incorrect_lines": ""}
 
             # Parse CSV
-            separator = None
-            for sep in (";", ":", ","):
-                if lines[0].find(sep):
+            separator = ";"
+            for sep in separators:
+                if lines[0].find(sep) != -1:
                     separator = sep
                     break
 
@@ -278,10 +282,13 @@ class SubjectsHandler(base.BaseHandler):
                     fields = line.split(separator)
 
                     dni = fields[dniInd]
+                    mark = fields[markInd]
 
                     try:
-                        mark = float(fields[markInd])
+                        mark = float(mark.replace(",", "."))
                     except:
+                        results["incorrect"] += 1
+                        results["incorrect_lines"] += "%s, %s (mark not valid)<br>" % (dni, mark)
                         continue
 
                     validDni = None
@@ -523,10 +530,10 @@ class SubjectsHandler(base.BaseHandler):
 
                     results = self.Parser.importCsvStudentsFile(fileContent, sub)
 
-                    self.session['correctLines'] = results["correct"]
+                    """self.session['correctLines'] = results["correct"]
                     self.session['incorrectLines'] = results["incorrect"]
                     self.session['incorrectLinesData'] = results["incorrect_lines"]
-                    self.redirect("/subjects/view/" + idSub)
+                    self.redirect("/subjects/view/" + idSub)"""
                 elif filename.endswith(".xls"):
                     sub = db.Subject.get_by_id(long(idSub))
 
@@ -579,7 +586,8 @@ class SubjectsHandler(base.BaseHandler):
                 tasks = sub.getTasks()
                 for task in tasks:
                     mark = db.Mark.getByStudentAndTask(student.key, task.key)
-                    mark.remove()
+                    if mark:
+                        mark.remove()
 
                 # Remove the student
                 sub.removeStudent(student.key)

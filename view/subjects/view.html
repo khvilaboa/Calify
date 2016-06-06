@@ -412,7 +412,6 @@
         }
 
         $.post(url, function (data, status) {
-
             if(status == "success") {
 
                 alertify.success(teacher?'{{ _("Teacher erased correctly") }}':'{{ _("Student erased correctly") }}');
@@ -428,6 +427,7 @@
                 alertify.error('{{ _("There was a problem deleting the subject") }}');
             }
         });
+
     });
 
     $(document).on("click", ".icon-changemark", {}, function () {
