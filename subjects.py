@@ -203,7 +203,10 @@ class SubjectsHandler(base.BaseHandler):
                             results["incorrect"] += 1
                             results["incorrect_lines"] += "%s, %s (it already exists)<br>" % (dni, name)
                         else:
-                            stKey = db.Student.addOrUpdate(dni, name.decode("latin-1"))
+                            try:
+                                stKey = db.Student.addOrUpdate(dni, name)
+                            except:
+                                stKey = db.Student.addOrUpdate(dni, name.decode("latin-1"))
                             if stKey not in sub.students:
                                 sub.addStudent(stKey)
                             results["correct"] += 1
