@@ -457,9 +457,9 @@
         $("#taskName").val(taskNameData);
         $("#taskPercent").val(affectPerc?taskPercentData:"");
         $("#taskMaxMark").val(taskMaxMarkData);
-        $("#taskHasMinMark").prop('checked', taskMinMarkData != "0.0");
+        $("#taskHasMinMark").prop('checked', taskMinMarkData != "0.0" && taskMinMarkData != "0");
         updateMinMarkFieldStatus();
-        if(taskMinMarkData != "0.0") $("#taskMinMark").val(taskMinMarkData);
+        if(taskMinMarkData != "0.0" && taskMinMarkData != "0") $("#taskMinMark").val(taskMinMarkData);
         $("#taskInformative").prop('checked', taskInformativeData.toString().toLowerCase() == "true");
         $("#taskExtra").prop('checked', taskExtraData.toString().toLowerCase() == "true");
         updatePercentFieldStatus();
