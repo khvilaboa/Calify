@@ -54,15 +54,15 @@ class ProfileHandler(base.BaseHandler):
             db.Teacher.addOrUpdate(self.getEmail(), self.request.get("name", None))
 
             self.redirect("/profile/%s" % self.getUserId())
+            return
 
         avatar = self.request.get("img", None)
         if avatar is not None:
             #avatar = images.resize(avatar, 32, 32)
             teacher = db.Teacher.getByEmail(self.getEmail())
             teacher.setAvatar(avatar)
-            self.response.write("ok")
             return
-        self.response.write("nope")
+
         return
 
 class ProfileImageHandler(base.BaseHandler):
