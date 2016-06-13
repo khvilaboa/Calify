@@ -22,7 +22,7 @@ class SubjectsHandler(base.BaseHandler):
             fileContent = ""
 
             for st in students:
-                mark = sub.getStudentFinalMark(st.key, True)
+                mark = round(sub.getStudentFinalMark(st.key, True),2)
                 if mark is not None:
                     fileContent += "%s;%s\n" % (st.dni[:8], mark)
 
@@ -108,7 +108,7 @@ class SubjectsHandler(base.BaseHandler):
             fileContent = ""
 
             for st in students:
-                mark = sub.getStudentFinalMark(st.key, True)
+                mark = round(sub.getStudentFinalMark(st.key, True), 2)
                 if mark is not None:
                     fileContent += "%s;%s\n" % (st.dni[:8], mark)
 
@@ -284,8 +284,11 @@ class SubjectsHandler(base.BaseHandler):
                 for line in lines:
                     fields = line.split(separator)
 
-                    dni = fields[dniInd]
-                    mark = fields[markInd]
+                    try:
+                        dni = fields[dniInd].strip()
+                        mark = fields[markInd].strip()
+                    except:
+                        continue
 
                     try:
                         mark = float(mark.replace(",", "."))
@@ -298,7 +301,7 @@ class SubjectsHandler(base.BaseHandler):
 
                     try:
                         #self.response.write(">%s<<br>" % fields[dniInd])
-                        validDni = cls.formatDni(fields[dniInd])
+                        validDni = cls.formatDni(dni)
                         #self.response.write("correct<br>")
                     except:
                         #self.response.write("nope<br>")
@@ -448,7 +451,7 @@ class SubjectsHandler(base.BaseHandler):
                 taskInformative = self.request.get("task[%s].informative" % id)
                 taskExtra = self.request.get("task[%s].extra" % id)
 
-                db.Task.addOrUpdate(subKey, taskName, int(taskPercent), int(id), int(taskMaxMark), int(taskMinMark), taskInformative == "true", taskExtra == "true")
+                db.Task.addOrUpdate(subKey, taskName, int(taskPercent), int(id), float(taskMaxMark), float(taskMinMark), taskInformative == "true", taskExtra == "true")
 
             idSub = str(subKey.id())
 
@@ -490,10 +493,10 @@ class SubjectsHandler(base.BaseHandler):
 
                 if taskName in tasks:
                     taskKey = tasks[taskName]
-                    db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id), int(taskMaxMark), int(taskMinMark), taskInformative == "true", taskExtra == "true", taskKey)
+                    db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id), float(taskMaxMark), float(taskMinMark), taskInformative == "true", taskExtra == "true", taskKey)
                     del tasks[taskName]
                 else:
-                    db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id), int(taskMaxMark), int(taskMinMark), taskInformative == "true", taskExtra == "true")
+                    db.Task.addOrUpdate(sub.key, taskName, int(taskPercent), int(id), float(taskMaxMark), float(taskMinMark), taskInformative == "true", taskExtra == "true")
                     self.response.write("create<br>")
 
             for task in tasks:

@@ -364,7 +364,7 @@
             id = dataRow[0];
             name = dataRow[1];
             dni = dataRow[2];
-            oriMark = dataRow[3].replace(/([0-9]*)\.0+/, "$1");
+            oriMark = dataRow[3].replace(/([0-9]*)\.0+$/, "$1");
             mandatoryTasks = dataRow[4] == "1";
             mark = oriMark;
             if(isPromoted(id)) {

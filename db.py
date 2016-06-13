@@ -118,7 +118,7 @@ class Subject(ndb.Model):
                 continue
 
             pres = True
-            mark = (rawMark.mark / task.maxmark) * 10 * (task.percent/100.0)
+            mark = (rawMark.mark / task.maxmark) * 10.0 * (task.percent/100.0)
 
             if export and mark < task.minmark:
                 extraPoints = 0
@@ -163,8 +163,8 @@ class Task(ndb.Model):
     name = ndb.StringProperty(indexed=True)
     percent = ndb.IntegerProperty(indexed=True)
     order = ndb.IntegerProperty(indexed=True)
-    minmark = ndb.IntegerProperty(indexed=False)
-    maxmark = ndb.IntegerProperty(indexed=False)
+    minmark = ndb.FloatProperty(indexed=False)
+    maxmark = ndb.FloatProperty(indexed=False)
     informative = ndb.BooleanProperty(indexed=False)
     extra = ndb.BooleanProperty(indexed=False)
 

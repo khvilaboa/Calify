@@ -18,8 +18,8 @@
             <div class="row">
                 <div class="col-xs-6 col-md-4">
                     <div>{{ _("Percentage") }}: {{ task.percent }}%</div>
-                    <div>{{ _("Evaluated over") }}: {{ task.maxmark }}</div>
-                    {%if task.minmark > 0 %}<div>{{ _("Minimum mark") }}: {{ task.minmark }}</div>{% endif %}
+                    <div>{{ _("Evaluated over") }}: {% if task.maxmark == (task.maxmark|int) %}{{ task.maxmark|int }}{% else %}{{ task.maxmark }}{% endif %}</div>
+                    {%if task.minmark > 0 %}<div>{{ _("Minimum mark") }}: {% if task.minmark == (task.minmark|int) %}{{ task.minmark|int }}{% else %}{{ task.minmark }}{% endif %}</div>{% endif %}
                 </div>
                 <div class="col-xs-6 col-md-4">
                     <div>{{ _("Informative") }}: {% if task.informative %}{{ _("Yes") }}{% else %}{{ _("No") }}{% endif %}</div>
