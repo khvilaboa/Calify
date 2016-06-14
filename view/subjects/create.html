@@ -57,29 +57,43 @@
 
     <div class="card" id="taskForm">
         <div class="form-group row card-row">
-            <label class="col-sm-2 control-label form-margin-correct">{{ _("Name") }}:</label>
+            <label class="col-lg-2 control-label form-margin-correct">{{ _("Type") }}:</label>
 
-            <div class="col-sm-4 form-margin-correct no-margin-sides">
+            <div class="col-lg-4 form-margin-correct no-margin-sides">
+                <select class="form-control" id="typeSelect">
+                    <option value="blank"></option>
+                    <option value="exam">{{ _("Exam") }}</option>
+                    <option value="midterm1">{{ _("Midterm exam") }} 1</option>
+                    <option value="midterm2">{{ _("Midterm exam") }} 2</option>
+                    <option value="project">{{ _("Project") }}</option>
+                    <option value="participation">{{ _("Participation") }}</option>
+                </select>
+            </div>
+            <label class="col-lg-2 control-label form-margin-correct">{{ _("Name") }}:</label>
+
+            <div class="col-lg-4 form-margin-correct no-margin-sides">
                 <input type="text" class="form-control" name="taskName" id="taskName"/>
             </div>
-            <label class="col-sm-2 control-label form-margin-correct">{{ _("Percent") }}:</label>
+            <label class="col-lg-2 control-label form-margin-correct">{{ _("Percent") }}:</label>
 
-            <div class="col-sm-4 form-margin-correct">
+            <div class="col-lg-4 form-margin-correct">
                 <input type="text" class="form-control" name="taskPercent" min="0" max="100"
                        id="taskPercent"/>
             </div>
 
-            <label class="col-sm-2 control-label form-margin-correct">{{ _("Evaluated over") }}:</label>
+            <label class="col-lg-2 control-label form-margin-correct">{{ _("Evaluated over") }}:</label>
 
-            <div class="col-sm-4 form-margin-correct">
+            <div class="col-lg-4 form-margin-correct">
                 <input type="text" class="form-control" name="taskMaxMark" id="taskMaxMark"/>
             </div>
 
-            <label class="col-sm-2 control-label form-margin-correct">{{ _("Min. mark") }}:</label>
+            <label for="taskMinMark" class="col-lg-2 control-label form-margin-correct">{{ _("Min. mark") }}:</label>
 
-            <div class="col-sm-4 form-margin-correct">
+            <div class="col-lg-4 form-margin-correct">
                 <input type="text" class="form-control" name="taskMinMark" id="taskMinMark"/>
             </div>
+
+            <div class="col-lg-6 hidden-xs hidden-sm hidden-md"></div>
 
             <div class="checkbox col-xs-12 col-lg-6">
               <label class="checkbox-inline"><input type="checkbox" value="" name="taskInformative" id="taskInformative">{{ _("Only informative") }}</label>
@@ -87,7 +101,7 @@
                 <label class="checkbox-inline"><input type="checkbox" value="" name="taskHasMinMark" id="taskHasMinMark">{{ _("Has minimum mark") }}</label>
             </div>
 
-            <div class="col-xs-12 col-lg-6">
+            <div class="col-xs-12">
                 <button type="button" class="btn btn-default addButton pull-right" id="taskAdd"><i class="fa fa-plus"></i> {{ _("Add") }}</button>
                 <button type="button" class="btn btn-default addButton pull-right hide" id="taskEdit"><i class="fa fa-pencil"></i> {{ _("Edit") }}</button>
             </div>
@@ -511,6 +525,7 @@
         $("#taskInformative").prop('checked', false);
         $("#taskExtra").prop('checked', false);
         $("#taskHasMinMark").prop('checked', false);
+        $("#typeSelect").val('');
         updatePercentFieldStatus();
         updateMinMarkFieldStatus();
     }
@@ -525,6 +540,59 @@
         formatDate: 'Y/m/d',
         //minDate: '-1970/01/02', // yesterday is minimum date
         //maxDate: '+1970/01/02' // and tommorow is maximum date calendar
+    });
+
+    $(document).on('change', '#typeSelect', function () {
+
+        var nameField = $("#taskName");
+        var percentField = $("#taskPercent");
+        var maxMarkField = $("#taskMaxMark");
+        var extraPointsCheckBox = $("#taskExtra");
+
+        switch($('#typeSelect').val()) {
+            case "blank":
+                nameField.val('');
+                extraPointsCheckBox.prop("checked", false);
+                updatePercentFieldStatus();
+                percentField.val('');
+                maxMarkField.val('10');
+                break;
+            case "exam":
+                nameField.val('{{_("Exam")}}');
+                extraPointsCheckBox.prop("checked", false);
+                updatePercentFieldStatus();
+                percentField.val('50');
+                maxMarkField.val('10');
+                break;
+            case "midterm1":
+                nameField.val('{{_("Midterm exam")}} 1');
+                extraPointsCheckBox.prop("checked", false);
+                updatePercentFieldStatus();
+                percentField.val('25');
+                maxMarkField.val('10');
+                break;
+            case "midterm2":
+                nameField.val('{{_("Midterm exam")}} 2');
+                extraPointsCheckBox.prop("checked", false);
+                updatePercentFieldStatus();
+                percentField.val('25');
+                maxMarkField.val('10');
+                break;
+            case "project":
+                nameField.val('{{_("Project")}}');
+                extraPointsCheckBox.prop("checked", false);
+                updatePercentFieldStatus();
+                percentField.val('50');
+                maxMarkField.val('10');
+                break;
+            case "participation":
+                nameField.val('{{_("Participation")}}');
+                extraPointsCheckBox.prop("checked", true);
+                updatePercentFieldStatus();
+                percentField.val('');
+                maxMarkField.val('1');
+                break;
+        }
     });
 
 </script>

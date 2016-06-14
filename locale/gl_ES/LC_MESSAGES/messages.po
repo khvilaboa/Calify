@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-05-25 23:49+0200\n"
+"POT-Creation-Date: 2016-06-14 12:17+0200\n"
 "PO-Revision-Date: 2016-05-16 23:39+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: gl_ES\n"
@@ -23,10 +23,10 @@ msgid "Profile"
 msgstr "Perfil"
 
 #: view/profile/index.html:24 view/profile/index.html:33
-#: view/subjects/create.html:13 view/subjects/create.html:60
-#: view/subjects/create.html:103 view/subjects/index.html:24
+#: view/subjects/create.html:13 view/subjects/create.html:72
+#: view/subjects/create.html:117 view/subjects/index.html:24
 #: view/subjects/view.html:59 view/subjects/view.html:113
-#: view/subjects/view.html:168 view/subjects/view.html:207
+#: view/subjects/view.html:165 view/subjects/view.html:204
 msgid "Name"
 msgstr "Nome"
 
@@ -34,11 +34,11 @@ msgstr "Nome"
 msgid "Enter your name here"
 msgstr "Pon o teu nome aquí"
 
-#: view/profile/index.html:29 view/subjects/create.html:127
+#: view/profile/index.html:29 view/subjects/create.html:141
 msgid "Modify"
 msgstr "Modificar"
 
-#: view/profile/index.html:36 view/subjects/view.html:208
+#: view/profile/index.html:36 view/subjects/view.html:205
 msgid "Email"
 msgstr "Email"
 
@@ -139,102 +139,122 @@ msgstr "Descripción"
 msgid "Tasks"
 msgstr "Tarefas"
 
-#: view/subjects/create.html:65 view/subjects/create.html:104
+#: view/subjects/create.html:60
+msgid "Type"
+msgstr "Tipo"
+
+#: view/subjects/create.html:65
+msgid "Exam"
+msgstr "Exame"
+
+#: view/subjects/create.html:66 view/subjects/create.html:67
+msgid "Midterm exam"
+msgstr "Parcial"
+
+#: view/subjects/create.html:68
+msgid "Project"
+msgstr "Proxecto"
+
+#: view/subjects/create.html:69
+msgid "Participation"
+msgstr "Participación"
+
+#: view/subjects/create.html:77 view/subjects/create.html:118
 #: view/subjects/view.html:60
 msgid "Percent"
 msgstr "Porcentaxe"
 
-#: view/subjects/create.html:72 view/subjects/create.html:105
+#: view/subjects/create.html:84 view/subjects/create.html:119
 #: view/tasks/calify.html:21
 msgid "Evaluated over"
 msgstr "Avaliado sobre"
 
-#: view/subjects/create.html:78
+#: view/subjects/create.html:90
 msgid "Min. mark"
 msgstr "Nota minima"
 
-#: view/subjects/create.html:85
+#: view/subjects/create.html:99
 msgid "Only informative"
 msgstr "Só informativa"
 
-#: view/subjects/create.html:86 view/tasks/calify.html:26
+#: view/subjects/create.html:100 view/tasks/calify.html:26
 msgid "Extra points"
 msgstr "Puntos extra"
 
-#: view/subjects/create.html:87
+#: view/subjects/create.html:101
 msgid "Has minimum mark"
 msgstr "Ten nota mínima"
 
-#: view/subjects/create.html:91 view/subjects/view.html:134
-#: view/subjects/view.html:197
+#: view/subjects/create.html:105 view/subjects/view.html:131
+#: view/subjects/view.html:194
 msgid "Add"
 msgstr "Engadir"
 
-#: view/subjects/create.html:92 view/subjects/view.html:20
+#: view/subjects/create.html:106 view/subjects/view.html:20
 msgid "Edit"
 msgstr "Editar"
 
-#: view/subjects/create.html:106 view/subjects/index.html:26
-#: view/subjects/view.html:65 view/subjects/view.html:170
-#: view/subjects/view.html:209
+#: view/subjects/create.html:120 view/subjects/index.html:26
+#: view/subjects/view.html:65 view/subjects/view.html:167
+#: view/subjects/view.html:206
 msgid "Actions"
 msgstr "Accións"
 
-#: view/subjects/create.html:119
+#: view/subjects/create.html:133
 msgid "The sum of the percentages is greater than 100%"
 msgstr "A suma dos porcentaxes é maior do 100%"
 
-#: view/subjects/create.html:126
+#: view/subjects/create.html:140
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: view/subjects/create.html:127
+#: view/subjects/create.html:141
 msgid "Create"
 msgstr "Crear"
 
-#: view/subjects/create.html:158
+#: view/subjects/create.html:172
 msgid "You must specify a subject name"
 msgstr "Tes que especificar un nome para a materia"
 
-#: view/subjects/create.html:162
+#: view/subjects/create.html:176
 msgid "You must specify a start date"
 msgstr "Tes que especificar una data de comezo"
 
-#: view/subjects/create.html:166
+#: view/subjects/create.html:180
 msgid "You must specify a end date"
 msgstr "Tes que especificar una data de fin"
 
-#: view/subjects/create.html:171
+#: view/subjects/create.html:185
 msgid "The start date has to be less than or equal to the end date"
 msgstr "A data de inicio debe ser inferior ou igual a de fin"
 
-#: view/subjects/create.html:176
+#: view/subjects/create.html:190
 msgid "The percent sum can't be lower than 100%"
 msgstr "O porcentaxe non pode ser menor co 100%"
 
-#: view/subjects/create.html:192
+#: view/subjects/create.html:206
 msgid "You must specify a task name"
 msgstr "Tes que especificar una data de comezo"
 
-#: view/subjects/create.html:195
+#: view/subjects/create.html:209
 msgid "You must specify a percentage for the task"
 msgstr "Tes que especificar un porcentaxe para a tarefa"
 
-#: view/subjects/create.html:198
+#: view/subjects/create.html:212
 msgid "The percetage specified is not valid"
 msgstr "O porcentaxe especificado non é válido"
 
-#: view/subjects/create.html:201
+#: view/subjects/create.html:215
 msgid "You must specify a mark on which the task will be evaluated"
 msgstr "Tes que especificar una nota na que se avaliará a tarefa"
 
-#: view/subjects/create.html:204
+#: view/subjects/create.html:218
 msgid "You must specify a minimum mark to pass the task (or disable the option)"
 msgstr ""
 "Tes que especificar una nota mínima para aprobar a tarefa (ou desactivar "
 "a opción)"
 
-#: view/subjects/create.html:207
+#: view/subjects/create.html:221
 msgid "The maximum mark specified is not valid"
 msgstr "A nota mínima especificada non é válida"
 
@@ -258,7 +278,7 @@ msgstr "Estás seguro de que queres eliminar a materia?"
 msgid "Subject erased correctly"
 msgstr "Materia borrada correctamente"
 
-#: view/subjects/index.html:131 view/subjects/view.html:431
+#: view/subjects/index.html:131 view/subjects/view.html:427
 msgid "There was a problem deleting the subject"
 msgstr "Houbo un problema borrando a materia"
 
@@ -328,64 +348,68 @@ msgstr "DNI/NIE"
 msgid "Enter DNI or NIE of the student"
 msgstr "Escriba o DNI ou NIE do alumno"
 
-#: view/subjects/view.html:151 view/subjects/view.html:160
+#: view/subjects/view.html:148 view/subjects/view.html:157
 #: view/tasks/calify.html:44
 msgid "Search"
 msgstr "Buscar"
 
-#: view/subjects/view.html:158
+#: view/subjects/view.html:155
 msgid "Enter the student's name or DNI"
 msgstr "Escriba o nome ou DNI do alumno"
 
-#: view/subjects/view.html:167
+#: view/subjects/view.html:164
 msgid "DNI"
 msgstr "DNI"
 
-#: view/subjects/view.html:169
+#: view/subjects/view.html:166
 msgid "Final mark"
 msgstr "Nota final"
 
-#: view/subjects/view.html:184 view/tasks/calify.html:71
+#: view/subjects/view.html:181 view/tasks/calify.html:71
 msgid "There aren't students in this subject yet"
 msgstr "Aínda non hay alumnos nesta materia"
 
-#: view/subjects/view.html:195
+#: view/subjects/view.html:192
 msgid "Enter the email of the teacher that you want to add"
 msgstr "Escriba o correo do profesor que desexa engadir"
 
-#: view/subjects/view.html:224
+#: view/subjects/view.html:221
 msgid "There aren't teachers in this subject"
 msgstr "Non hai profesores nesta materia"
 
-#: view/subjects/view.html:300 view/subjects/view.html:479
+#: view/subjects/view.html:297 view/subjects/view.html:476
 #: view/tasks/calify.html:216 view/tasks/calify.html:252
 #: view/tasks/calify.html:302
 msgid "There was a problem loading the students"
 msgstr "Houbo un problema ó cargar os alumnos"
 
-#: view/subjects/view.html:393
+#: view/subjects/view.html:390
 msgid "The email is invalid"
 msgstr "O correo electrónico introducido non é válido"
 
-#: view/subjects/view.html:421
+#: view/subjects/view.html:417
 msgid "Teacher erased correctly"
 msgstr "Profesor borrado correctamente"
 
-#: view/subjects/view.html:421
+#: view/subjects/view.html:417
 msgid "Student erased correctly"
 msgstr "Alumno borrado correctamente"
 
-#: view/subjects/view.html:460
+#: view/subjects/view.html:457
 msgid "There was an error adding the promotion"
 msgstr "Houbo un error engadindo a promoción"
 
-#: view/subjects/view.html:492
+#: view/subjects/view.html:489
 msgid "It's necessary to specify a name"
 msgstr "É necesario introducir un nombre"
 
-#: view/subjects/view.html:495
+#: view/subjects/view.html:492
 msgid "DNI not valid"
 msgstr "O DNI non é válido"
+
+#: view/subjects/view.html:499
+msgid "You must select a file to import the students"
+msgstr "Tes que seleccionar un arquivo para importar os alumnos"
 
 #: view/tasks/calify.html:20
 msgid "Percentage"
@@ -439,21 +463,9 @@ msgstr "Houbo un error enviando a nota"
 msgid "Mark not valid"
 msgstr "Nota non válida"
 
-#: ---
-msgid "Log out"
-msgstr "Cerrar sesión"
-
-#: ---
-msgid "Spanish"
-msgstr "Español"
-
-#: ---
-msgid "English"
-msgstr "Inglés"
-
-#: ---
-msgid "Galician"
-msgstr "Galego"
+#: view/tasks/calify.html:326
+msgid "You must select a file to import the marks"
+msgstr "Tes que seleccionar un arquivo para importar as notas"
 
 #~ msgid "Log out"
 #~ msgstr "Cerrar sesión"
