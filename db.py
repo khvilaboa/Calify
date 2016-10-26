@@ -171,7 +171,7 @@ class Task(ndb.Model):
 
     def getStudents(self):
         sub = self.subject.get()
-        return sub.students
+        return sub.getStudents()
 
     def getMarks(self):
         return Mark.query(Mark.task == self.key).fetch()
@@ -179,6 +179,10 @@ class Task(ndb.Model):
     def remove(self):
         self.key.remove()
 
+    def getStudentMark(self, stKey):
+        student = stKey.get()
+        mark = Mark.getByStudentAndTask(student.key, self.key)
+        return mark.mark if mark else None
 
     @staticmethod
     def addOrUpdate(subKey, name, percent, order, maxMark, minMark, informative, extra, taskKey=None):

@@ -12,7 +12,7 @@
         <div class="col-xs-12">
             <div class="card-info-title">
 
-                <h4>{{ task.name }} <span class="pull-right"><a href="/subjects/modify/{{ subject.key.id() }}"><i class="fa fa-pencil"></i></a></span></h4>
+                <h4>{{ task.name }} <span class="pull-right"><a href="/subjects/modify/{{ subject.key.id() }}"><i class="fa fa-pencil"></i></a><a href="/tasks/export/{{ task.key.id()}}" class="sides-margin" data-toggle="tooltip" title="{{ _('Export CSV') }}"><i class="fa fa-download"></i></a></span></h4>
             </div>
 
             <div class="row">

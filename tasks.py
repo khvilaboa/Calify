@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 
-import webapp2, jinja2, os, db, base
+import webapp2, jinja2, os, db, base, time
 from webapp2_extras import i18n, sessions
 
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -14,6 +14,22 @@ JINJA_ENVIRONMENT.install_gettext_translations(i18n)
 
 
 class TasksHandler(base.BaseHandler):
+
+    class Parser:
+        @staticmethod
+        def exportCsvStudentsFile(task):
+            students = task.getStudents().order(db.Student.dni)
+            fileContent = ""
+
+            for st in students:
+                mark = task.getStudentMark(st.key)
+
+                if mark is not None:
+                    mark = round(mark, 2)
+                    fileContent += "%s;%s\n" % (st.dni[:8], mark)
+
+            return fileContent
+
     def get(self, action, idTask, idSt):
         if not self.loggedIn():
             self.redirect("/")
@@ -68,6 +84,21 @@ class TasksHandler(base.BaseHandler):
             except:
                 pass  # Mark isn't float
             return
+        elif action == "export" and idTask != "":
+            task = db.Task.get_by_id(long(idTask))
+            tasksMarks = {m.student: m.mark for m in task.getMarks()}
+            students = task.getStudents().order(db.Student.dni)
+
+            # Export CSV
+            self.response.headers['Content-Type'] = 'text/csv'
+            filename = self.getUserName() + "_" + str(time.time()).replace(".", "") + ".csv"
+            self.response.headers['Content-Disposition'] = 'attachment; filename=' + filename
+
+            fileContent = self.Parser.exportCsvStudentsFile(task)
+            self.response.write(fileContent)
+
+            return
+
         else:
             self.redirect("/")
             return

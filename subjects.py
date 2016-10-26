@@ -109,8 +109,9 @@ class SubjectsHandler(base.BaseHandler):
             fileContent = ""
 
             for st in students:
-                mark = round(sub.getStudentFinalMark(st.key, True), 2)
+                mark = sub.getStudentFinalMark(st.key, True)
                 if mark is not None:
+                    mark = round(mark, 2)
                     fileContent += "%s;%s\n" % (st.dni[:8], mark)
 
                 writeXlsData(ws, row, 1, row - 12)
@@ -382,7 +383,7 @@ class SubjectsHandler(base.BaseHandler):
             if type != "csv" and type != "xls":
                 self.redirect("/subjects/view/%s" % sub.key.id())
 
-            # Task that contains the current subject
+            # Tasks that contains the current subject
             tasksInfo = sub.getTasks()
 
             # Marks per each task and student
