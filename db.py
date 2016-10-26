@@ -98,7 +98,7 @@ class Subject(ndb.Model):
     def getStudentFinalMark(self, stKey, export=False):
 
         def getPromotedMark(mark):
-            for impMark in [5,7,9]:
+            for impMark in [5, 7, 9]:
                 if 0.25 >= impMark - mark > 0:
                     return impMark
             return mark
@@ -126,7 +126,6 @@ class Subject(ndb.Model):
                 break
 
             weightedAvg += mark
-
 
         if pres:
             mark = min(weightedAvg + extraPoints, 10)

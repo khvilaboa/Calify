@@ -22,8 +22,9 @@ class SubjectsHandler(base.BaseHandler):
             fileContent = ""
 
             for st in students:
-                mark = round(sub.getStudentFinalMark(st.key, True),2)
+                mark = sub.getStudentFinalMark(st.key, True)
                 if mark is not None:
+                    mark = round(mark, 2)
                     fileContent += "%s;%s\n" % (st.dni[:8], mark)
 
             return fileContent
