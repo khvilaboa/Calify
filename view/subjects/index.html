@@ -22,6 +22,7 @@
         <thead>
         <tr>
             <th>{{ _("Name") }}</th>
+            <th>{{ _("Year") }}</th>
             <th>{{ _("Students") }}</th>
             <th>{{ _("Actions") }}</th>
         </tr>
@@ -102,9 +103,10 @@
             dataRow = rows[r].split("^^");
             id = dataRow[0];
             name = dataRow[1];
-            dni = dataRow[2];
+            students = dataRow[2];
+            year = dataRow[3];
 
-            bodyHtml += '<tr data-id=\"' + id + '\" class="with-pointer" onclick="window.document.location = \'/subjects/view/' + id + '\'"><td>' + name + '</td><td>' + dni + '</td><td><img src=\"/img/edit.png\" class=\"img-icon\"  onclick=\"window.document.location = \'/subjects/modify/' + id + '\'"/><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>';
+            bodyHtml += '<tr data-id=\"' + id + '\" class="with-pointer" onclick="window.document.location = \'/subjects/view/' + id + '\'"><td>' + name + '</td><td>' + year + '</td><td>' + students + '</td><td><img src=\"/img/edit.png\" class=\"img-icon\"  onclick=\"window.document.location = \'/subjects/modify/' + id + '\'"/><img src=\"/img/delete.png\" class=\"img-icon icon-delete\" /></td></tr>';
         }
 
         tableBody.html(bodyHtml);

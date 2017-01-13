@@ -716,7 +716,7 @@ class SearchHandler(base.BaseHandler):
 
         resp = ""
         for subject in data["objects"]:
-            resp += "%s^^%s^^%s\n" % (subject.key.id(), subject.name, len(subject.students))  # Data to be formatted in the JS code
+            resp += "%s^^%s^^%s^^%s\n" % (subject.key.id(), subject.name, len(subject.students), self.formatYear(subject.startdate, subject.enddate))  # Data to be formatted in the JS code
 
         if len(data["objects"]):
             # Add the buttons info (new offsets)
@@ -731,6 +731,12 @@ class SearchHandler(base.BaseHandler):
             resp += "\n\n%d\n%d\n%d\n%d" % (leftPage, rightPage, curPage, db.ITEMS_PER_PAGE)
 
         self.response.write(resp)
+
+    def formatYear(self, startDate, endDate):
+        sy = str(startDate).split("-")[0]
+        ey = str(endDate).split("-")[0]
+
+        return "%s/%s" % (sy, ey[-2:]) if sy != ey else sy
 
 config = {}
 config['webapp2_extras.sessions'] = {
