@@ -712,7 +712,7 @@ class SearchHandler(base.BaseHandler):
         off = self.request.get("o", None)
 
         # Paginate the query (beginning after a offset if it's specified)
-        data = db.paginateOff(query, (-db.Subject.creationdate, db.Subject.key), int(off) if off else 0)
+        data = db.paginateOff(query, (db.Subject.creationdate, db.Subject.key), int(off) if off else 0)
 
         resp = ""
         for subject in data["objects"]:

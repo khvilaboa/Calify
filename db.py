@@ -7,8 +7,8 @@ from google.appengine.ext import ndb
 class Subject(ndb.Model):
     name = ndb.StringProperty(indexed=True)
     description = ndb.StringProperty(indexed=False)
-    startdate = ndb.DateProperty(indexed=False)
-    enddate = ndb.DateProperty(indexed=False)
+    startdate = ndb.DateProperty(indexed=True)
+    enddate = ndb.DateProperty(indexed=True)
     creationdate = ndb.DateTimeProperty(indexed=True)
 
     teachers = ndb.KeyProperty(kind="Teacher", repeated=True)
@@ -120,7 +120,7 @@ class Subject(ndb.Model):
             pres = True
             mark = (rawMark.mark / task.maxmark) * 10.0 * (task.percent/100.0)
 
-            if export and mark < task.minmark:
+            if export and mark < task.minmark * (task.percent/100.0):
                 extraPoints = 0
                 weightedAvg = 4
                 break

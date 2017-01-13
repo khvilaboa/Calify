@@ -40,6 +40,40 @@ indexes:
   properties:
   - name: teachers
   - name: creationdate
+  - name: name
+
+- kind: Subject
+  properties:
+  - name: teachers
+  - name: creationdate
+  - name: name
+    direction: desc
+
+- kind: Subject
+  properties:
+  - name: teachers
+  - name: creationdate
+    direction: desc
+
+- kind: Subject
+  properties:
+  - name: teachers
+  - name: enddate
+
+- kind: Subject
+  properties:
+  - name: teachers
+  - name: name
+
+- kind: Subject
+  properties:
+  - name: teachers
+  - name: startdate
+
+- kind: Subject
+  properties:
+  - name: teachers
+  - name: startdate
     direction: desc
 
 - kind: Task
