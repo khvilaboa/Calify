@@ -95,7 +95,7 @@ class Subject(ndb.Model):
 
         return self.key.delete()
 
-    def getStudentFinalMark(self, stKey, export=False):
+    def getStudentFinalMark(self, stKey, export=False, promote=True):
 
         def getPromotedMark(mark):
             for impMark in [5, 7, 9]:
@@ -129,7 +129,7 @@ class Subject(ndb.Model):
 
         if pres:
             mark = min(weightedAvg + extraPoints, 10)
-            if stKey in self.promoteds:
+            if promote and stKey in self.promoteds:
                 mark = getPromotedMark(mark)
             if mark == int(mark):
                 mark = int(mark)

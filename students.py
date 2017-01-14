@@ -64,7 +64,7 @@ class SearchHandler(base.BaseHandler):
         for student in data["objects"]:
             #self.response.write("%s, %s\n" % (student.key.id(), round(sub.getStudentFinalMark(student.key),2)))
             resp += "%s^^%s^^%s" % (student.key.id(), student.name, student.dni)  # Data to be formatted in the JS code
-            resp += "^^%s" % (marks.get(student.key.id(), "-1") if taskId else (round(sub.getStudentFinalMark(student.key), 2) if sub.getStudentFinalMark(student.key) is not None else "-"))  # Add marks if the destination is a task view
+            resp += "^^%s" % (marks.get(student.key.id(), "-1") if taskId else (round(sub.getStudentFinalMark(student.key, promote=False), 2) if sub.getStudentFinalMark(student.key, promote=False) is not None else "-"))  # Add marks if the destination is a task view
             if not taskId:
                 resp += "^^%s" % ("1" if student.hasPassedMandatoryTasks(sub.key) else "0")
             resp += "\n"
