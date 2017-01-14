@@ -111,7 +111,7 @@ class SubjectsHandler(base.BaseHandler):
             for st in students:
                 mark = sub.getStudentFinalMark(st.key, True)
                 if mark is not None:
-                    mark = round(mark, 2)
+                    mark = round(mark, 1)
                     fileContent += "%s;%s\n" % (st.dni[:8], mark)
 
                 writeXlsData(ws, row, 1, row - 12)
