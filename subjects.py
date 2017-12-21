@@ -4,6 +4,8 @@
 import webapp2, jinja2, os, db, base, re, time, sys, xlwt, StringIO, datetime
 from webapp2_extras import i18n, sessions
 
+import utils
+
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.i18n', 'jinja2.ext.autoescape'],
@@ -15,7 +17,6 @@ JINJA_ENVIRONMENT.install_gettext_translations(i18n)
 class SubjectsHandler(base.BaseHandler):
 
     class Parser:
-
         @staticmethod
         def exportCsvStudentsFile(sub):
             students = sub.getStudents().order(db.Student.dni)
@@ -384,10 +385,6 @@ class SubjectsHandler(base.BaseHandler):
                 self.redirect("/subjects/view/%s" % sub.key.id())
 
             # Tasks that contains the current subject
-            tasksInfo = sub.getTasks()
-
-            # Marks per each task and student
-            tasksMarks = {task.key: {m.student: m.mark for m in task.getMarks()} for task in sub.getTasks()}
             students = sub.getStudents().order(db.Student.dni)
 
             try:
@@ -396,22 +393,21 @@ class SubjectsHandler(base.BaseHandler):
                 count = 0
 
             if type == "csv":
+                file_name = utils.create_file_name(self.getUserName(), "subject", sub.name) + ".csv"
                 self.response.headers['Content-Type'] = 'text/csv'
-                filename = self.getUserName() + "_" + str(time.time()).replace(".", "") + ".csv"
-                self.response.headers['Content-Disposition'] = 'attachment; filename=' + filename
+                self.response.headers['Content-Disposition'] = 'attachment; filename=' + file_name
 
-                fileContent = self.Parser.exportCsvStudentsFile(sub)
-                self.response.write(fileContent)
+                file_content = self.Parser.exportCsvStudentsFile(sub)
+                self.response.write(file_content)
 
                 return
             elif type == "xls":
+                file_name = utils.create_file_name(self.getUserName(), "subject", sub.name) + ".xls"
                 self.response.headers['Content-Type'] = 'application/vnd.ms-excel'
-                filename = self.getUserName() + "_" + str(time.time()).replace(".", "") + ".xls"
-                self.response.headers['Content-Disposition'] = 'attachment; filename=' + filename
-                #self.response.write(sys.path)
+                self.response.headers['Content-Disposition'] = 'attachment; filename=' + file_name
 
-                fileContent = self.Parser.exportXlsStudentsFile(sub)
-                self.response.write(fileContent)
+                file_content = self.Parser.exportXlsStudentsFile(sub)
+                self.response.write(file_content)
 
                 return
 

@@ -63,6 +63,19 @@ indexes:
 - kind: Subject
   properties:
   - name: teachers
+  - name: enddate
+    direction: desc
+
+- kind: Subject
+  properties:
+  - name: teachers
+  - name: enddate
+    direction: desc
+  - name: creationdate
+
+- kind: Subject
+  properties:
+  - name: teachers
   - name: name
 
 - kind: Subject
