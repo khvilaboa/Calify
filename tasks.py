@@ -96,6 +96,7 @@ class TasksHandler(base.BaseHandler):
             str_export_time += "-" + str.format("{0:02d}_{1:02d}_{2:02d}",
                                          export_time.tm_hour, export_time.tm_min, export_time.tm_sec)
             file_name = utils.create_file_name(self.getUserName(), "task", task.subject.get().name + "_" + task.name)
+            file_name += ".csv"
             self.response.headers['Content-Type'] = 'text/csv'
             self.response.headers['Content-Disposition'] = 'attachment; filename=' + file_name
             self.response.write(self.Parser.exportCsvStudentsFile(task))
