@@ -700,7 +700,6 @@ class SubjectsHandler(base.BaseHandler):
         return self.session_store.get_session()
 
 
-
 class SearchHandler(base.BaseHandler):
     def get(self):
         if not self.loggedIn():
@@ -708,7 +707,7 @@ class SearchHandler(base.BaseHandler):
             return
 
         teacher = db.Teacher.getByEmail(self.getEmail())
-        query = db.Subject.getSubjectsByTeacher(teacher.key)
+        query = db.Subject.getSubjectsByTeacher(teacher.key).order(-db.Subject.enddate)
         off = self.request.get("o", None)
 
         # Paginate the query (beginning after a offset if it's specified)
