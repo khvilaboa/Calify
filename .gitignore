@@ -5,3 +5,5 @@
 # Python compiled files
 *.pyc
 
+# PyCharm configuration
+.idea/
