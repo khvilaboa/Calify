@@ -728,10 +728,16 @@ class SearchHandler(base.BaseHandler):
         self.response.write(resp)
 
     def formatYear(self, startDate, endDate):
-        sy = str(startDate).split("-")[0]
-        ey = str(endDate).split("-")[0]
+        sy = str(startDate.year)
+        ey = str(endDate.year)
 
-        return "%s/%s" % (sy, ey[-2:]) if sy != ey else sy
+        if ey == sy:
+            if startDate.month < 9:
+                sy = str(startDate.year - 1)
+            else:
+                ey = str(endDate.year + 1)
+
+        return str.format("{0}/{1}", sy, ey[-2:])
 
 config = {}
 config['webapp2_extras.sessions'] = {
