@@ -82,6 +82,7 @@ class SearchHandler(base.BaseHandler):
 
         self.response.write(resp)
 
+
 app = webapp2.WSGIApplication([
     ('/students/search', SearchHandler)
 ], debug=True)

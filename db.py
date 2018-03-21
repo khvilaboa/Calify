@@ -314,7 +314,7 @@ class Mark(ndb.Model):
         return m.put()
 
 
-ITEMS_PER_PAGE = 8
+ITEMS_PER_PAGE = 10
 
 
 def paginateOff(query, order, offset=0):
@@ -324,6 +324,7 @@ def paginateOff(query, order, offset=0):
     next_offset = offset + ITEMS_PER_PAGE if bool(more) else -1
 
     return {'objects': objects, 'prevOffset': prev_offset, 'nextOffset': next_offset, 'curOffset': offset}
+
 
 def paginateArray(array, offset=0):
     objects = array[offset:offset+ITEMS_PER_PAGE]

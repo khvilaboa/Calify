@@ -713,6 +713,7 @@ class SearchHandler(base.BaseHandler):
         for subject in data["objects"]:
             resp += "%s^^%s^^%s^^%s\n" % (subject.key.id(), subject.name, len(subject.students), self.formatYear(subject.startdate, subject.enddate))  # Data to be formatted in the JS code
 
+        num_page_buttons_shown = 5
         if len(data["objects"]):
             # Add the buttons info (new offsets)
             resp += "\n%d\n%d" % (data["prevOffset"], data["nextOffset"])
@@ -721,8 +722,8 @@ class SearchHandler(base.BaseHandler):
             lenQuery = query.count()  #len(query.fetch())
             maxPage = max(0, 8*((lenQuery - 1)//8))
             curPage = data["curOffset"]
-            leftPage = max(0, curPage-2*db.ITEMS_PER_PAGE)
-            rightPage = min(curPage+2*db.ITEMS_PER_PAGE, maxPage)
+            leftPage = max(0, curPage-num_page_buttons_shown*db.ITEMS_PER_PAGE)
+            rightPage = min(curPage+num_page_buttons_shown*db.ITEMS_PER_PAGE, maxPage)
             resp += "\n\n%d\n%d\n%d\n%d" % (leftPage, rightPage, curPage, db.ITEMS_PER_PAGE)
 
         self.response.write(resp)
